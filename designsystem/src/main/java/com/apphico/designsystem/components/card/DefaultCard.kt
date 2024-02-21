@@ -43,16 +43,10 @@ fun DefaultCard(
     )
 }
 
-class DefaultCardPreviewProvider : PreviewParameterProvider<Group> {
-    override val values = sequenceOf(mockedGroup)
-}
-
 @Preview(name = "Light Mode", showBackground = true)
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-private fun DefaultCardPreview(
-    @PreviewParameter(DefaultCardPreviewProvider::class) group: Group
-) {
+private fun DefaultCardPreview() {
     DefaultCard(
         onClick = {},
         content = {}

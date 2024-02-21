@@ -3,6 +3,8 @@ package com.apphico.designsystem.theme
 import androidx.annotation.DrawableRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Psychology
@@ -72,8 +74,8 @@ object ToDoAppIcons {
     val icToday = ImageVectorIcon(Icons.Outlined.Today)
     val icFilter = ImageVectorIcon(Icons.Outlined.FilterList)
     val icArrowDown = ImageVectorIcon(Icons.Outlined.ArrowDropDown)
-    val icArrowLeft = ImageVectorIcon(Icons.Outlined.KeyboardArrowLeft)
-    val icArrowRight = ImageVectorIcon(Icons.Outlined.KeyboardArrowRight)
+    val icArrowLeft = ImageVectorIcon(Icons.AutoMirrored.Outlined.KeyboardArrowLeft)
+    val icArrowRight = ImageVectorIcon(Icons.AutoMirrored.Outlined.KeyboardArrowRight)
     val icKeyboard = ImageVectorIcon(Icons.Outlined.KeyboardAlt)
     val icClock = ImageVectorIcon(Icons.Outlined.AccessTime)
     val icReorder = ImageVectorIcon(Icons.Outlined.Reorder)

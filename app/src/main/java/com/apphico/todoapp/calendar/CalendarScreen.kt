@@ -43,7 +43,6 @@ import com.apphico.todoapp.navigation.enterToEnd
 import com.apphico.todoapp.navigation.enterToStart
 import com.apphico.todoapp.navigation.exitToEnd
 import com.apphico.todoapp.navigation.exitToStart
-import java.lang.String
 
 fun AnimatedContentTransitionScope<NavBackStackEntry>.enterCalendar() =
     when (initialState.destination.route) {

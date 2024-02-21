@@ -74,12 +74,12 @@ fun ProgressCard(
             }
             Box {
                 LinearProgressIndicator(
+                    progress = { progress },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(24.dp),
-                    trackColor = ProgressBlue.copy(alpha = 0.5f),
                     color = ProgressBlue,
-                    progress = progress
+                    trackColor = ProgressBlue.copy(alpha = 0.5f),
                 )
                 Text(
                     modifier = Modifier

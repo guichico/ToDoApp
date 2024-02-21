@@ -290,7 +290,7 @@ private fun EndDateField(
         placeholder = stringResource(R.string.end_date),
         onClick = {
             if (datePickerState.selectedDateMillis == null)
-                datePickerState.setSelection(getGMTNowMillis())
+                datePickerState.selectedDateMillis = getGMTNowMillis()
             isDatePickerDialogOpen.value = true
         }
     )

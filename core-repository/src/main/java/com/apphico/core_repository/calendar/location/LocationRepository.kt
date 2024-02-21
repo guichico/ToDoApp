@@ -72,6 +72,7 @@ class LocationRepositoryImpl : LocationRepository {
                 it?.let { getFromCoordinates(context, it.coordinates) } ?: flowOf(null)
             }
 
+    @Suppress("DEPRECATION")
     override fun getFromCoordinates(
         context: Context,
         coordinates: Coordinates
@@ -94,6 +95,7 @@ class LocationRepositoryImpl : LocationRepository {
             }
         }
 
+    @Suppress("DEPRECATION")
     override fun getFromName(
         context: Context,
         name: String

@@ -117,14 +117,14 @@ fun AchievementCard(
                 }
                 if (achievement.getProgress() < 1f) {
                     LinearProgressIndicator(
+                        progress = { achievement.getProgress() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(14.dp)
                             .padding(top = ToDoAppTheme.spacing.small),
-                        trackColor = LightBlue,
                         color = MediumBlue,
+                        trackColor = LightBlue,
                         strokeCap = StrokeCap.Round,
-                        progress = achievement.getProgress()
                     )
                 } else {
                     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.extraSmall))
