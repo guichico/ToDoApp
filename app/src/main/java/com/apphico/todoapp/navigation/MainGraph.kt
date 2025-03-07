@@ -58,7 +58,8 @@ import com.apphico.todoapp.task.navigateToSelectLocationOnMap
 const val DEFAULT_TWEEN_ANIMATION = 500
 
 fun NavGraphBuilder.mainGraph(
-    navController: NavController
+    navController: NavController,
+    snackBar: (String) -> Unit
 ) {
     navigation(route = Flow.Main.route, startDestination = BottomBarNavigationItem.CALENDAR.route) {
         composable(
@@ -115,7 +116,8 @@ fun NavGraphBuilder.mainGraph(
             AddEditTaskScreen(
                 navigateToSelectGroup = { navController.navigateToSelectGroup() },
                 navigateToSelectLocation = { task, location -> navController.navigateToAddEditLocation(task, location) },
-                navigateBack = { navController.navigateBack() }
+                navigateBack = { navController.navigateBack() },
+                snackBar = snackBar
             )
         }
         composable(

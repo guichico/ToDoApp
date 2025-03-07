@@ -57,7 +57,7 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.exitSelectLocationOnMap() 
     }
 
 fun NavController.navigateToSelectLocationOnMap(
-    task: Task,
+    task: Task?,
     location: Location?
 ) {
     navigateWithArgs(
@@ -73,10 +73,10 @@ fun NavController.navigateToSelectLocationOnMap(
 @Composable
 fun SelectLocationOnMapScreen(
     selectLocationOnMapViewModel: SelectLocationOnMapViewModel = hiltViewModel(),
-    navigateBackToAddEditLocation: (Task, Location) -> Unit,
+    navigateBackToAddEditLocation: (Task?, Location) -> Unit,
     navigateBack: () -> Unit
 ) {
-    val task = checkNotNull(selectLocationOnMapViewModel.taskArg)
+    val task = selectLocationOnMapViewModel.taskArg
     val location = selectLocationOnMapViewModel.location.collectAsState()
 
     val isSearchFinished by selectLocationOnMapViewModel.locationSearchFinished.collectAsState()

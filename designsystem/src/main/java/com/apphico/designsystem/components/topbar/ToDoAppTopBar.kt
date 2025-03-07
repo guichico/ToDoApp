@@ -136,10 +136,7 @@ private fun HeaderWithSubtitle(
     }
     Text(
         modifier = Modifier
-            .padding(
-                end = ToDoAppTheme.spacing.extraSmall,
-                bottom = ToDoAppTheme.spacing.medium
-            ),
+            .padding(end = ToDoAppTheme.spacing.extraSmall),
         text = subTitle,
         style = MaterialTheme.typography.titleMedium.copy(fontSize = 14.sp),
         color = MaterialTheme.colorScheme.secondary

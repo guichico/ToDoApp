@@ -20,6 +20,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -47,12 +48,14 @@ import com.apphico.todoapp.navigation.BottomBarNavigationItem
 import com.apphico.todoapp.navigation.Flow
 import com.apphico.todoapp.navigation.ToDoAppBottomBar
 import com.apphico.todoapp.navigation.mainGraph
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppScaffold(
     navController: NavHostController,
     navBackStackEntry: NavBackStackEntry?
 ) {
+    val coroutine = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
 
     val bottomBarSelectedItem = navBackStackEntry?.destination?.bottomBarSelectedItem()
@@ -105,7 +108,14 @@ fun AppScaffold(
             navController = navController,
             startDestination = Flow.Main.route
         ) {
-            mainGraph(navController = navController)
+            mainGraph(
+                navController = navController,
+                snackBar = {
+                    coroutine.launch {
+                        snackBarHostState.showSnackbar(it)
+                    }
+                }
+            )
         }
     }
 }

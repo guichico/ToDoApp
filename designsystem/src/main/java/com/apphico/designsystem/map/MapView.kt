@@ -44,11 +44,11 @@ import com.apphico.designsystem.theme.White
 @Composable
 fun MapView(
     modifier: Modifier = Modifier,
-    task: Task,
+    task: Task?,
     location: State<Location?>,
     onAddressChanged: (String) -> Unit,
     onSearchLocationClicked: (String?) -> Unit,
-    onEditLocationClicked: (Task, Location?) -> Unit
+    onEditLocationClicked: (Task?, Location?) -> Unit
 ) {
     val locationUpdates = remember { mutableStateOf(location.value?.coordinates) }
 

@@ -11,8 +11,8 @@ val mockedTask = Task(
     startDate = LocalDateTime.now(),
     endDate = LocalDateTime.now(),
     checkList = listOf(
-        CheckListItem("take dog to a walk", true),
-        CheckListItem("pet the dog", false)
+        CheckListItem(0L, "take dog to a walk", true),
+        CheckListItem(0L, "pet the dog", false)
     ),
     daysOfWeek = listOf(2, 3, 4),
     reminder = LocalTime.of(13, 15),

@@ -15,8 +15,8 @@ val mockedAchievement = Achievement(
     endDate = LocalDateTime.now(),
     measurementType = MeasurementType.TaskDone(
         checkList = listOf(
-            CheckListItem("Perder 10 kg", false),
-            CheckListItem("Ganhar 5kg de massa muscular de puro músculo, ficar grandão", true)
+            CheckListItem(0L, "Perder 10 kg", false),
+            CheckListItem(0L, "Ganhar 5kg de massa muscular de puro músculo, ficar grandão", true)
         )
     )
 )

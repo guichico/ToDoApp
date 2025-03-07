@@ -9,6 +9,7 @@ typealias Coordinates = Pair<Double, Double>
 
 @Parcelize
 data class Location(
+    val id: Long = 0,
     val coordinates: Coordinates,
     val address: String? = null
 ) : Parcelable

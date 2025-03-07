@@ -5,7 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Group(
-    val id: Long = Long.MIN_VALUE,
+    val id: Long = 0,
     val name: String = "",
     val color: Int = Int.MIN_VALUE
 ) : Parcelable

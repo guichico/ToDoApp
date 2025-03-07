@@ -3,17 +3,16 @@ package com.apphico.designsystem.theme
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.ripple.LocalRippleTheme
-import androidx.compose.material.ripple.RippleAlpha
-import androidx.compose.material.ripple.RippleTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -55,6 +54,10 @@ object ToDoAppTheme {
         get() = LocalSpacing.current
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+internal fun toDoAppRippleTheme(color: Color) = RippleConfiguration(color = color)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToDoAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -81,10 +84,11 @@ fun ToDoAppTheme(
             window.statusBarColor = (if (darkTheme) Black else White).toArgb()
             window.navigationBarColor = (if (darkTheme) Black else White).toArgb()
 
-            WindowCompat.getInsetsController(window, view).apply {
-                isAppearanceLightStatusBars = !isColorDark(window.statusBarColor)
-                isAppearanceLightNavigationBars = !isColorDark(window.navigationBarColor)
-            }
+            WindowCompat.getInsetsController(window, view)
+                .apply {
+                    isAppearanceLightStatusBars = !isColorDark(window.statusBarColor)
+                    isAppearanceLightNavigationBars = !isColorDark(window.navigationBarColor)
+                }
         }
     }
 
@@ -94,19 +98,9 @@ fun ToDoAppTheme(
     ) {
         CompositionLocalProvider(
             LocalSpacing provides ToDoAppTheme.spacing,
-            LocalRippleTheme provides ToDoAppRippleTheme
+            LocalRippleConfiguration provides toDoAppRippleTheme(RippleBlue)
         ) {
             content()
         }
     }
-}
-
-@Immutable
-object ToDoAppRippleTheme : RippleTheme {
-
-    @Composable
-    override fun defaultColor(): Color = RippleBlue
-
-    @Composable
-    override fun rippleAlpha(): RippleAlpha = RippleTheme.defaultRippleAlpha(contentColor = RippleBlue, lightTheme = !isSystemInDarkTheme())
 }

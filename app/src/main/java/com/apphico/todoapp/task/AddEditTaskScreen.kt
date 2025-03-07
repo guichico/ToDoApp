@@ -95,7 +95,7 @@ fun NavController.navigateToAddEditTask(task: Task?) {
 }
 
 fun NavController.navigateBackToAddEditTask(
-    task: Task,
+    task: Task?,
     location: Location?
 ) {
     navigateWithArgs(
@@ -113,7 +113,8 @@ fun AddEditTaskScreen(
     addEditTaskViewModel: AddEditTaskViewModel = hiltViewModel(),
     navigateToSelectGroup: () -> Unit,
     navigateToSelectLocation: (Task, Location?) -> Unit,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    snackBar: (String) -> Unit
 ) {
     val editingTask = addEditTaskViewModel.editingTask.collectAsState()
     val isEditing = addEditTaskViewModel.isEditing
@@ -135,6 +136,8 @@ fun AddEditTaskScreen(
         derivedStateOf { scrollState.isScrollInProgress || scrollState.value != 0 }
     }
 
+    val taskSavedString = stringResource(R.string.task_saved)
+
     DeleteSaveTopBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -145,7 +148,11 @@ fun AddEditTaskScreen(
             .zIndex(1f),
         title = stringResource(R.string.add_new_task),
         isEditing = isEditing,
-        onSaveClicked = {},
+        onSaveClicked = {
+            addEditTaskViewModel.save()
+            navigateBack()
+            snackBar(taskSavedString)
+        },
         onDeleteClicked = {},
         navigateBack = {
             navigateBackConfirm(

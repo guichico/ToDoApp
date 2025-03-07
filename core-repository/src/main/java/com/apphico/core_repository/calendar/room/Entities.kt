@@ -1,0 +1,53 @@
+package com.apphico.core_repository.calendar.room
+
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.Relation
+import java.time.LocalDateTime
+import java.time.LocalTime
+
+@Entity
+data class GroupDB(
+    @PrimaryKey(autoGenerate = true) val groupId: Long,
+    @ColumnInfo("group_name") val name: String,
+    val color: Int
+)
+
+@Entity
+data class CheckListItemDB(
+    @PrimaryKey(autoGenerate = true) val checkListItemId: Long,
+    val checkListTaskId: Long,
+    val name: String,
+    val isDone: Boolean = false,
+)
+
+@Entity
+data class LocationDB(
+    @PrimaryKey(autoGenerate = true) val locationId: Long,
+    val locationTaskId: Long,
+    val latitude: Double,
+    val longitude: Double,
+    val address: String?
+)
+
+@Entity
+data class TaskDB(
+    @PrimaryKey(autoGenerate = true) val taskId: Long,
+    @ColumnInfo("task_name") val name: String?,
+    val description: String?,
+    val taskGroupId: Long?,
+    val startDate: LocalDateTime?,
+    val endDate: LocalDateTime?,
+    val daysOfWeek: List<Int>?,
+    val reminder: LocalTime?,
+    @ColumnInfo("task_is_done") val isDone: Boolean = false
+)
+
+data class TaskRelations(
+    @Embedded val taskDB: TaskDB,
+    @Relation(parentColumn = "taskGroupId", entityColumn = "groupId") val groupDB: GroupDB?,
+    @Relation(parentColumn = "taskId", entityColumn = "checkListTaskId") val checkList: List<CheckListItemDB>?,
+    @Relation(parentColumn = "taskId", entityColumn = "locationTaskId") val locationDB: LocationDB?
+)

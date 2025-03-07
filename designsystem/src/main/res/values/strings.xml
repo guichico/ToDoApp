@@ -58,4 +58,5 @@
     <string name="unit_int">Número inteiro</string>
     <string name="unit_decimal">Decimal</string>
     <string name="unit_currency">Moeda</string>
+    <string name="task_saved">Tarefa salva com sucesso</string>
 </resources>

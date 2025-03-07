@@ -1,10 +1,9 @@
 package com.apphico.core_model
 
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.util.UUID
-import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Task(

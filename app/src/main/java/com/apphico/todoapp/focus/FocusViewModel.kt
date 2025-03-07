@@ -16,4 +16,8 @@ class FocusViewModel @Inject constructor(
     val routines = focusRepository.getRoutines()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
+    init {
+        println("Init FocusViewModel")
+    }
+
 }

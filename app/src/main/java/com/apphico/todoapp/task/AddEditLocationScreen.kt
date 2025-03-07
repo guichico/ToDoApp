@@ -78,7 +78,7 @@ fun NavController.navigateToAddEditLocation(
 }
 
 fun NavController.navigateBackToAddEditLocation(
-    task: Task,
+    task: Task?,
     location: Location?
 ) {
     navigateWithArgs(
@@ -95,11 +95,11 @@ fun NavController.navigateBackToAddEditLocation(
 @Composable
 fun AddEditLocationScreen(
     addEditLocationViewModel: AddEditLocationViewModel = hiltViewModel(),
-    navigateToSelectLocationOnMap: (Task, Location?) -> Unit,
-    onConfirmClicked: (Task, Location?) -> Unit,
+    navigateToSelectLocationOnMap: (Task?, Location?) -> Unit,
+    onConfirmClicked: (Task?, Location?) -> Unit,
     navigateBack: () -> Unit
 ) {
-    val task = checkNotNull(addEditLocationViewModel.taskArg)
+    val task = addEditLocationViewModel.taskArg
     val location = addEditLocationViewModel.location.collectAsState()
 
     val permissionsGranted = remember { mutableStateOf(false) }
@@ -147,12 +147,12 @@ fun AddEditLocationScreen(
 @Composable
 private fun AddEditLocationScreenContent(
     innerPadding: PaddingValues,
-    task: Task,
+    task: Task?,
     location: State<Location?>,
     onAddressChanged: (String) -> Unit,
     onSearchLocationClicked: (String?) -> Unit,
-    onConfirmClicked: (Task, Location?) -> Unit,
-    navigateToSelectLocationOnMap: (Task, Location?) -> Unit,
+    onConfirmClicked: (Task?, Location?) -> Unit,
+    navigateToSelectLocationOnMap: (Task?, Location?) -> Unit,
     navigateBack: () -> Unit
 ) {
     Box(

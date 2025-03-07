@@ -1,21 +1,25 @@
 package com.apphico.todoapp.task
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
+import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.todoapp.di.AddEditLocationScreenArgModule
 import com.apphico.todoapp.di.AddEditTaskScreenArgModule
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
 
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
     @AddEditTaskScreenArgModule.TaskData private val taskArg: Task?,
-    @AddEditLocationScreenArgModule.LocationData private val locationArg: Location?
+    @AddEditLocationScreenArgModule.LocationData private val locationArg: Location?,
+    val taskRepository: TaskRepository
 ) : ViewModel() {
 
     val editingTask = MutableStateFlow(taskArg ?: Task())
@@ -107,7 +111,11 @@ class AddEditTaskViewModel @Inject constructor(
             task = task.copy(endDate = task.endDate?.withHour(endTime.hour)?.withMinute(endTime.minute))
         }
 
-        println(task)
+        viewModelScope
+            .launch {
+                taskRepository
+                    .insertTask(task)
+            }
     }
 }
 

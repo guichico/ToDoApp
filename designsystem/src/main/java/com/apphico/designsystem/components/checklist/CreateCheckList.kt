@@ -208,8 +208,8 @@ private fun TaskCreateCheckListPreview() {
             checkList = remember {
                 mutableStateOf(
                     listOf(
-                        CheckListItem("take dog to a walk", true),
-                        CheckListItem("pet the dog", false)
+                        CheckListItem(0L, "take dog to a walk", true),
+                        CheckListItem(0L, "pet the dog", false)
                     )
                 )
             },

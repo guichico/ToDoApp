@@ -91,8 +91,7 @@ class LocationRepositoryImpl : LocationRepository {
                 trySend(address?.toLocation())
             }
 
-            awaitClose {
-            }
+            awaitClose {}
         }
 
     @Suppress("DEPRECATION")
@@ -114,7 +113,6 @@ class LocationRepositoryImpl : LocationRepository {
                 trySend(address?.toLocation())
             }
 
-            awaitClose {
-            }
+            awaitClose {}
         }
 }
