@@ -95,6 +95,16 @@ class AddEditTaskViewModel @Inject constructor(
         editingTask.value = editingTask.value.copy(location = null)
     }
 
+    fun delete() {
+        var task = editingTask.value
+
+        viewModelScope
+            .launch {
+                taskRepository
+                    .deleteTask(task)
+            }
+    }
+
     fun save() {
         editingTask.value.let { task ->
             if (task.name.isEmpty()) {
@@ -113,8 +123,13 @@ class AddEditTaskViewModel @Inject constructor(
 
         viewModelScope
             .launch {
-                taskRepository
-                    .insertTask(task)
+                if (isEditing) {
+                    taskRepository
+                        .updateTask(task)
+                } else {
+                    taskRepository
+                        .insertTask(task)
+                }
             }
     }
 }

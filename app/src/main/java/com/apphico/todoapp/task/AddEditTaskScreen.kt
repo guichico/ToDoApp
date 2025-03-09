@@ -137,6 +137,7 @@ fun AddEditTaskScreen(
     }
 
     val taskSavedString = stringResource(R.string.task_saved)
+    val taskDeletedString = stringResource(R.string.task_deleted)
 
     DeleteSaveTopBar(
         modifier = Modifier
@@ -153,7 +154,11 @@ fun AddEditTaskScreen(
             navigateBack()
             snackBar(taskSavedString)
         },
-        onDeleteClicked = {},
+        onDeleteClicked = {
+            addEditTaskViewModel.delete()
+            navigateBack()
+            snackBar(taskDeletedString)
+        },
         navigateBack = {
             navigateBackConfirm(
                 isAlertDialogOpen = isAlertDialogOpen,
@@ -256,14 +261,14 @@ private fun AddTaskScreenContent(
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
+            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.extraLarge))
 
             DaysOfWeekGrid(
                 selectedDaysState = remember { derivedStateOf { task.value.daysOfWeek } },
                 onSelectionChanged = onDaysOfWeekChanged
             )
 
-            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.extraExtraLarge))
 
             CheckList(
                 scrollState = scrollState,
