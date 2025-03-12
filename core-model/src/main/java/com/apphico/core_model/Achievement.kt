@@ -1,34 +1,44 @@
 package com.apphico.core_model
 
 import android.os.Parcelable
-import java.time.LocalDateTime
+import com.apphico.core_model.serializers.LocalDateTimeSerializer
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
+import java.time.LocalDateTime
 
+@Serializable
 enum class MeasurementValueUnit { INT, DECIMAL, CURRENCY }
 
 @Parcelize
+@Serializable
 sealed class MeasurementType : Parcelable {
 
+    @Serializable
     data object None : MeasurementType()
 
     @Parcelize
+    @Serializable
     data class TaskDone(
         val checkList: List<CheckListItem> = emptyList()
     ) : MeasurementType()
 
     @Parcelize
+    @Serializable
     data class Percentage(
         val percentageProgress: List<PercentageProgress> = emptyList()
     ) : MeasurementType() {
         @Parcelize
+        @Serializable
         data class PercentageProgress(
             val progress: Float,
+            @Serializable(with = LocalDateTimeSerializer::class)
             val date: LocalDateTime,
             val description: String? = null
         ) : Parcelable
     }
 
     @Parcelize
+    @Serializable
     data class Value(
         val unit: MeasurementValueUnit? = null,
         val startingValue: Float,
@@ -36,8 +46,10 @@ sealed class MeasurementType : Parcelable {
         val trackedValues: List<TrackedValues> = emptyList()
     ) : MeasurementType() {
         @Parcelize
+        @Serializable
         data class TrackedValues(
             val trackedValue: Float,
+            @Serializable(with = LocalDateTimeSerializer::class)
             val date: LocalDateTime,
             val description: String? = null
         ) : Parcelable
@@ -45,13 +57,16 @@ sealed class MeasurementType : Parcelable {
 }
 
 @Parcelize
+@Serializable
 data class Achievement(
     val id: Long = 0,
     val name: String = "",
     val description: String? = null,
     val group: Group? = null,
     val measurementType: MeasurementType? = null,
+    @Serializable(with = LocalDateTimeSerializer::class)
     val endDate: LocalDateTime? = null,
+    @Serializable(with = LocalDateTimeSerializer::class)
     val doneDate: LocalDateTime? = null
 ) : Parcelable {
     fun getProgress() = when {

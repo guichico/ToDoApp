@@ -4,10 +4,12 @@ import android.location.Address
 import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 typealias Coordinates = Pair<Double, Double>
 
 @Parcelize
+@Serializable
 data class Location(
     val id: Long = 0,
     val coordinates: Coordinates,

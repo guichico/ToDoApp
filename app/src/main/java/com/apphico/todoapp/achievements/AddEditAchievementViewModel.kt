@@ -1,28 +1,40 @@
 package com.apphico.todoapp.achievements
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.navigation.toRoute
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
-import com.apphico.todoapp.di.AddEditAchievementScreenArgModule
+import com.apphico.todoapp.navigation.CustomNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDateTime
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlin.reflect.typeOf
 
 @HiltViewModel
 class AddEditAchievementViewModel @Inject constructor(
-    @AddEditAchievementScreenArgModule.AchievementData private val achievementArg: Achievement?
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val editingAchievement = MutableStateFlow(achievementArg ?: Achievement())
-    val editingMeasurementType = MutableStateFlow<MeasurementType?>(null)
-    val progress = MutableStateFlow(achievementArg?.getProgress() ?: 0f)
+    val achievement = savedStateHandle.toRoute<AddEditAchievementRoute>(
+        typeMap = mapOf(
+            typeOf<AddEditAchievementParameters>() to CustomNavType(
+                AddEditAchievementParameters::class.java,
+                AddEditAchievementParameters.serializer()
+            )
+        )
+    ).addEditAchievementParameters.achievement
 
-    val isEditing = achievementArg != null
+    val editingAchievement = MutableStateFlow(achievement ?: Achievement())
+    val editingMeasurementType = MutableStateFlow<MeasurementType?>(null)
+    val progress = MutableStateFlow(achievement?.getProgress() ?: 0f)
+
+    val isEditing = achievement != null
 
     fun hasChanges(): Boolean {
-        val achievement = achievementArg ?: Achievement()
+        val achievement = achievement ?: Achievement()
         val editingAchievement = editingAchievement.value
 
         // TODO Implement others

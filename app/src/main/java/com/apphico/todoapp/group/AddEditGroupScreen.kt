@@ -1,11 +1,6 @@
 package com.apphico.todoapp.group
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,8 +24,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroup
 import com.apphico.designsystem.R
@@ -40,31 +33,13 @@ import com.apphico.designsystem.components.dialogs.navigateBackConfirm
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.todoapp.navigation.Screen
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.enterAddEditGroup() =
-    when (initialState.destination.route) {
-        Screen.SelectGroup.route -> slideInVertically(initialOffsetY = { it })
-        else -> fadeIn()
-    }
-
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.exitAddEditGroup() =
-    when (targetState.destination.route) {
-        Screen.SelectGroup.route -> slideOutVertically(targetOffsetY = { it })
-        else -> fadeOut()
-    }
-
-fun NavController.navigateToAddEditGroup() {
-    this.navigate(Screen.AddEditGroup.route)
-}
 
 @Composable
 fun AddEditGroupScreen(
     addEditGroupViewModel: AddEditGroupViewModel = hiltViewModel(),
     navigateBack: () -> Unit
 ) {
-    val group = addEditGroupViewModel.group.collectAsState()
+    val group = addEditGroupViewModel.editingGroup.collectAsState()
     val isEditing = addEditGroupViewModel.isEditing
 
     val isAlertDialogOpen = remember { mutableStateOf(false) }

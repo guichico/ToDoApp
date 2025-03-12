@@ -22,10 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
-import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import com.apphico.core_model.FocusMode
 import com.apphico.core_model.fakeData.mockedFocus
 import com.apphico.designsystem.R
@@ -34,28 +31,6 @@ import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
 import com.apphico.designsystem.components.dialogs.navigateBackConfirm
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.todoapp.navigation.Screen
-import com.apphico.todoapp.navigation.navigateWithArgs
-
-internal const val FOCUS_ARG = "task"
-
-fun NavController.navigateAddEditFocus(focusMode: FocusMode?) {
-    navigateWithArgs(
-        route = Screen.AddEditFocus.route,
-        args = bundleOf(FOCUS_ARG to focusMode),
-        navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-    )
-}
-
-fun NavController.navigateBackToAddEditFocus(
-    focusMode: FocusMode
-) {
-    navigateWithArgs(
-        route = Screen.AddEditFocus.route,
-        args = bundleOf(FOCUS_ARG to focusMode),
-        navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(Screen.AddEditFocus.route, true).build()
-    )
-}
 
 @Composable
 fun AddEditFocusScreen(

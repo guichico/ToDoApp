@@ -1,25 +1,31 @@
 package com.apphico.todoapp.focus
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.navigation.toRoute
 import com.apphico.core_model.FocusMode
 import com.apphico.core_repository.calendar.focus.FocusRepository
-import com.apphico.todoapp.di.AddEditFocusScreenArgModule
+import com.apphico.todoapp.navigation.CustomNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
+import javax.inject.Inject
+import kotlin.reflect.typeOf
 
 @HiltViewModel
 class AddEditFocusViewModel @Inject constructor(
-    @AddEditFocusScreenArgModule.FocusData private val focusArg: FocusMode?,
+    savedStateHandle: SavedStateHandle,
     private val focusRepository: FocusRepository
 ) : ViewModel() {
 
-    val editingFocus = MutableStateFlow(focusArg ?: FocusMode())
+    val focusMode = savedStateHandle.toRoute<AddEditFocusRoute>(
+        typeMap = mapOf(typeOf<AddEditFocusParameters>() to CustomNavType(AddEditFocusParameters::class.java, AddEditFocusParameters.serializer()))
+    ).addEditFocusParameters.focusMode
 
-    val isEditing = focusArg != null
+    val editingFocus = MutableStateFlow(focusMode ?: FocusMode())
+    val isEditing = focusMode != null
 
     fun hasChanges(): Boolean {
-        val focus = focusArg ?: FocusMode()
+        val focus = focusMode ?: FocusMode()
         val editingFocus = editingFocus.value
 
         // TODO Implement others

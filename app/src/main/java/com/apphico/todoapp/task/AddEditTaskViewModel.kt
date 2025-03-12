@@ -1,42 +1,64 @@
 package com.apphico.todoapp.task
 
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.apphico.core_model.CheckListItem
+import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.task.TaskRepository
-import com.apphico.todoapp.di.AddEditLocationScreenArgModule
-import com.apphico.todoapp.di.AddEditTaskScreenArgModule
+import com.apphico.todoapp.navigation.SavedStateHandleViewModel
+import com.apphico.todoapp.group.GROUP_ARG
+import com.apphico.todoapp.location.LOCATION_ARG
+import com.apphico.todoapp.navigation.CustomNavType
+import com.apphico.todoapp.navigation.OnCompleteListener
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
+import kotlin.reflect.typeOf
 
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
-    @AddEditTaskScreenArgModule.TaskData private val taskArg: Task?,
-    @AddEditLocationScreenArgModule.LocationData private val locationArg: Location?,
+    savedStateHandle: SavedStateHandle,
     val taskRepository: TaskRepository
-) : ViewModel() {
+) : SavedStateHandleViewModel(savedStateHandle) {
 
-    val editingTask = MutableStateFlow(taskArg ?: Task())
+    val task = savedStateHandle.toRoute<AddEditTaskRoute>(
+        typeMap = mapOf(typeOf<AddEditTaskParameters>() to CustomNavType(AddEditTaskParameters::class.java, AddEditTaskParameters.serializer()))
+    ).addEditTaskParameters.task
 
-    val isEditing = taskArg != null
+    private val group = savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
+    private val location = savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
 
-    val startTime = MutableStateFlow(taskArg?.startDate?.toLocalTime())
-    val endTime = MutableStateFlow(taskArg?.endDate?.toLocalTime())
+    val editingTask = MutableStateFlow(task ?: Task())
+    val isEditing = task != null
+
+    val startTime = MutableStateFlow(task?.startDate?.toLocalTime())
+    val endTime = MutableStateFlow(task?.endDate?.toLocalTime())
 
     init {
-        locationArg?.let {
-            editingTask.value = editingTask.value.copy(location = it)
+        viewModelScope.launch {
+            group
+                .mapNotNull { it }
+                .collect { g ->
+                    editingTask.value = editingTask.value.copy(group = g)
+                }
+
+            location
+                .mapNotNull { it }
+                .collect { l ->
+                    editingTask.value = editingTask.value.copy(location = l)
+                }
         }
     }
 
     fun hasChanges(): Boolean {
-        val task = taskArg ?: Task()
+        val task = task ?: Task()
         val editingTask = editingTask.value
 
         // TODO Implement others
@@ -95,17 +117,19 @@ class AddEditTaskViewModel @Inject constructor(
         editingTask.value = editingTask.value.copy(location = null)
     }
 
-    fun delete() {
+    fun delete(onCompleteListener: OnCompleteListener) {
         var task = editingTask.value
 
         viewModelScope
             .launch {
-                taskRepository
+                val isSuccess = taskRepository
                     .deleteTask(task)
+
+                if (isSuccess) onCompleteListener.onSuccess() else onCompleteListener.onError()
             }
     }
 
-    fun save() {
+    fun save(onCompleteListener: OnCompleteListener) {
         editingTask.value.let { task ->
             if (task.name.isEmpty()) {
                 return
@@ -123,14 +147,18 @@ class AddEditTaskViewModel @Inject constructor(
 
         viewModelScope
             .launch {
-                if (isEditing) {
+                val isSuccess = if (isEditing) {
                     taskRepository
                         .updateTask(task)
                 } else {
                     taskRepository
                         .insertTask(task)
                 }
+
+                if (isSuccess) onCompleteListener.onSuccess() else onCompleteListener.onError()
             }
     }
 }
+
+
 

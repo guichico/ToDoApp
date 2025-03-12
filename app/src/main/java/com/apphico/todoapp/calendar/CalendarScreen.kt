@@ -1,10 +1,6 @@
 package com.apphico.todoapp.calendar
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,33 +23,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
 import com.apphico.designsystem.task.TaskCard
 import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.todoapp.navigation.BottomBarNavigationItem
-import com.apphico.todoapp.navigation.DEFAULT_TWEEN_ANIMATION
-import com.apphico.todoapp.navigation.enterToEnd
-import com.apphico.todoapp.navigation.enterToStart
-import com.apphico.todoapp.navigation.exitToEnd
-import com.apphico.todoapp.navigation.exitToStart
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.enterCalendar() =
-    when (initialState.destination.route) {
-        BottomBarNavigationItem.FOCUS.route -> enterToStart()
-        BottomBarNavigationItem.ACHIEVEMENT.route -> enterToEnd()
-        else -> fadeIn(tween(DEFAULT_TWEEN_ANIMATION))
-    }
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.exitCalendar() =
-    when (targetState.destination.route) {
-        BottomBarNavigationItem.FOCUS.route -> exitToEnd()
-        BottomBarNavigationItem.ACHIEVEMENT.route -> exitToStart()
-        else -> fadeOut(tween(DEFAULT_TWEEN_ANIMATION))
-    }
 
 @Composable
 fun CalendarScreen(

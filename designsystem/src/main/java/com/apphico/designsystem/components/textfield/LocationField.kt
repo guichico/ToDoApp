@@ -25,7 +25,7 @@ import com.apphico.designsystem.theme.isColorDark
 fun LocationField(
     modifier: Modifier = Modifier,
     task: State<Task>,
-    navigateToSelectLocation: (Task, Location?) -> Unit,
+    navigateToSelectLocation: (Location?) -> Unit,
     onLocationRemoved: () -> Unit
 ) {
     val iconTint = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black
@@ -34,7 +34,7 @@ fun LocationField(
         modifier = modifier,
         value = task.value.location?.address ?: "",
         placeholder = stringResource(R.string.add_location),
-        onClick = { navigateToSelectLocation(task.value, task.value.location) },
+        onClick = { navigateToSelectLocation(task.value.location) },
         leadingIcon = {
             ToDoAppIcon(
                 icon = ToDoAppIcons.icLocation,
@@ -66,7 +66,7 @@ fun LocationFieldPreview(
     ToDoAppTheme {
         LocationField(
             task = remember { mutableStateOf(Task()) },
-            navigateToSelectLocation = { _, _ -> },
+            navigateToSelectLocation = {},
             onLocationRemoved = {}
         )
     }

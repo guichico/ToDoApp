@@ -2,8 +2,10 @@ package com.apphico.core_model
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
 @Parcelize
+@Serializable
 data class FocusMode(
     val id: Long = 0,
     val name: String = "",

@@ -28,7 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.apphico.core_model.Group
@@ -44,10 +44,12 @@ import com.apphico.designsystem.views.Status
 import com.apphico.extensions.formatDayOfWeekDate
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowDate
-import com.apphico.todoapp.navigation.BottomBarNavigationItem
-import com.apphico.todoapp.navigation.Flow
+import com.apphico.todoapp.calendar.CalendarRoute
+import com.apphico.todoapp.focus.FocusRoute
 import com.apphico.todoapp.navigation.ToDoAppBottomBar
+import com.apphico.todoapp.navigation.TopLevelRoute
 import com.apphico.todoapp.navigation.mainGraph
+import com.apphico.todoapp.navigation.topLevelRoutes
 import kotlinx.coroutines.launch
 
 @Composable
@@ -58,9 +60,9 @@ fun AppScaffold(
     val coroutine = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    val bottomBarSelectedItem = navBackStackEntry?.destination?.bottomBarSelectedItem()
-    var isBottomBarVisible by remember { mutableStateOf(true) }
+    val bottomBarSelectedItem = topLevelRoutes.firstOrNull { navBackStackEntry?.destination?.hasRoute(it.route::class) == true }
 
+    var isBottomBarVisible by remember { mutableStateOf(true) }
     LaunchedEffect(bottomBarSelectedItem) {
         isBottomBarVisible = bottomBarSelectedItem != null || navBackStackEntry?.destination?.route == null
     }
@@ -95,10 +97,7 @@ fun AppScaffold(
         },
         bottomBar = {
             if (isBottomBarVisible) {
-                ToDoAppBottomBar(
-                    navController = navController,
-                    items = BottomBarNavigationItem.entries.map { it }.toTypedArray()
-                )
+                ToDoAppBottomBar(navController = navController)
             }
         }
     ) { padding ->
@@ -106,7 +105,7 @@ fun AppScaffold(
             modifier = Modifier
                 .padding(padding),
             navController = navController,
-            startDestination = Flow.Main.route
+            startDestination = CalendarRoute
         ) {
             mainGraph(
                 navController = navController,
@@ -124,14 +123,14 @@ fun AppScaffold(
 @Composable
 private fun TopBar(
     navBackStackEntry: NavBackStackEntry?,
-    bottomBarSelectedItem: BottomBarNavigationItem?
+    bottomBarSelectedItem: TopLevelRoute<*>?
 ) {
-    val isCalendarSelected = bottomBarSelectedItem == BottomBarNavigationItem.CALENDAR
-    val isFocusSelected = bottomBarSelectedItem == BottomBarNavigationItem.FOCUS
+    val isCalendarSelected = bottomBarSelectedItem?.route is CalendarRoute
+    val isFocusSelected = bottomBarSelectedItem?.route is FocusRoute
 
     val selectedDate = remember { mutableStateOf(getNowDate()) }
 
-    val topBarTitle = bottomBarSelectedItem?.label?.let { stringResource(id = it) } ?: ""
+    val topBarTitle = bottomBarSelectedItem?.name?.let { stringResource(id = it) } ?: ""
     val topBarSubTitle = when {
         isCalendarSelected -> {
             when (selectedDate.value.year) {
@@ -215,9 +214,6 @@ private fun TopBar(
         )
     }
 }
-
-fun NavDestination?.bottomBarSelectedItem() =
-    BottomBarNavigationItem.entries.firstOrNull { it.route == this?.route }
 
 private fun List<Group>.addOrRemoveGroup(group: Group): List<Group> {
     return this.toMutableList().apply {

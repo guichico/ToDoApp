@@ -1,11 +1,6 @@
 package com.apphico.todoapp.achievements
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,7 +16,6 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -29,8 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
@@ -40,24 +32,6 @@ import com.apphico.designsystem.components.textfield.DecimalTextField
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.todoapp.navigation.Screen
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.enterAddEditProgress() =
-    when (initialState.destination.route) {
-        Screen.AddEditAchievement.route -> slideInVertically(initialOffsetY = { it })
-        else -> fadeIn()
-    }
-
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.exitAddEditProgress() =
-    when (targetState.destination.route) {
-        Screen.AddEditAchievement.route -> slideOutVertically(targetOffsetY = { it })
-        else -> fadeOut()
-    }
-
-fun NavController.navigateToAddEditProgress() {
-    this.navigate(Screen.AddEditProgress.route)
-}
 
 @Composable
 fun AddEditProgressScreen(

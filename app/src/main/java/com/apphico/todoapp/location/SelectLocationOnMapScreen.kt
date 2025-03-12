@@ -1,11 +1,6 @@
-package com.apphico.todoapp.task
+package com.apphico.todoapp.location
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,61 +24,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import com.apphico.core_model.Coordinates
 import com.apphico.core_model.Location
-import com.apphico.core_model.Task
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.map.FullScreenMapView
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.todoapp.navigation.Screen
-import com.apphico.todoapp.navigation.navigateWithArgs
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.enterSelectLocationOnMap() =
-    when (initialState.destination.route) {
-        Screen.AddEditLocation.route -> slideInVertically(initialOffsetY = { it })
-        else -> fadeIn()
-    }
-
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.exitSelectLocationOnMap() =
-    when (targetState.destination.route) {
-        Screen.AddEditLocation.route -> slideOutVertically(targetOffsetY = { it })
-        else -> fadeOut()
-    }
-
-fun NavController.navigateToSelectLocationOnMap(
-    task: Task?,
-    location: Location?
-) {
-    navigateWithArgs(
-        route = Screen.SelectLocationOnMap.route,
-        args = bundleOf(
-            TASK_ARG to task,
-            LOCATION_ARG to location
-        )
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectLocationOnMapScreen(
     selectLocationOnMapViewModel: SelectLocationOnMapViewModel = hiltViewModel(),
-    navigateBackToAddEditLocation: (Task?, Location) -> Unit,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    onSearchFinished: (Location) -> Unit
 ) {
-    val task = selectLocationOnMapViewModel.taskArg
     val location = selectLocationOnMapViewModel.location.collectAsState()
 
-    val isSearchFinished by selectLocationOnMapViewModel.locationSearchFinished.collectAsState()
+    val isSearchFinished by selectLocationOnMapViewModel.isLocationSearchFinished.collectAsState()
 
     LaunchedEffect(isSearchFinished) {
         if (isSearchFinished) {
-            navigateBackToAddEditLocation(task, location.value!!)
+            onSearchFinished(location.value!!)
         }
     }
 

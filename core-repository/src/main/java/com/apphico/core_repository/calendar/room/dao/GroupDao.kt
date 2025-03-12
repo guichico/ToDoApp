@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.apphico.core_repository.calendar.room.GroupDB
 
 @Dao
@@ -15,7 +16,10 @@ interface GroupDao {
     fun getGroup(groupId: Long): List<GroupDB>
 
     @Insert
-    suspend fun insert(groupDB: GroupDB) : Long
+    suspend fun insert(groupDB: GroupDB): Long
+
+    @Update
+    suspend fun update(groupDB: GroupDB)
 
     @Delete
     suspend fun delete(groupDB: GroupDB)

@@ -3,11 +3,6 @@ package com.apphico.todoapp.achievements
 import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -48,10 +43,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
-import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.MeasurementType
@@ -78,9 +70,6 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getGMTNowMillis
-import com.apphico.todoapp.bottomBarSelectedItem
-import com.apphico.todoapp.navigation.Screen
-import com.apphico.todoapp.navigation.navigateWithArgs
 import java.time.LocalDateTime
 
 private val MeasurementType.title: Int
@@ -97,25 +86,6 @@ private val MeasurementValueUnit.label: Int
         MeasurementValueUnit.DECIMAL -> R.string.unit_decimal
         MeasurementValueUnit.CURRENCY -> R.string.unit_currency
     }
-
-internal const val ACHIEVEMENT_ARG = "achievement"
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.enterAddEditAchievement() =
-    when {
-        initialState.destination.bottomBarSelectedItem() != null -> slideInVertically(initialOffsetY = { it })
-        else -> fadeIn()
-    }
-
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.exitAddEditAchievement() =
-    when {
-        targetState.destination.bottomBarSelectedItem() != null -> slideOutVertically(targetOffsetY = { it })
-        else -> fadeOut()
-    }
-
-fun NavController.navigateToAddEditAchievement(achievement: Achievement?) {
-    navigateWithArgs(Screen.AddEditAchievement.route, bundleOf(ACHIEVEMENT_ARG to achievement))
-}
 
 @Composable
 fun AddEditAchievementScreen(

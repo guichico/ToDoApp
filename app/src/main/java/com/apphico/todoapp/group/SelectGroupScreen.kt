@@ -1,11 +1,6 @@
 package com.apphico.todoapp.group
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -45,8 +40,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroup
 import com.apphico.designsystem.R
@@ -55,63 +48,13 @@ import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.todoapp.navigation.Screen
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.enterSelectGroup() =
-    when (initialState.destination.route) {
-        Screen.AddEditTask.route,
-        Screen.AddEditAchievement.route -> slideInVertically(initialOffsetY = { it })
-        else -> fadeIn()
-    }
-
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.exitSelectGroup() =
-    when (targetState.destination.route) {
-        Screen.AddEditTask.route,
-        Screen.AddEditAchievement.route -> slideOutVertically(targetOffsetY = { it })
-        else -> fadeOut()
-    }
-
-fun NavController.navigateToSelectGroup() {
-    this.navigate(Screen.SelectGroup.route)
-}
-
-/*
-
-internal const val GROUP_ARG = "group"
-
-fun NavController.navigateToSelectGroup(
-    task: Task,
-    group: Group?
-) {
-    navigateWithArgs(
-        route = Screen.SelectGroup.route,
-        args = bundleOf(
-            TASK_ARG to task,
-            GROUP_ARG to group
-        ),
-        navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-    )
-}
-
-fun NavController.navigateBackToSelectGroup(
-    task: Task
-) {
-    navigateWithArgs(
-        route = Screen.SelectGroup.route,
-        args = bundleOf(
-            TASK_ARG to task
-        ),
-        navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(Screen.AddEditLocation.route, true).build()
-    )
-}
- */
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SelectGroupScreen(
     selectGroupViewModel: SelectGroupViewModel = hiltViewModel(),
-    navigateToAddEditGroup: () -> Unit,
+    onGroupSelected: (Group) -> Unit,
+    navigateToAddEditGroup: (Group?) -> Unit,
     navigateBack: () -> Unit
 ) {
     val groups = selectGroupViewModel.groups.collectAsState()
@@ -130,6 +73,7 @@ fun SelectGroupScreen(
         SelectGroupScreenContent(
             innerPadding = innerPadding,
             groups = groups,
+            onGroupSelected = onGroupSelected,
             navigateToAddEditGroup = navigateToAddEditGroup
         )
     }
@@ -139,7 +83,8 @@ fun SelectGroupScreen(
 fun SelectGroupScreenContent(
     innerPadding: PaddingValues,
     groups: State<List<Group>>,
-    navigateToAddEditGroup: () -> Unit
+    onGroupSelected: (Group) -> Unit,
+    navigateToAddEditGroup: (Group?) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -159,14 +104,18 @@ fun SelectGroupScreenContent(
             )
         ) {
             items(groups.value) { group ->
-                GroupRow(group)
+                GroupRow(
+                    group = group,
+                    onGroupSelected = onGroupSelected,
+                    navigateToAddEditGroup = navigateToAddEditGroup
+                )
             }
         }
         FloatingActionButton(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(ToDoAppTheme.spacing.medium),
-            onClick = navigateToAddEditGroup
+            onClick = { navigateToAddEditGroup(null) }
         ) {
             ToDoAppIcon(
                 icon = ToDoAppIcons.icAdd,
@@ -178,15 +127,16 @@ fun SelectGroupScreenContent(
 
 @Composable
 fun GroupRow(
-    group: Group
+    group: Group,
+    onGroupSelected: (Group) -> Unit,
+    navigateToAddEditGroup: (Group) -> Unit
 ) {
     DefaultCard(
-        onClick = { /*TODO*/ }
+        onClick = { onGroupSelected(group) }
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { }
         ) {
             Box(
                 modifier = Modifier
@@ -212,7 +162,7 @@ fun GroupRow(
                 modifier = Modifier
                     .padding(end = ToDoAppTheme.spacing.extraSmall)
                     .align(Alignment.CenterVertically),
-                onClick = { /*TODO*/ }
+                onClick = { navigateToAddEditGroup(group) }
             ) {
                 ToDoAppIcon(
                     icon = ToDoAppIcons.icEdit,
@@ -239,6 +189,7 @@ private fun SelectGroupScreenPreview(
         SelectGroupScreenContent(
             innerPadding = PaddingValues(),
             groups = remember { mutableStateOf(groups) },
+            onGroupSelected = {},
             navigateToAddEditGroup = {}
         )
     }

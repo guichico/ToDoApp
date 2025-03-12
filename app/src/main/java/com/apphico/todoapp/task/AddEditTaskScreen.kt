@@ -1,11 +1,6 @@
 package com.apphico.todoapp.task
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,11 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
-import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
@@ -65,56 +56,17 @@ import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatShortTime
 import com.apphico.extensions.getGMTNowMillis
 import com.apphico.extensions.toMillis
-import com.apphico.todoapp.bottomBarSelectedItem
-import com.apphico.todoapp.navigation.Screen
-import com.apphico.todoapp.navigation.navigateWithArgs
+import com.apphico.todoapp.navigation.OnCompleteListener
 import java.time.LocalDateTime
 import java.time.LocalTime
-
-internal const val TASK_ARG = "task"
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.enterAddEditTask() =
-    when {
-        initialState.destination.bottomBarSelectedItem() != null -> slideInVertically(initialOffsetY = { it })
-        else -> fadeIn()
-    }
-
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.exitAddEditTask() =
-    when {
-        targetState.destination.bottomBarSelectedItem() != null -> slideOutVertically(targetOffsetY = { it })
-        else -> fadeOut()
-    }
-
-fun NavController.navigateToAddEditTask(task: Task?) {
-    navigateWithArgs(
-        route = Screen.AddEditTask.route,
-        args = bundleOf(TASK_ARG to task),
-        navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-    )
-}
-
-fun NavController.navigateBackToAddEditTask(
-    task: Task?,
-    location: Location?
-) {
-    navigateWithArgs(
-        route = Screen.AddEditTask.route,
-        args = bundleOf(
-            TASK_ARG to task,
-            LOCATION_ARG to location
-        ),
-        navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(Screen.AddEditTask.route, true).build()
-    )
-}
 
 @Composable
 fun AddEditTaskScreen(
     addEditTaskViewModel: AddEditTaskViewModel = hiltViewModel(),
+    snackBar: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
-    navigateToSelectLocation: (Task, Location?) -> Unit,
-    navigateBack: () -> Unit,
-    snackBar: (String) -> Unit
+    navigateToSelectLocation: (Location?) -> Unit,
+    onTaskSaved: (Boolean) -> Unit
 ) {
     val editingTask = addEditTaskViewModel.editingTask.collectAsState()
     val isEditing = addEditTaskViewModel.isEditing
@@ -128,7 +80,7 @@ fun AddEditTaskScreen(
     DiscardChangesDialog(
         isAlertDialogOpen = isAlertDialogOpen,
         hasChanges = hasChanges,
-        navigateBack = navigateBack
+        navigateBack = { onTaskSaved(false) }
     )
 
     val scrollState = rememberScrollState()
@@ -136,8 +88,11 @@ fun AddEditTaskScreen(
         derivedStateOf { scrollState.isScrollInProgress || scrollState.value != 0 }
     }
 
-    val taskSavedString = stringResource(R.string.task_saved)
-    val taskDeletedString = stringResource(R.string.task_deleted)
+    val taskSaveSuccess = stringResource(R.string.task_saved)
+    val taskSaveError = stringResource(R.string.task_save_error)
+
+    val taskDeleteSuccess = stringResource(R.string.task_deleted)
+    val taskDeleteError = stringResource(R.string.task_delete_error)
 
     DeleteSaveTopBar(
         modifier = Modifier
@@ -150,20 +105,34 @@ fun AddEditTaskScreen(
         title = stringResource(R.string.add_new_task),
         isEditing = isEditing,
         onSaveClicked = {
-            addEditTaskViewModel.save()
-            navigateBack()
-            snackBar(taskSavedString)
+            addEditTaskViewModel.save(object : OnCompleteListener {
+                override fun onSuccess() {
+                    onTaskSaved(true)
+                    snackBar(taskSaveSuccess)
+                }
+
+                override fun onError() {
+                    snackBar(taskSaveError)
+                }
+            })
         },
         onDeleteClicked = {
-            addEditTaskViewModel.delete()
-            navigateBack()
-            snackBar(taskDeletedString)
+            addEditTaskViewModel.delete(object : OnCompleteListener {
+                override fun onSuccess() {
+                    onTaskSaved(true)
+                    snackBar(taskDeleteSuccess)
+                }
+
+                override fun onError() {
+                    snackBar(taskDeleteError)
+                }
+            })
         },
         navigateBack = {
             navigateBackConfirm(
                 isAlertDialogOpen = isAlertDialogOpen,
                 hasChanges = hasChanges,
-                navigateBack = navigateBack
+                navigateBack = { onTaskSaved(false) }
             )
         }
     ) { innerPadding ->
@@ -208,7 +177,7 @@ private fun AddTaskScreenContent(
     onDaysOfWeekChanged: (List<Int>) -> Unit,
     onCheckListChanged: (List<CheckListItem>) -> Unit,
     onReminderTimeChanged: (LocalTime?) -> Unit,
-    navigateToSelectLocation: (Task, Location?) -> Unit,
+    navigateToSelectLocation: (Location?) -> Unit,
     onLocationRemoved: () -> Unit
 ) {
     Column(
@@ -296,8 +265,8 @@ private fun AddTaskScreenContent(
 
             LocationField(
                 modifier = Modifier.fillMaxWidth(),
-                navigateToSelectLocation = navigateToSelectLocation,
                 task = task,
+                navigateToSelectLocation = navigateToSelectLocation,
                 onLocationRemoved = onLocationRemoved
             )
         }
@@ -547,7 +516,7 @@ private fun AddTaskScreenPreview(
             onDaysOfWeekChanged = {},
             onCheckListChanged = {},
             onReminderTimeChanged = {},
-            navigateToSelectLocation = { _, _ -> },
+            navigateToSelectLocation = {},
             onLocationRemoved = {}
         )
     }

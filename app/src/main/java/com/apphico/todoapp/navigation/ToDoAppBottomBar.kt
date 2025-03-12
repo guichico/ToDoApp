@@ -28,7 +28,6 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 @Composable
 fun ToDoAppBottomBar(
     navController: NavController,
-    items: Array<BottomBarItem>,
     modifier: Modifier = Modifier
 ) {
     NavigationBar(
@@ -41,13 +40,13 @@ fun ToDoAppBottomBar(
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
-        items.forEach { item ->
-            val isSelected = currentRoute == item.route
+        topLevelRoutes.forEach { topLevelRoute ->
+            val isSelected = currentRoute == topLevelRoute.route
 
             NavigationBarItem(
                 selected = isSelected,
                 onClick = {
-                    navController.navigate(item.route) {
+                    navController.navigate(topLevelRoute.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
@@ -58,13 +57,13 @@ fun ToDoAppBottomBar(
                 },
                 label = {
                     Text(
-                        text = stringResource(id = item.label),
+                        text = stringResource(id = topLevelRoute.name),
                         style = MaterialTheme.typography.labelLarge
                     )
                 },
                 icon = {
                     ToDoAppIcon(
-                        icon = if (isSelected) item.selectedIcon else item.unselectedIcon,
+                        icon = if (isSelected) topLevelRoute.selectedIcon else topLevelRoute.unselectedIcon,
                         contentDescription = null
                     )
                 },
@@ -86,8 +85,7 @@ fun ToDoAppBottomBar(
 private fun BottomBarPreview() {
     ToDoAppTheme {
         ToDoAppBottomBar(
-            navController = rememberNavController(),
-            items = BottomBarNavigationItem.entries.map { it }.toTypedArray()
+            navController = rememberNavController()
         )
     }
 }

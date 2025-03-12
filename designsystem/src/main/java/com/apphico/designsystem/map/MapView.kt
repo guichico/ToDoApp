@@ -32,7 +32,6 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Location
-import com.apphico.core_model.Task
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.theme.Black
@@ -44,11 +43,10 @@ import com.apphico.designsystem.theme.White
 @Composable
 fun MapView(
     modifier: Modifier = Modifier,
-    task: Task?,
     location: State<Location?>,
     onAddressChanged: (String) -> Unit,
     onSearchLocationClicked: (String?) -> Unit,
-    onEditLocationClicked: (Task?, Location?) -> Unit
+    onEditLocationClicked: (Location?) -> Unit
 ) {
     val locationUpdates = remember { mutableStateOf(location.value?.coordinates) }
 
@@ -84,7 +82,7 @@ fun MapView(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = White
                     ),
-                    onClick = { onEditLocationClicked(task, location.value) }
+                    onClick = { onEditLocationClicked(location.value) }
                 ) {
                     ToDoAppIcon(
                         modifier = Modifier
@@ -146,11 +144,10 @@ private fun MapViewPreview(
     ToDoAppTheme {
         MapView(
             modifier = Modifier.fillMaxSize(),
-            task = Task(),
             location = remember { mutableStateOf(null) },
             onAddressChanged = {},
             onSearchLocationClicked = {},
-            onEditLocationClicked = { _, _ -> }
+            onEditLocationClicked = {}
         )
     }
 }

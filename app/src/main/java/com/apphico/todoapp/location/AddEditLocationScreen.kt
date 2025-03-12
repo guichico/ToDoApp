@@ -1,12 +1,7 @@
-package com.apphico.todoapp.task
+package com.apphico.todoapp.location
 
 import android.Manifest
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,75 +27,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import androidx.navigation.NavOptions
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
 import com.apphico.designsystem.CheckPermissions
 import com.apphico.designsystem.R
-import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.components.buttons.NormalButton
+import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.map.MapView
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.todoapp.navigation.Screen
-import com.apphico.todoapp.navigation.navigateWithArgs
-
-internal const val LOCATION_ARG = "location"
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.enterAddEditLocation() =
-    when (initialState.destination.route) {
-        Screen.AddEditTask.route -> slideInVertically(initialOffsetY = { it })
-        else -> fadeIn()
-    }
-
-
-fun AnimatedContentTransitionScope<NavBackStackEntry>.exitAddEditLocation() =
-    when (targetState.destination.route) {
-        Screen.AddEditTask.route -> slideOutVertically(targetOffsetY = { it })
-        else -> fadeOut()
-    }
-
-fun NavController.navigateToAddEditLocation(
-    task: Task,
-    location: Location?
-) {
-    navigateWithArgs(
-        route = Screen.AddEditLocation.route,
-        args = bundleOf(
-            TASK_ARG to task,
-            LOCATION_ARG to location
-        ),
-        navOptions = NavOptions.Builder().setLaunchSingleTop(true).build()
-    )
-}
-
-fun NavController.navigateBackToAddEditLocation(
-    task: Task?,
-    location: Location?
-) {
-    navigateWithArgs(
-        route = Screen.AddEditLocation.route,
-        args = bundleOf(
-            TASK_ARG to task,
-            LOCATION_ARG to location
-        ),
-        navOptions = NavOptions.Builder().setLaunchSingleTop(true).setPopUpTo(Screen.AddEditLocation.route, true).build()
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditLocationScreen(
     addEditLocationViewModel: AddEditLocationViewModel = hiltViewModel(),
-    navigateToSelectLocationOnMap: (Task?, Location?) -> Unit,
-    onConfirmClicked: (Task?, Location?) -> Unit,
+    navigateToSelectLocationOnMap: (Location?) -> Unit,
+    onConfirmClicked: (Location?) -> Unit,
     navigateBack: () -> Unit
 ) {
-    val task = addEditLocationViewModel.taskArg
-    val location = addEditLocationViewModel.location.collectAsState()
+    val location = addEditLocationViewModel.editingLocation.collectAsState()
 
     val permissionsGranted = remember { mutableStateOf(false) }
 
@@ -133,7 +78,6 @@ fun AddEditLocationScreen(
     ) { innerPadding ->
         AddEditLocationScreenContent(
             innerPadding = innerPadding,
-            task = task,
             location = location,
             onAddressChanged = addEditLocationViewModel::onAddressTextChanged,
             onSearchLocationClicked = addEditLocationViewModel::searchLocation,
@@ -147,12 +91,11 @@ fun AddEditLocationScreen(
 @Composable
 private fun AddEditLocationScreenContent(
     innerPadding: PaddingValues,
-    task: Task?,
     location: State<Location?>,
     onAddressChanged: (String) -> Unit,
     onSearchLocationClicked: (String?) -> Unit,
-    onConfirmClicked: (Task?, Location?) -> Unit,
-    navigateToSelectLocationOnMap: (Task?, Location?) -> Unit,
+    onConfirmClicked: (Location?) -> Unit,
+    navigateToSelectLocationOnMap: (Location?) -> Unit,
     navigateBack: () -> Unit
 ) {
     Box(
@@ -173,7 +116,6 @@ private fun AddEditLocationScreenContent(
                 modifier = Modifier
                     .weight(1f)
                     .padding(bottom = ToDoAppTheme.spacing.extraLarge),
-                task = task,
                 location = location,
                 onAddressChanged = onAddressChanged,
                 onSearchLocationClicked = onSearchLocationClicked,
@@ -190,7 +132,7 @@ private fun AddEditLocationScreenContent(
                 )
                 NormalButton(
                     text = stringResource(R.string.confirm),
-                    onClick = { onConfirmClicked(task, location.value) }
+                    onClick = { onConfirmClicked(location.value) }
                 )
             }
         }
@@ -205,12 +147,11 @@ private fun AddEditLocationScreenPreview() {
     ToDoAppTheme {
         AddEditLocationScreenContent(
             innerPadding = PaddingValues(),
-            task = Task(),
             location = remember { mutableStateOf(null) },
             onAddressChanged = {},
             onSearchLocationClicked = {},
-            onConfirmClicked = { _, _ -> },
-            navigateToSelectLocationOnMap = { _, _ -> },
+            onConfirmClicked = {},
+            navigateToSelectLocationOnMap = {},
             navigateBack = {}
         )
     }

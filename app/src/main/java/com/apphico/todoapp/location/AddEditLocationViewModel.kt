@@ -1,34 +1,40 @@
-package com.apphico.todoapp.task
+package com.apphico.todoapp.location
 
-import android.annotation.SuppressLint
 import android.content.Context
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apphico.core_model.Location
-import com.apphico.core_model.Task
+import androidx.navigation.toRoute
 import com.apphico.core_repository.calendar.location.LocationRepository
-import com.apphico.todoapp.di.AddEditLocationScreenArgModule
-import com.apphico.todoapp.di.AddEditTaskScreenArgModule
+import com.apphico.todoapp.navigation.CustomNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.reflect.typeOf
 
-@SuppressLint("StaticFieldLeak")
 @HiltViewModel
 class AddEditLocationViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    @AddEditTaskScreenArgModule.TaskData val taskArg: Task?,
-    @AddEditLocationScreenArgModule.LocationData private val locationArg: Location?,
+    savedStateHandle: SavedStateHandle,
     private val locationRepository: LocationRepository
 ) : ViewModel() {
 
-    val location = MutableStateFlow(locationArg)
+    val location = savedStateHandle.toRoute<AddEditLocationRoute>(
+        typeMap = mapOf(
+            typeOf<AddEditLocationParameters>() to CustomNavType(
+                AddEditLocationParameters::class.java,
+                AddEditLocationParameters.serializer()
+            )
+        )
+    ).addEditLocationParameters.location
+
+    val editingLocation = MutableStateFlow(location)
 
     fun onAddressTextChanged(text: String) {
-        location.value = location.value?.copy(address = text)
+        editingLocation.value = editingLocation.value.copy(address = text)
     }
 
     fun searchMyLocation() {
@@ -36,7 +42,7 @@ class AddEditLocationViewModel @Inject constructor(
             locationRepository
                 .getMyLocationFullAddress(context)
                 .filterNotNull()
-                .collect(location)
+                .collect(editingLocation)
         }
     }
 
@@ -46,7 +52,7 @@ class AddEditLocationViewModel @Inject constructor(
                 locationRepository
                     .getFromName(context, text)
                     .filterNotNull()
-                    .collect(location)
+                    .collect(editingLocation)
             }
         }
     }
