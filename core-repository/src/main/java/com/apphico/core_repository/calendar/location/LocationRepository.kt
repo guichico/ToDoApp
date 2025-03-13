@@ -7,11 +7,8 @@ import android.os.Build
 import com.apphico.core_model.Coordinates
 import com.apphico.core_model.Location
 import com.apphico.core_model.toLocation
-import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.CancellationToken
-import com.google.android.gms.tasks.CancellationTokenSource
-import com.google.android.gms.tasks.OnTokenCanceledListener
+import com.google.android.gms.location.Priority
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -35,16 +32,8 @@ class LocationRepositoryImpl : LocationRepository {
     @SuppressLint("MissingPermission")
     override fun getMyLocationCoordinates(context: Context): Flow<Location?> =
         callbackFlow {
-            val onCancellation = object : CancellationToken() {
-                override fun onCanceledRequested(onTokenCanceledListener: OnTokenCanceledListener): CancellationToken {
-                    return CancellationTokenSource().token
-                }
-
-                override fun isCancellationRequested(): Boolean = false
-            }
-
             LocationServices.getFusedLocationProviderClient(context)
-                .getCurrentLocation(CurrentLocationRequest.Builder().build(), onCancellation)
+                .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener { location ->
                     trySend(
                         location?.let {
@@ -58,11 +47,7 @@ class LocationRepositoryImpl : LocationRepository {
                 .addOnCanceledListener { trySend(null) }
                 .addOnFailureListener { trySend(null) }
 
-            awaitClose {
-                onCancellation.onCanceledRequested {
-                    trySend(null)
-                }
-            }
+            awaitClose()
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -91,7 +76,7 @@ class LocationRepositoryImpl : LocationRepository {
                 trySend(address?.toLocation())
             }
 
-            awaitClose {}
+            awaitClose()
         }
 
     @Suppress("DEPRECATION")
@@ -113,6 +98,6 @@ class LocationRepositoryImpl : LocationRepository {
                 trySend(address?.toLocation())
             }
 
-            awaitClose {}
+            awaitClose()
         }
 }

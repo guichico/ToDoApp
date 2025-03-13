@@ -28,12 +28,15 @@ fun DiscardChangesDialog(
 
     if (isAlertDialogOpen.value) {
         ToDoAppAlertDialog(
-            isAlertOpenState = isAlertDialogOpen,
             title = stringResource(R.string.discard_changes_title),
             message = stringResource(R.string.discard_changes_message),
             dismissButtonText = stringResource(R.string.continue_btn),
+            onDismissRequest = { isAlertDialogOpen.value = false },
             confirmButtonText = stringResource(R.string.discard),
-            onConfirmClicked = navigateBack
+            onConfirmClicked = {
+                isAlertDialogOpen.value = false
+                navigateBack()
+            }
         )
     }
 }

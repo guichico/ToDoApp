@@ -32,9 +32,9 @@ fun NavGraphBuilder.selectGroupScreen(
         previousBackStackEntry = previousBackStackEntry
     ) { previousSavedStateHandle ->
         SelectGroupScreen(
-            onGroupSelected = { group -> onGroupSelected(previousSavedStateHandle, group) },
-            navigateToAddEditGroup = onEditClicked,
-            navigateBack = onBackClick
+            navigateBack = onBackClick,
+            onEditGroupClicked = onEditClicked,
+            onGroupSelected = { group -> onGroupSelected(previousSavedStateHandle, group) }
         )
     }
 }

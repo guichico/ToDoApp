@@ -56,7 +56,6 @@ import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatShortTime
 import com.apphico.extensions.getGMTNowMillis
 import com.apphico.extensions.toMillis
-import com.apphico.todoapp.navigation.OnCompleteListener
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -105,28 +104,17 @@ fun AddEditTaskScreen(
         title = stringResource(R.string.add_new_task),
         isEditing = isEditing,
         onSaveClicked = {
-            addEditTaskViewModel.save(object : OnCompleteListener {
-                override fun onSuccess() {
-                    onTaskSaved(true)
-                    snackBar(taskSaveSuccess)
-                }
 
-                override fun onError() {
-                    snackBar(taskSaveError)
-                }
-            })
+            addEditTaskViewModel.save { isSuccess ->
+                onTaskSaved(isSuccess)
+                snackBar(if (isSuccess) taskSaveSuccess else taskSaveError)
+            }
         },
         onDeleteClicked = {
-            addEditTaskViewModel.delete(object : OnCompleteListener {
-                override fun onSuccess() {
-                    onTaskSaved(true)
-                    snackBar(taskDeleteSuccess)
-                }
-
-                override fun onError() {
-                    snackBar(taskDeleteError)
-                }
-            })
+            addEditTaskViewModel.delete { isSuccess ->
+                onTaskSaved(isSuccess)
+                snackBar(if (isSuccess) taskDeleteSuccess else taskDeleteError)
+            }
         },
         navigateBack = {
             navigateBackConfirm(

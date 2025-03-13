@@ -29,6 +29,7 @@ import com.apphico.core_model.Coordinates
 import com.apphico.core_model.Location
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
+import com.apphico.designsystem.location.CheckLocationPermission
 import com.apphico.designsystem.map.FullScreenMapView
 import com.apphico.designsystem.theme.ToDoAppTheme
 
@@ -37,15 +38,19 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 fun SelectLocationOnMapScreen(
     selectLocationOnMapViewModel: SelectLocationOnMapViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
-    onSearchFinished: (Location) -> Unit
+    onSearchFinished: (Location?) -> Unit
 ) {
-    val location = selectLocationOnMapViewModel.location.collectAsState()
+    CheckLocationPermission(
+        navigateBack = navigateBack,
+        setDefaultLocation = selectLocationOnMapViewModel::setDefaultLocation
+    )
 
+    val location = selectLocationOnMapViewModel.editingLocation.collectAsState()
     val isSearchFinished by selectLocationOnMapViewModel.isLocationSearchFinished.collectAsState()
 
     LaunchedEffect(isSearchFinished) {
         if (isSearchFinished) {
-            onSearchFinished(location.value!!)
+            onSearchFinished(location.value)
         }
     }
 
@@ -68,8 +73,9 @@ fun SelectLocationOnMapScreen(
     }
 }
 
+
 @Composable
-fun SelectLocationOnMapScreenContent(
+private fun SelectLocationOnMapScreenContent(
     innerPadding: PaddingValues,
     location: State<Location?>,
     onConfirmLocationClicked: (Coordinates) -> Unit
@@ -100,9 +106,7 @@ fun SelectLocationOnMapScreenContent(
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Preview(name = "Full Preview", showSystemUi = true)
 @Composable
-private fun SelectLocationOnMapScreenPreview(
-
-) {
+private fun SelectLocationOnMapScreenPreview() {
     ToDoAppTheme {
         SelectLocationOnMapScreenContent(
             innerPadding = PaddingValues(),

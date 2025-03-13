@@ -37,15 +37,6 @@ class AddEditLocationViewModel @Inject constructor(
         editingLocation.value = editingLocation.value.copy(address = text)
     }
 
-    fun searchMyLocation() {
-        viewModelScope.launch {
-            locationRepository
-                .getMyLocationFullAddress(context)
-                .filterNotNull()
-                .collect(editingLocation)
-        }
-    }
-
     fun searchLocation(text: String?) {
         if (!text.isNullOrEmpty()) {
             viewModelScope.launch {

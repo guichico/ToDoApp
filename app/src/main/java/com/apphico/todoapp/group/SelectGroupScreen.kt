@@ -2,7 +2,6 @@ package com.apphico.todoapp.group
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -53,9 +52,9 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 @Composable
 fun SelectGroupScreen(
     selectGroupViewModel: SelectGroupViewModel = hiltViewModel(),
-    onGroupSelected: (Group) -> Unit,
-    navigateToAddEditGroup: (Group?) -> Unit,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    onEditGroupClicked: (Group?) -> Unit,
+    onGroupSelected: (Group) -> Unit
 ) {
     val groups = selectGroupViewModel.groups.collectAsState()
 
@@ -74,7 +73,7 @@ fun SelectGroupScreen(
             innerPadding = innerPadding,
             groups = groups,
             onGroupSelected = onGroupSelected,
-            navigateToAddEditGroup = navigateToAddEditGroup
+            navigateToAddEditGroup = onEditGroupClicked
         )
     }
 }

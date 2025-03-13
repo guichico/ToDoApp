@@ -8,15 +8,16 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.task.TaskRepository
-import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import com.apphico.todoapp.group.GROUP_ARG
 import com.apphico.todoapp.location.LOCATION_ARG
 import com.apphico.todoapp.navigation.CustomNavType
-import com.apphico.todoapp.navigation.OnCompleteListener
+import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
@@ -32,9 +33,6 @@ class AddEditTaskViewModel @Inject constructor(
         typeMap = mapOf(typeOf<AddEditTaskParameters>() to CustomNavType(AddEditTaskParameters::class.java, AddEditTaskParameters.serializer()))
     ).addEditTaskParameters.task
 
-    private val group = savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
-    private val location = savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
-
     val editingTask = MutableStateFlow(task ?: Task())
     val isEditing = task != null
 
@@ -43,13 +41,15 @@ class AddEditTaskViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            group
+            savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
                 .mapNotNull { it }
                 .collect { g ->
                     editingTask.value = editingTask.value.copy(group = g)
                 }
+        }
 
-            location
+        viewModelScope.launch {
+            savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
                 .mapNotNull { it }
                 .collect { l ->
                     editingTask.value = editingTask.value.copy(location = l)
@@ -117,19 +117,7 @@ class AddEditTaskViewModel @Inject constructor(
         editingTask.value = editingTask.value.copy(location = null)
     }
 
-    fun delete(onCompleteListener: OnCompleteListener) {
-        var task = editingTask.value
-
-        viewModelScope
-            .launch {
-                val isSuccess = taskRepository
-                    .deleteTask(task)
-
-                if (isSuccess) onCompleteListener.onSuccess() else onCompleteListener.onError()
-            }
-    }
-
-    fun save(onCompleteListener: OnCompleteListener) {
+    fun save(onResult: (Boolean) -> Unit) {
         editingTask.value.let { task ->
             if (task.name.isEmpty()) {
                 return
@@ -145,20 +133,26 @@ class AddEditTaskViewModel @Inject constructor(
             task = task.copy(endDate = task.endDate?.withHour(endTime.hour)?.withMinute(endTime.minute))
         }
 
-        viewModelScope
-            .launch {
-                val isSuccess = if (isEditing) {
-                    taskRepository
-                        .updateTask(task)
-                } else {
-                    taskRepository
-                        .insertTask(task)
-                }
-
-                if (isSuccess) onCompleteListener.onSuccess() else onCompleteListener.onError()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                onResult(
+                    if (isEditing) {
+                        taskRepository.updateTask(task)
+                    } else {
+                        taskRepository.insertTask(task)
+                    }
+                )
             }
+        }
+    }
+
+    fun delete(onResult: (Boolean) -> Unit) {
+        var task = editingTask.value
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                onResult(taskRepository.deleteTask(task))
+            }
+        }
     }
 }
-
-
-

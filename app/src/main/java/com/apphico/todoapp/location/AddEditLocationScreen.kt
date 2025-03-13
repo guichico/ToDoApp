@@ -1,6 +1,5 @@
 package com.apphico.todoapp.location
 
-import android.Manifest
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +18,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -29,8 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Location
-import com.apphico.core_model.Task
-import com.apphico.designsystem.CheckPermissions
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.NormalButton
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
@@ -46,24 +42,6 @@ fun AddEditLocationScreen(
     navigateBack: () -> Unit
 ) {
     val location = addEditLocationViewModel.editingLocation.collectAsState()
-
-    val permissionsGranted = remember { mutableStateOf(false) }
-
-    val locationPermissions = listOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    )
-
-    CheckPermissions(
-        permissions = locationPermissions,
-        onPermissionGrantedChanged = { permissionsGranted.value = it }
-    )
-
-    LaunchedEffect(permissionsGranted.value) {
-        if (permissionsGranted.value && location.value == null) {
-            addEditLocationViewModel.searchMyLocation()
-        }
-    }
 
     Scaffold(
         modifier = Modifier

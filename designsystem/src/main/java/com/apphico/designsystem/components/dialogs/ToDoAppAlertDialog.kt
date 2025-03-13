@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -12,9 +11,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,10 +25,10 @@ import com.apphico.designsystem.theme.isColorDark
 
 @Composable
 fun ToDoAppAlertDialog(
-    isAlertOpenState: MutableState<Boolean>,
     title: String,
     message: String,
     dismissButtonText: String,
+    onDismissRequest: () -> Unit,
     confirmButtonText: String,
     onConfirmClicked: () -> Unit
 ) {
@@ -43,7 +39,7 @@ fun ToDoAppAlertDialog(
             usePlatformDefaultWidth = false,
             decorFitsSystemWindows = false
         ),
-        onDismissRequest = { isAlertOpenState.value = false }
+        onDismissRequest = onDismissRequest
     ) {
         Column {
             Column(
@@ -68,7 +64,8 @@ fun ToDoAppAlertDialog(
                             bottom = ToDoAppTheme.spacing.medium
                         ),
                     text = message,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
                 )
             }
             Row(
@@ -80,16 +77,11 @@ fun ToDoAppAlertDialog(
             ) {
                 AlertButton(
                     text = dismissButtonText,
-                    onClick = {
-                        isAlertOpenState.value = false
-                    }
+                    onClick = onDismissRequest
                 )
                 AlertButton(
                     text = confirmButtonText,
-                    onClick = {
-                        isAlertOpenState.value = false
-                        onConfirmClicked()
-                    }
+                    onClick = onConfirmClicked
                 )
             }
         }
@@ -108,7 +100,8 @@ private fun AlertButton(
         onClick = onClick
     ) {
         Text(
-            text = text
+            text = text,
+            color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
         )
     }
 }
@@ -121,10 +114,10 @@ private fun AlertDialogPreview(
 ) {
     ToDoAppTheme {
         ToDoAppAlertDialog(
-            isAlertOpenState = remember { mutableStateOf(true) },
             title = "Some title",
             message = "Some message",
             dismissButtonText = "Continuar",
+            onDismissRequest = {},
             confirmButtonText = "Descartar",
             onConfirmClicked = {}
         )
