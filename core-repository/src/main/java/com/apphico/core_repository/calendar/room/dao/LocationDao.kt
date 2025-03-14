@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.apphico.core_repository.calendar.room.LocationDB
 
 @Dao
@@ -15,7 +16,10 @@ interface LocationDao {
     fun getLocation(locationId: Long): List<LocationDB>
 
     @Insert
-    suspend fun insert(location: LocationDB) : Long
+    suspend fun insert(location: LocationDB): Long
+
+    @Update
+    suspend fun update(location: LocationDB)
 
     @Delete
     suspend fun delete(location: LocationDB)

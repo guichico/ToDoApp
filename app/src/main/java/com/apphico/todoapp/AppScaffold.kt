@@ -17,6 +17,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,12 +46,14 @@ import com.apphico.extensions.formatDayOfWeekDate
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowDate
 import com.apphico.todoapp.calendar.CalendarRoute
+import com.apphico.todoapp.calendar.CalendarViewMode
 import com.apphico.todoapp.focus.FocusRoute
 import com.apphico.todoapp.navigation.ToDoAppBottomBar
 import com.apphico.todoapp.navigation.TopLevelRoute
 import com.apphico.todoapp.navigation.mainGraph
 import com.apphico.todoapp.navigation.topLevelRoutes
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @Composable
 fun AppScaffold(
@@ -66,6 +69,9 @@ fun AppScaffold(
     LaunchedEffect(bottomBarSelectedItem) {
         isBottomBarVisible = bottomBarSelectedItem != null || navBackStackEntry?.destination?.route == null
     }
+
+    val calendarViewMode = remember { mutableStateOf(CalendarViewMode.DAY) }
+    val selectedDate = remember { mutableStateOf(getNowDate()) }
 
     Scaffold(
         snackbarHost = {
@@ -91,7 +97,16 @@ fun AppScaffold(
             if (isBottomBarVisible) {
                 TopBar(
                     navBackStackEntry = navBackStackEntry,
-                    bottomBarSelectedItem = bottomBarSelectedItem
+                    bottomBarSelectedItem = bottomBarSelectedItem,
+                    calendarViewMode = calendarViewMode,
+                    onViewModeChanged = {
+                        calendarViewMode.value = when (calendarViewMode.value) {
+                            CalendarViewMode.DAY -> CalendarViewMode.AGENDA
+                            CalendarViewMode.AGENDA -> CalendarViewMode.DAY
+                        }
+                    },
+                    selectedDate = selectedDate,
+                    onSelectedDateChanged = { selectedDate.value = it }
                 )
             }
         },
@@ -113,7 +128,9 @@ fun AppScaffold(
                     coroutine.launch {
                         snackBarHostState.showSnackbar(it)
                     }
-                }
+                },
+                calendarViewMode = calendarViewMode,
+                selectedDate = selectedDate
             )
         }
     }
@@ -123,12 +140,14 @@ fun AppScaffold(
 @Composable
 private fun TopBar(
     navBackStackEntry: NavBackStackEntry?,
-    bottomBarSelectedItem: TopLevelRoute<*>?
+    bottomBarSelectedItem: TopLevelRoute<*>?,
+    calendarViewMode: State<CalendarViewMode>,
+    onViewModeChanged: () -> Unit,
+    selectedDate: State<LocalDate>,
+    onSelectedDateChanged: (LocalDate) -> Unit
 ) {
     val isCalendarSelected = bottomBarSelectedItem?.route is CalendarRoute
     val isFocusSelected = bottomBarSelectedItem?.route is FocusRoute
-
-    val selectedDate = remember { mutableStateOf(getNowDate()) }
 
     val topBarTitle = bottomBarSelectedItem?.name?.let { stringResource(id = it) } ?: ""
     val topBarSubTitle = when {
@@ -176,11 +195,19 @@ private fun TopBar(
                 Row {
                     if (isCalendarSelected) {
                         IconButton(
-                            onClick = { selectedDate.value = getNowDate() }
+                            onClick = { onSelectedDateChanged(getNowDate()) }
                         ) {
                             ToDoAppIcon(
                                 icon = ToDoAppIcons.icToday,
                                 contentDescription = "today"
+                            )
+                        }
+                        IconButton(
+                            onClick = onViewModeChanged
+                        ) {
+                            ToDoAppIcon(
+                                icon = if (calendarViewMode.value == CalendarViewMode.DAY) ToDoAppIcons.icCalendarViewDay else ToDoAppIcons.icCalendarViewAgenda,
+                                contentDescription = "viewMode"
                             )
                         }
                     }
@@ -201,7 +228,7 @@ private fun TopBar(
         CalendarView(
             isCalendarExpanded = isCalendarExpanded,
             selectedDate = selectedDate,
-            onSelectedDateChanged = { selectedDate.value = it }
+            onSelectedDateChanged = onSelectedDateChanged
         )
         FilterView(
             isFilterExpanded = isFilterExpanded,

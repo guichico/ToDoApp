@@ -14,16 +14,14 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.CalendarViewDay
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.Circle
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditLocationAlt
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.KeyboardAlt
-import androidx.compose.material.icons.outlined.KeyboardArrowLeft
-import androidx.compose.material.icons.outlined.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.ModeEdit
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Psychology
@@ -33,6 +31,7 @@ import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material.icons.outlined.Reorder
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Today
+import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material.icons.outlined.WorkspacePremium
 import androidx.compose.material3.Icon
@@ -71,6 +70,8 @@ object ToDoAppIcons {
     val icEdit = ImageVectorIcon(Icons.Outlined.ModeEdit)
     val icReminder = ImageVectorIcon(Icons.Outlined.Alarm)
     val icLocation = ImageVectorIcon(Icons.Outlined.Place)
+    val icCalendarViewDay = ImageVectorIcon(Icons.Outlined.CalendarViewDay)
+    val icCalendarViewAgenda = ImageVectorIcon(Icons.Outlined.ViewAgenda)
     val icToday = ImageVectorIcon(Icons.Outlined.Today)
     val icFilter = ImageVectorIcon(Icons.Outlined.FilterList)
     val icArrowDown = ImageVectorIcon(Icons.Outlined.ArrowDropDown)

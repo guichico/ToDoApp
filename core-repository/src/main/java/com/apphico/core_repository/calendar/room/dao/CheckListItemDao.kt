@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.apphico.core_repository.calendar.room.CheckListItemDB
 
 @Dao
@@ -18,6 +19,10 @@ interface CheckListItemDao {
     @Transaction
     @Insert
     suspend fun insertAll(checkListItems: List<CheckListItemDB>): List<Long>
+
+    @Transaction
+    @Update
+    suspend fun updateAll(checkListItems: List<CheckListItemDB>)
 
     @Transaction
     @Delete

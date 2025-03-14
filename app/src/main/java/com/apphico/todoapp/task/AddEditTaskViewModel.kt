@@ -13,11 +13,10 @@ import com.apphico.todoapp.location.LOCATION_ARG
 import com.apphico.todoapp.navigation.CustomNavType
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
@@ -43,7 +42,7 @@ class AddEditTaskViewModel @Inject constructor(
         viewModelScope.launch {
             savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
                 .mapNotNull { it }
-                .collect { g ->
+                .collectLatest { g ->
                     editingTask.value = editingTask.value.copy(group = g)
                 }
         }
@@ -51,8 +50,12 @@ class AddEditTaskViewModel @Inject constructor(
         viewModelScope.launch {
             savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
                 .mapNotNull { it }
-                .collect { l ->
-                    editingTask.value = editingTask.value.copy(location = l)
+                .collectLatest { locationArg ->
+                    val location = editingTask.value.location?.id?.let { locationId ->
+                        locationArg.copy(id = locationId)
+                    } ?: locationArg
+
+                    editingTask.value = editingTask.value.copy(location = location)
                 }
         }
     }
@@ -134,15 +137,13 @@ class AddEditTaskViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                onResult(
-                    if (isEditing) {
-                        taskRepository.updateTask(task)
-                    } else {
-                        taskRepository.insertTask(task)
-                    }
-                )
-            }
+            onResult(
+                if (isEditing) {
+                    taskRepository.updateTask(task)
+                } else {
+                    taskRepository.insertTask(task)
+                }
+            )
         }
     }
 
@@ -150,9 +151,7 @@ class AddEditTaskViewModel @Inject constructor(
         var task = editingTask.value
 
         viewModelScope.launch {
-            withContext(Dispatchers.IO) {
-                onResult(taskRepository.deleteTask(task))
-            }
+            onResult(taskRepository.deleteTask(task))
         }
     }
 }

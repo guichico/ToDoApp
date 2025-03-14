@@ -46,6 +46,7 @@ fun Location.toLocationDB(taskId: Long): LocationDB =
 
 fun LocationDB.toLocation(): Location =
     Location(
+        id = this.locationId,
         coordinates = Coordinates(this.latitude, this.longitude),
         address = this.address
     )

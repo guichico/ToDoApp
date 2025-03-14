@@ -104,7 +104,6 @@ fun AddEditTaskScreen(
         title = stringResource(R.string.add_new_task),
         isEditing = isEditing,
         onSaveClicked = {
-
             addEditTaskViewModel.save { isSuccess ->
                 onTaskSaved(isSuccess)
                 snackBar(if (isSuccess) taskSaveSuccess else taskSaveError)

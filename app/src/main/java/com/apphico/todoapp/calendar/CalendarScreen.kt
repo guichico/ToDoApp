@@ -29,13 +29,19 @@ import com.apphico.designsystem.task.TaskCard
 import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
+import java.time.LocalDate
 
 @Composable
 fun CalendarScreen(
     calendarViewModel: CalendarViewModel = hiltViewModel(),
+    calendarViewMode: State<CalendarViewMode>,
+    selectedDate: State<LocalDate>,
     navigateToAddEditTask: (Task?) -> Unit
 ) {
     val calendar = calendarViewModel.calendar.collectAsState()
+
+    calendarViewModel.setViewMode(calendarViewMode.value)
+    calendarViewModel.setDate(selectedDate.value)
 
     CalendarScreenContent(
         tasks = calendar,

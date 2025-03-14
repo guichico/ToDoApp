@@ -41,6 +41,13 @@ class TaskRepositoryImpl(
         return try {
             appDatabase.taskDao().update(task.toTaskDB())
 
+            task.location?.let {
+                appDatabase.locationDao().update(it.toLocationDB(task.id))
+            }
+
+            appDatabase.checkListItemDao()
+                .updateAll(task.checkList.map { it.toCheckListItemDB(task.id) })
+
             return true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
