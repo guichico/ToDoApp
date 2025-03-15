@@ -1,7 +1,6 @@
 package com.apphico.designsystem.components.textfield
 
 import android.content.res.Configuration
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -14,8 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
 import com.apphico.designsystem.R
+import com.apphico.designsystem.components.icons.ToDoAppIcon
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.theme.Black
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
@@ -44,15 +44,11 @@ fun LocationField(
         },
         trailingIcon = {
             task.value.location?.let {
-                IconButton(
+                ToDoAppIconButton(
+                    icon = ToDoAppIcons.icRemove,
+                    tint = iconTint,
                     onClick = onLocationRemoved
-                ) {
-                    ToDoAppIcon(
-                        icon = ToDoAppIcons.icRemove,
-                        contentDescription = "remove location",
-                        tint = iconTint
-                    )
-                }
+                )
             }
         }
     )

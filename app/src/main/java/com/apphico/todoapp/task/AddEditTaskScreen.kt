@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
@@ -45,11 +44,12 @@ import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
 import com.apphico.designsystem.components.dialogs.navigateBackConfirm
+import com.apphico.designsystem.components.icons.ToDoAppIcon
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.textfield.LocationField
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.textfield.SmallTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatMediumDate
@@ -65,7 +65,7 @@ fun AddEditTaskScreen(
     snackBar: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
     navigateToSelectLocation: (Location?) -> Unit,
-    onTaskSaved: (Boolean) -> Unit
+    navigateBack: () -> Unit
 ) {
     val editingTask = addEditTaskViewModel.editingTask.collectAsState()
     val isEditing = addEditTaskViewModel.isEditing
@@ -79,7 +79,7 @@ fun AddEditTaskScreen(
     DiscardChangesDialog(
         isAlertDialogOpen = isAlertDialogOpen,
         hasChanges = hasChanges,
-        navigateBack = { onTaskSaved(false) }
+        navigateBack = navigateBack
     )
 
     val scrollState = rememberScrollState()
@@ -105,21 +105,21 @@ fun AddEditTaskScreen(
         isEditing = isEditing,
         onSaveClicked = {
             addEditTaskViewModel.save { isSuccess ->
-                onTaskSaved(isSuccess)
                 snackBar(if (isSuccess) taskSaveSuccess else taskSaveError)
+                navigateBack()
             }
         },
         onDeleteClicked = {
             addEditTaskViewModel.delete { isSuccess ->
-                onTaskSaved(isSuccess)
                 snackBar(if (isSuccess) taskDeleteSuccess else taskDeleteError)
+                navigateBack()
             }
         },
         navigateBack = {
             navigateBackConfirm(
                 isAlertDialogOpen = isAlertDialogOpen,
                 hasChanges = hasChanges,
-                navigateBack = { onTaskSaved(false) }
+                navigateBack = navigateBack
             )
         }
     ) { innerPadding ->
@@ -300,7 +300,7 @@ private fun StarDateRow(
         initialSelectedDateMillis = startDate.value?.toMillis() ?: getGMTNowMillis()
     )
     val startTimePickerState = rememberTimePickerState(
-        initialHour = startTime.value?.hour ?: 0,
+        initialHour = startTime.value?.hour ?: LocalTime.now().hour,
         initialMinute = startTime.value?.minute ?: 0
     )
 
@@ -354,7 +354,7 @@ private fun EndDateRow(
         initialSelectedDateMillis = endDate.value?.toMillis() ?: getGMTNowMillis()
     )
     val endTimePickerState = rememberTimePickerState(
-        initialHour = endTime.value?.hour ?: 0,
+        initialHour = endTime.value?.hour ?: LocalTime.now().hour.plus(1),
         initialMinute = endTime.value?.minute ?: 0
     )
 
@@ -461,21 +461,23 @@ private fun Reminder(
         },
         trailingIcon = {
             reminder.value?.let {
-                IconButton(
+                ToDoAppIconButton(
+                    icon = ToDoAppIcons.icRemove,
                     onClick = { onReminderTimeChanged(null) }
-                ) {
-                    ToDoAppIcon(
-                        icon = ToDoAppIcons.icRemove,
-                        contentDescription = "remove"
-                    )
-                }
+                )
             }
         }
     )
 }
 
 class AddTaskScreenPreviewProvider : PreviewParameterProvider<Task> {
-    override val values = sequenceOf(Task(isDone = false), mockedTask)
+    override val values = sequenceOf(
+        Task(
+            startDate = LocalDateTime.now(),
+            endDate = LocalDateTime.now()
+        ),
+        mockedTask
+    )
 }
 
 @Preview(name = "Light Mode", showBackground = true)

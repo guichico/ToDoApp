@@ -6,15 +6,16 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.apphico.core_repository.calendar.room.CheckListItemDB
+import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CheckListItemDao {
     @Query("SELECT * FROM checklistitemdb")
-    fun getAll(): List<CheckListItemDB>
+    fun getAll(): Flow<List<CheckListItemDB>>
 
     @Query("SELECT * FROM checklistitemdb WHERE checkListItemId IN (:checkListItemId)")
-    fun getCheckListItem(checkListItemId: Long): List<CheckListItemDB>
+    fun getCheckListItem(checkListItemId: Long): Flow<CheckListItemDB>
 
     @Transaction
     @Insert

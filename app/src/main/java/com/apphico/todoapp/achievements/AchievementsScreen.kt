@@ -25,7 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.fakeData.mockedAchievements
 import com.apphico.designsystem.achievements.AchievementCard
-import com.apphico.designsystem.theme.ToDoAppIcon
+import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 

@@ -2,11 +2,11 @@ package com.apphico.core_repository.calendar.group
 
 import android.util.Log
 import com.apphico.core_model.Group
-import com.apphico.core_repository.calendar.room.AppDatabase
-import com.apphico.core_repository.calendar.room.toGroup
-import com.apphico.core_repository.calendar.room.toGroupDB
+import com.apphico.core_repository.calendar.room.dao.GroupDao
+import com.apphico.core_repository.calendar.room.entities.toGroup
+import com.apphico.core_repository.calendar.room.entities.toGroupDB
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
 interface GroupRepository {
     fun getGroups(): Flow<List<Group>>
@@ -16,22 +16,16 @@ interface GroupRepository {
 }
 
 class GroupRepositoryImpl(
-    val appDatabase: AppDatabase
+    private val groupDao: GroupDao
 ) : GroupRepository {
 
     override fun getGroups(): Flow<List<Group>> =
-        flow {
-            emit(
-                appDatabase
-                    .groupDao()
-                    .getAll()
-                    .map { it.toGroup() }
-            )
-        }
+        groupDao.getAll()
+            .map { it.map { it.toGroup() } }
 
     override suspend fun insertGroup(group: Group): Boolean {
         return try {
-            appDatabase.groupDao().insert(group.toGroupDB())
+            groupDao.insert(group.toGroupDB())
 
             return true
         } catch (ex: Exception) {
@@ -42,7 +36,7 @@ class GroupRepositoryImpl(
 
     override suspend fun updateGroup(group: Group): Boolean {
         return try {
-            appDatabase.groupDao().update(group.toGroupDB())
+            groupDao.update(group.toGroupDB())
 
             return true
         } catch (ex: Exception) {
@@ -53,7 +47,7 @@ class GroupRepositoryImpl(
 
     override suspend fun deleteGroup(group: Group): Boolean {
         return try {
-            appDatabase.groupDao().delete(group.toGroupDB())
+            groupDao.delete(group.toGroupDB())
 
             return true
         } catch (ex: Exception) {

@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.apphico.designsystem.theme.ToDoAppIcon
+import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 
 @Composable

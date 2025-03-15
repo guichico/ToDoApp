@@ -46,11 +46,10 @@ import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroups
 import com.apphico.designsystem.R
-import com.apphico.designsystem.components.buttons.NormalButton
 import com.apphico.designsystem.components.buttons.SmallButton
+import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.MediumGray
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 

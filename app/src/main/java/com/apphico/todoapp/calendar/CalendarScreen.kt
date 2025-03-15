@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -25,11 +28,15 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
+import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.task.TaskCard
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.extensions.formatLongDayOfWeekDate
+import com.apphico.extensions.formatShortDayOfWeekDate
+import com.apphico.extensions.isCurrentYear
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Composable
 fun CalendarScreen(
@@ -44,6 +51,8 @@ fun CalendarScreen(
     calendarViewModel.setDate(selectedDate.value)
 
     CalendarScreenContent(
+        selectedDate = selectedDate.value,
+        calendarViewMode = calendarViewMode.value,
         tasks = calendar,
         navigateToAddEditTask = navigateToAddEditTask
     )
@@ -51,6 +60,8 @@ fun CalendarScreen(
 
 @Composable
 private fun CalendarScreenContent(
+    selectedDate: LocalDate,
+    calendarViewMode: CalendarViewMode,
     tasks: State<List<Task>>,
     navigateToAddEditTask: (Task?) -> Unit
 ) {
@@ -70,10 +81,17 @@ private fun CalendarScreenContent(
                 bottom = 80.dp
             )
         ) {
-            items(tasks.value) {
-                TaskCard(
-                    task = it,
-                    onClick = { navigateToAddEditTask(it) }
+            if (calendarViewMode == CalendarViewMode.DAY) {
+                taskRowsDayViewMode(
+                    selectedDate = selectedDate,
+                    tasks = tasks.value,
+                    onTaskClicked = navigateToAddEditTask
+                )
+            } else {
+                taskRowsAgendaViewMode(
+                    selectedDate = selectedDate,
+                    tasks = tasks.value,
+                    onTaskClicked = navigateToAddEditTask
                 )
             }
         }
@@ -91,6 +109,94 @@ private fun CalendarScreenContent(
     }
 }
 
+@Composable
+private fun DateHeader(
+    date: LocalDate
+) {
+    Text(
+        modifier = Modifier
+            .padding(
+                vertical = ToDoAppTheme.spacing.medium,
+                horizontal = ToDoAppTheme.spacing.small
+            ),
+        text = if (date.isCurrentYear()) date.formatShortDayOfWeekDate() else date.formatLongDayOfWeekDate(),
+        style = MaterialTheme.typography.titleSmall,
+        color = MaterialTheme.colorScheme.primary
+    )
+}
+
+private fun LazyListScope.taskRowsDayViewMode(
+    selectedDate: LocalDate,
+    tasks: List<Task>,
+    onTaskClicked: (Task?) -> Unit
+) {
+    val oneTimeTask = tasks.filter { it.startDate == null }
+    val routineTask = tasks.filter { it.startDate != null }
+
+    items(oneTimeTask) { task ->
+        TaskCard(
+            task = task,
+            onClick = { onTaskClicked(task) }
+        )
+    }
+    if (routineTask.isNotEmpty()) {
+        item {
+            DateHeader(date = selectedDate)
+        }
+    }
+    items(routineTask) { event ->
+        TaskCard(
+            task = event,
+            onClick = { onTaskClicked(event) }
+        )
+    }
+}
+
+private fun LazyListScope.taskRowsAgendaViewMode(
+    selectedDate: LocalDate,
+    tasks: List<Task>,
+    onTaskClicked: (Task?) -> Unit
+) {
+    val allTasks = mutableListOf<Task>()
+
+    allTasks.addAll(tasks.filter { it.daysOfWeek.isEmpty() })
+    tasks.filter { it.daysOfWeek.isNotEmpty() }
+        .forEach { task -> allTasks.addAll(task.addFutureTasks(selectedDate = selectedDate)) }
+    allTasks.sortBy { it.startDate }
+
+    itemsIndexed(allTasks) { index, task ->
+        task.startDate?.let { date ->
+            val startDate = date.toLocalDate()
+            val previousDate = if (index > 0) allTasks[index - 1].startDate?.toLocalDate() else null
+
+            if (startDate != previousDate) {
+                DateHeader(date = startDate)
+            }
+        }
+
+        TaskCard(
+            task = task,
+            onClick = { onTaskClicked(task) }
+        )
+    }
+}
+
+private fun Task.addFutureTasks(
+    selectedDate: LocalDate
+): List<Task> {
+    if (this.startDate != null && this.endDate != null) {
+        val startDate = selectedDate
+        val endDate = this.endDate!!.toLocalDate().plusDays(1)
+
+        return startDate.datesUntil(endDate)
+            .filter { it.dayOfWeek.value in this.daysOfWeek }
+            .map { newDate -> this.copy(startDate = LocalDateTime.of(newDate, this.startDate?.toLocalTime())) }
+            .toList()
+    }
+
+    return emptyList()
+}
+
 class CalendarScreenPreviewProvider : PreviewParameterProvider<List<Task>> {
     override val values = sequenceOf(mockedTasks)
 }
@@ -104,6 +210,8 @@ private fun CalendarScreenPreview(
 ) {
     ToDoAppTheme {
         CalendarScreenContent(
+            selectedDate = LocalDate.now(),
+            calendarViewMode = CalendarViewMode.DAY,
             tasks = remember { mutableStateOf(tasks) },
             navigateToAddEditTask = {}
         )

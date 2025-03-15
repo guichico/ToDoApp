@@ -21,7 +21,7 @@ fun NavController.navigateToAddEditAchievement(achievement: Achievement?) =
     navigate(AddEditAchievementRoute(AddEditAchievementParameters(achievement)))
 
 fun NavGraphBuilder.addEditAchievementScreen(
-    onBackClick: () -> Unit,
+    onBackClicked: () -> Unit,
     onSelectGroupClicked: () -> Unit,
     onAddEditProgressClicked: () -> Unit,
 ) {
@@ -36,7 +36,7 @@ fun NavGraphBuilder.addEditAchievementScreen(
         AddEditAchievementScreen(
             navigateToSelectGroup = onSelectGroupClicked,
             navigateToAddEditProgress = onAddEditProgressClicked,
-            navigateBack = onBackClick
+            navigateBack = onBackClicked
         )
     }
 }

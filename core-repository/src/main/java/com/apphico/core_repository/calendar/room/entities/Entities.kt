@@ -1,4 +1,4 @@
-package com.apphico.core_repository.calendar.room
+package com.apphico.core_repository.calendar.room.entities
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
@@ -35,7 +35,7 @@ data class LocationDB(
 @Entity
 data class TaskDB(
     @PrimaryKey(autoGenerate = true) val taskId: Long,
-    @ColumnInfo("task_name") val name: String?,
+    @ColumnInfo("task_name") val name: String,
     val description: String?,
     val taskGroupId: Long?,
     val startDate: LocalDateTime?,

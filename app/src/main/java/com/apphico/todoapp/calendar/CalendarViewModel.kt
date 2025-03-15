@@ -1,13 +1,10 @@
 package com.apphico.todoapp.calendar
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.extensions.combine
-import com.apphico.extensions.ifTrue
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
-import com.apphico.todoapp.task.SHOULD_REFRESH_ARG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -27,18 +24,15 @@ class CalendarViewModel @Inject constructor(
     calendarRepository: CalendarRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
-    private val shouldRefresh = savedStateHandle.getLiveData<Boolean>(SHOULD_REFRESH_ARG, true).asFlow()
-
     private val calendarViewMode = MutableStateFlow(CalendarViewMode.DAY)
     private val selectedDate = MutableStateFlow(LocalDate.now())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val calendar = combine(
-        shouldRefresh.ifTrue(),
         calendarViewMode,
         selectedDate
     )
-        .flatMapLatest { (_, viewMode, selectedDate) ->
+        .flatMapLatest { (viewMode, selectedDate) ->
             with(calendarRepository) {
                 when (viewMode) {
                     CalendarViewMode.DAY -> getFromDay(date = selectedDate)

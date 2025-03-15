@@ -20,7 +20,7 @@ data class AddEditLocationParameters(val location: Location) : Parcelable
 fun NavController.navigateToAddEditLocation(location: Location) = navigate(AddEditLocationRoute(AddEditLocationParameters(location)))
 
 fun NavGraphBuilder.addEditLocationScreen(
-    onBackClick: () -> Unit,
+    onBackClicked: () -> Unit,
     onConfirmClicked: (Location?) -> Unit,
     onSelectLocationOnMapClicked: (Location?) -> Unit
 ) {
@@ -35,7 +35,7 @@ fun NavGraphBuilder.addEditLocationScreen(
         AddEditLocationScreen(
             onConfirmClicked = onConfirmClicked,
             navigateToSelectLocationOnMap = onSelectLocationOnMapClicked,
-            navigateBack = onBackClick
+            navigateBack = onBackClicked
         )
     }
 }

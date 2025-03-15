@@ -18,8 +18,8 @@ import com.apphico.core_model.Coordinates
 import com.apphico.core_model.Location
 import com.apphico.core_model.toCoordinates
 import com.apphico.core_model.toLatLng
+import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.theme.ChiliRed
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition

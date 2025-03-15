@@ -6,23 +6,33 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.apphico.core_repository.calendar.room.TaskDB
-import com.apphico.core_repository.calendar.room.TaskRelations
+import com.apphico.core_repository.calendar.room.entities.TaskDB
+import com.apphico.core_repository.calendar.room.entities.TaskRelations
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
 interface TaskDao {
     @Transaction
-    @Query("SELECT * FROM taskdb WHERE endDate > :fromStartDate ORDER BY startDate")
-    fun getAll(fromStartDate: LocalDate): List<TaskRelations>
+    @Query("SELECT * FROM taskdb WHERE (:fromStartDate BETWEEN date(startDate) AND date(endDate)) OR startDate is null ORDER BY startDate")
+    fun getAll(fromStartDate: LocalDate): Flow<List<TaskRelations>>
 
     @Transaction
-    @Query("SELECT * FROM taskdb WHERE :date BETWEEN date(startDate) AND date(endDate) ORDER BY time(startDate)")
-    fun getFromDay(date: LocalDate): List<TaskRelations>
+    @Query(
+        "SELECT * FROM taskdb " +
+                "WHERE (daysOfWeek LIKE :dayOfWeek) OR daysOfWeek LIKE '%[]%' " +
+                "AND (:date BETWEEN date(startDate) AND date(endDate)) " +
+                "OR endDate is null " +
+                "ORDER BY time(startDate)"
+    )
+    fun getFromDay(
+        date: LocalDate,
+        dayOfWeek: String = "%${date.dayOfWeek.value}%"
+    ): Flow<List<TaskRelations>>
 
     @Transaction
     @Query("SELECT * FROM taskdb WHERE taskId IN (:taskId)")
-    fun getTask(taskId: Long): List<TaskRelations>
+    fun getTask(taskId: Long): Flow<TaskRelations>
 
     @Insert
     suspend fun insert(taskDB: TaskDB): Long

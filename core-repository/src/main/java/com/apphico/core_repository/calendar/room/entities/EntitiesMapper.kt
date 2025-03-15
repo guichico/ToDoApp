@@ -1,4 +1,4 @@
-package com.apphico.core_repository.calendar.room
+package com.apphico.core_repository.calendar.room.entities
 
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Coordinates
@@ -67,7 +67,7 @@ fun Task.toTaskDB(): TaskDB =
 fun TaskRelations.toTask(): Task =
     Task(
         id = this.taskDB.taskId,
-        name = this.taskDB.name ?: "",
+        name = this.taskDB.name,
         description = this.taskDB.description,
         group = this.groupDB?.toGroup(),
         checkList = this.checkList?.map { it.tCheckListItem() } ?: emptyList(),

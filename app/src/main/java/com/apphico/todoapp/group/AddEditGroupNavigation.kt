@@ -20,7 +20,7 @@ data class AddEditGroupParameters(val group: Group?) : Parcelable
 fun NavController.navigateToAddEditGroup(group: Group?) = navigate(AddEditGroupRoute(AddEditGroupParameters(group)))
 
 fun NavGraphBuilder.addEditGroupScreen(
-    onBackClick: () -> Unit
+    onBackClicked: () -> Unit
 ) {
     composable<AddEditGroupRoute>(
         typeMap = mapOf(
@@ -31,7 +31,7 @@ fun NavGraphBuilder.addEditGroupScreen(
         )
     ) {
         AddEditGroupScreen(
-            navigateBack = onBackClick
+            navigateBack = onBackClicked
         )
     }
 }

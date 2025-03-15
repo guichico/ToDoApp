@@ -4,15 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -35,16 +30,17 @@ import androidx.navigation.compose.NavHost
 import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroups
 import com.apphico.designsystem.components.date.CalendarView
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
+import com.apphico.designsystem.components.snackbar.SnackBar
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
-import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.views.FilterView
 import com.apphico.designsystem.views.Status
-import com.apphico.extensions.formatDayOfWeekDate
+import com.apphico.extensions.formatDayAndMonth
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowDate
+import com.apphico.extensions.isCurrentYear
 import com.apphico.todoapp.calendar.CalendarRoute
 import com.apphico.todoapp.calendar.CalendarViewMode
 import com.apphico.todoapp.focus.FocusRoute
@@ -76,21 +72,9 @@ fun AppScaffold(
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackBarHostState) { data ->
-                Snackbar(
-                    modifier = Modifier
-                        .padding(ToDoAppTheme.spacing.large),
-                    shape = CardDefaults.shape
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(
-                                start = ToDoAppTheme.spacing.extraSmall,
-                                bottom = ToDoAppTheme.spacing.extraSmall
-                            ),
-                        text = data.visuals.message,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
+                SnackBar(
+                    text = data.visuals.message
+                )
             }
         },
         topBar = {
@@ -152,10 +136,8 @@ private fun TopBar(
     val topBarTitle = bottomBarSelectedItem?.name?.let { stringResource(id = it) } ?: ""
     val topBarSubTitle = when {
         isCalendarSelected -> {
-            when (selectedDate.value.year) {
-                getNowDate().year -> selectedDate.value.formatDayOfWeekDate()
-                else -> selectedDate.value.formatMediumDate()
-            }
+            val date = selectedDate.value
+            if (date.isCurrentYear()) selectedDate.value.formatDayAndMonth() else selectedDate.value.formatMediumDate()
         }
 
         else -> null
@@ -192,37 +174,16 @@ private fun TopBar(
             subTitle = topBarSubTitle,
             scrollBehavior = scrollBehavior,
             actions = {
-                Row {
-                    if (isCalendarSelected) {
-                        IconButton(
-                            onClick = { onSelectedDateChanged(getNowDate()) }
-                        ) {
-                            ToDoAppIcon(
-                                icon = ToDoAppIcons.icToday,
-                                contentDescription = "today"
-                            )
-                        }
-                        IconButton(
-                            onClick = onViewModeChanged
-                        ) {
-                            ToDoAppIcon(
-                                icon = if (calendarViewMode.value == CalendarViewMode.DAY) ToDoAppIcons.icCalendarViewDay else ToDoAppIcons.icCalendarViewAgenda,
-                                contentDescription = "viewMode"
-                            )
-                        }
+                FiltersButtonsRow(
+                    isCalendarSelected = isCalendarSelected,
+                    onSelectedDateChanged = onSelectedDateChanged,
+                    calendarViewMode = calendarViewMode,
+                    onViewModeChanged = onViewModeChanged,
+                    onOpenFiltersClicked = {
+                        isCalendarExpanded.value = false
+                        isFilterExpanded.value = !isFilterExpanded.value
                     }
-                    IconButton(
-                        onClick = {
-                            isCalendarExpanded.value = false
-                            isFilterExpanded.value = !isFilterExpanded.value
-                        }
-                    ) {
-                        ToDoAppIcon(
-                            icon = ToDoAppIcons.icFilter,
-                            contentDescription = "filter"
-                        )
-                    }
-                }
+                )
             }
         )
         CalendarView(
@@ -238,6 +199,32 @@ private fun TopBar(
             groups = remember { mutableStateOf(mockedGroups) },
             selectedGroups = selectedGroups,
             onGroupSelected = { selectedGroups.value = selectedGroups.value.addOrRemoveGroup(it) }
+        )
+    }
+}
+
+@Composable
+private fun FiltersButtonsRow(
+    isCalendarSelected: Boolean,
+    onSelectedDateChanged: (LocalDate) -> Unit,
+    calendarViewMode: State<CalendarViewMode>,
+    onViewModeChanged: () -> Unit,
+    onOpenFiltersClicked: () -> Unit
+) {
+    Row {
+        if (isCalendarSelected) {
+            ToDoAppIconButton(
+                icon = ToDoAppIcons.icToday,
+                onClick = { onSelectedDateChanged(getNowDate()) }
+            )
+            ToDoAppIconButton(
+                icon = if (calendarViewMode.value == CalendarViewMode.DAY) ToDoAppIcons.icCalendarViewDay else ToDoAppIcons.icCalendarViewAgenda,
+                onClick = onViewModeChanged
+            )
+        }
+        ToDoAppIconButton(
+            icon = ToDoAppIcons.icFilter,
+            onClick = onOpenFiltersClicked
         )
     }
 }

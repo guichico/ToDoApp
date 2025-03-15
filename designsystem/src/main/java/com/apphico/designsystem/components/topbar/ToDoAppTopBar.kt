@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,18 +20,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.apphico.designsystem.components.icons.ToDoAppIcon
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.emptyLambda
 import com.apphico.designsystem.theme.Black
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.isColorDark
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -89,15 +87,11 @@ fun ToDoAppTopBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(
+                    ToDoAppIconButton(
+                        icon = ToDoAppIcons.icBack,
+                        tint = textColor,
                         onClick = navigateBack
-                    ) {
-                        ToDoAppIcon(
-                            icon = ToDoAppIcons.icBack,
-                            contentDescription = "back",
-                            tint = textColor
-                        )
-                    }
+                    )
                 }
             }
         } else {

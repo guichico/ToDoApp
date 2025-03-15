@@ -58,13 +58,13 @@ import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.DefaultDialog
 import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
 import com.apphico.designsystem.components.dialogs.navigateBackConfirm
+import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.textfield.CurrencyTextField
 import com.apphico.designsystem.components.textfield.DecimalTextField
 import com.apphico.designsystem.components.textfield.IntTextField
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.textfield.SmallTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.format

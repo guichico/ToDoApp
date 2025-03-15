@@ -9,8 +9,16 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
+import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
+import com.apphico.core_repository.calendar.room.entities.GroupDB
+import com.apphico.core_repository.calendar.room.entities.LocationDB
+import com.apphico.core_repository.calendar.room.entities.TaskDB
 
-@Database(entities = [TaskDB::class, GroupDB::class, CheckListItemDB::class, LocationDB::class], version = 1, exportSchema = false)
+@Database(
+    version = 1,
+    exportSchema = false,
+    entities = [TaskDB::class, GroupDB::class, CheckListItemDB::class, LocationDB::class],
+)
 @TypeConverters(DateConverters::class, ListConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDao(): TaskDao

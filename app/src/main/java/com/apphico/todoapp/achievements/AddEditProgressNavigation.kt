@@ -9,11 +9,11 @@ import kotlinx.serialization.Serializable
 object AddEditProgressRoute
 
 fun NavGraphBuilder.addEditProgressScreen(
-    onBackClick: () -> Unit,
+    onBackClicked: () -> Unit,
 ) {
     composable<AddEditProgressRoute> {
         AddEditProgressScreen(
-            navigateBack = onBackClick
+            navigateBack = onBackClicked
         )
     }
 }

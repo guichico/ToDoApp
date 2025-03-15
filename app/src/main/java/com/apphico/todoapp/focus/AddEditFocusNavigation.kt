@@ -20,7 +20,7 @@ data class AddEditFocusParameters(val focusMode: FocusMode?) : Parcelable
 fun NavController.navigateToAddEditFocus(focusMode: FocusMode?) = navigate(AddEditFocusRoute(AddEditFocusParameters(focusMode)))
 
 fun NavGraphBuilder.addEditFocusScreen(
-    onBackClick: () -> Unit
+    onBackClicked: () -> Unit
 ) {
     composable<AddEditFocusRoute>(
         typeMap = mapOf(
@@ -31,7 +31,7 @@ fun NavGraphBuilder.addEditFocusScreen(
         )
     ) {
         AddEditFocusScreen(
-            navigateBack = onBackClick
+            navigateBack = onBackClicked
         )
     }
 }

@@ -24,7 +24,7 @@ fun NavController.navigateBackToAddEditTask(savedStateHandle: SavedStateHandle, 
 
 fun NavGraphBuilder.selectGroupScreen(
     previousBackStackEntry: () -> NavBackStackEntry,
-    onBackClick: () -> Unit,
+    onBackClicked: () -> Unit,
     onGroupSelected: (SavedStateHandle, Group) -> Unit,
     onEditClicked: (Group?) -> Unit
 ) {
@@ -32,7 +32,7 @@ fun NavGraphBuilder.selectGroupScreen(
         previousBackStackEntry = previousBackStackEntry
     ) { previousSavedStateHandle ->
         SelectGroupScreen(
-            navigateBack = onBackClick,
+            navigateBack = onBackClicked,
             onEditGroupClicked = onEditClicked,
             onGroupSelected = { group -> onGroupSelected(previousSavedStateHandle, group) }
         )

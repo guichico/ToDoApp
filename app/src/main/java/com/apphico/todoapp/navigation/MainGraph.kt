@@ -30,7 +30,6 @@ import com.apphico.todoapp.location.navigateBackToAddEditTask
 import com.apphico.todoapp.location.navigateToSelectLocationOnMap
 import com.apphico.todoapp.location.selectLocationOnMapScreen
 import com.apphico.todoapp.task.addEditTaskScreen
-import com.apphico.todoapp.task.navigateBackToCalendar
 import com.apphico.todoapp.task.navigateToAddEditTask
 import java.time.LocalDate
 import kotlin.reflect.KType
@@ -55,28 +54,27 @@ fun NavGraphBuilder.mainGraph(
         onAchievementClicked = navController::navigateToAddEditAchievement
     )
     addEditTaskScreen(
-        previousBackStackEntry = previousBackStackEntry,
         snackBar = snackBar,
+        onBackClicked = navController::navigateBack,
         onSelectGroupClicked = navController::navigateToSelectGroup,
-        onSelectLocationClicked = navController::navigateToSelectLocationOnMap,
-        onTaskSaved = navController::navigateBackToCalendar
+        onSelectLocationClicked = navController::navigateToSelectLocationOnMap
     )
     selectGroupScreen(
         previousBackStackEntry = previousBackStackEntry,
-        onBackClick = navController::navigateBack,
+        onBackClicked = navController::navigateBack,
         onGroupSelected = navController::navigateBackToAddEditTask,
         onEditClicked = navController::navigateToAddEditGroup,
     )
     addEditGroupScreen(
-        onBackClick = navController::navigateBack
+        onBackClicked = navController::navigateBack
     )
     selectLocationOnMapScreen(
         previousBackStackEntry = previousBackStackEntry,
-        onBackClick = navController::navigateBack,
+        onBackClicked = navController::navigateBack,
         onSearchFinished = navController::navigateBackToAddEditTask
     )
     addEditLocationScreen(
-        onBackClick = navController::navigateBack,
+        onBackClicked = navController::navigateBack,
         onSelectLocationOnMapClicked = { location ->
             // navController.navigateToSelectLocationOnMap(task, location)
         },
@@ -85,15 +83,15 @@ fun NavGraphBuilder.mainGraph(
         }
     )
     addEditFocusScreen(
-        onBackClick = navController::navigateBack
+        onBackClicked = navController::navigateBack
     )
     addEditAchievementScreen(
-        onBackClick = navController::navigateBack,
+        onBackClicked = navController::navigateBack,
         onSelectGroupClicked = {},
         onAddEditProgressClicked = {}
     )
     addEditProgressScreen(
-        onBackClick = navController::navigateBack
+        onBackClicked = navController::navigateBack
     )
 }
 

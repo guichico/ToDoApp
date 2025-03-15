@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -33,9 +32,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Location
 import com.apphico.designsystem.R
+import com.apphico.designsystem.components.icons.ToDoAppIcon
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.theme.Black
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
@@ -122,14 +122,10 @@ private fun AddressField(
         onValueChange = { onAddressChanged(it) },
         textStyle = MaterialTheme.typography.titleMedium,
         trailingIcon = {
-            IconButton(
+            ToDoAppIconButton(
+                icon = ToDoAppIcons.icSearch,
                 onClick = { onSearchLocationClicked(location.value?.address) }
-            ) {
-                ToDoAppIcon(
-                    icon = ToDoAppIcons.icSearch,
-                    contentDescription = "search"
-                )
-            }
+            )
         },
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSearchLocationClicked(location.value?.address) }),

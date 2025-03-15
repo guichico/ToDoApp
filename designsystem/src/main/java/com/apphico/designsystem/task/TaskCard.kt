@@ -31,7 +31,7 @@ import com.apphico.core_model.fakeData.mockedTask
 import com.apphico.designsystem.components.card.DefaultCard
 import com.apphico.designsystem.components.checkbox.CircleCheckbox
 import com.apphico.designsystem.components.checklist.CheckList
-import com.apphico.designsystem.theme.ToDoAppIcon
+import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatShortTime

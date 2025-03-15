@@ -34,14 +34,7 @@ import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material.icons.outlined.WifiOff
 import androidx.compose.material.icons.outlined.WorkspacePremium
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalContentColor
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import com.apphico.designsystem.theme.BaseToDoAppIcon.DrawableResourceIcon
 import com.apphico.designsystem.theme.BaseToDoAppIcon.ImageVectorIcon
 
 sealed class BaseToDoAppIcon {
@@ -85,32 +78,4 @@ object ToDoAppIcons {
     val icEditLocation = ImageVectorIcon(Icons.Outlined.EditLocationAlt)
     val icNoInternetConnection = ImageVectorIcon(Icons.Outlined.WifiOff)
     val icError = ImageVectorIcon(Icons.Outlined.Error)
-}
-
-@Composable
-fun ToDoAppIcon(
-    icon: BaseToDoAppIcon,
-    modifier: Modifier = Modifier,
-    contentDescription: String?,
-    tint: Color = LocalContentColor.current
-) {
-    when (icon) {
-        is ImageVectorIcon -> {
-            Icon(
-                modifier = modifier,
-                imageVector = icon.imageVector,
-                contentDescription = contentDescription,
-                tint = tint
-            )
-        }
-
-        is DrawableResourceIcon -> {
-            Icon(
-                modifier = modifier,
-                painter = painterResource(id = icon.id),
-                contentDescription = contentDescription,
-                tint = tint
-            )
-        }
-    }
 }

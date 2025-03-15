@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,8 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.theme.DisabledColor
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
@@ -191,15 +190,10 @@ private fun CalendarMonth(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         ) {
-            IconButton(
+            ToDoAppIconButton(
+                icon = ToDoAppIcons.icArrowLeft,
                 onClick = onPreviousMonthClicked
-            ) {
-                ToDoAppIcon(
-                    icon = ToDoAppIcons.icArrowLeft,
-                    contentDescription = "previous month"
-                )
-            }
-
+            )
             Text(
                 modifier = Modifier
                     .padding(horizontal = ToDoAppTheme.spacing.extraLarge)
@@ -208,14 +202,10 @@ private fun CalendarMonth(
                 text = if (month.yearMonth.year == getNowDate().yearMonth.year) month.yearMonth.formatLong() else month.yearMonth.formatLongYear(),
                 style = MaterialTheme.typography.titleMedium
             )
-            IconButton(
+            ToDoAppIconButton(
+                icon = ToDoAppIcons.icArrowRight,
                 onClick = onNextMonthClicked
-            ) {
-                ToDoAppIcon(
-                    icon = ToDoAppIcons.icArrowRight,
-                    contentDescription = "next month"
-                )
-            }
+            )
         }
         Row(
             modifier = Modifier.fillMaxWidth()

@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -43,8 +42,9 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroup
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.card.DefaultCard
+import com.apphico.designsystem.components.icons.ToDoAppIcon
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 
@@ -157,18 +157,14 @@ fun GroupRow(
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.primary
             )
-            IconButton(
+            ToDoAppIconButton(
                 modifier = Modifier
                     .padding(end = ToDoAppTheme.spacing.extraSmall)
                     .align(Alignment.CenterVertically),
+                icon = ToDoAppIcons.icEdit,
+                tint = MaterialTheme.colorScheme.primary,
                 onClick = { navigateToAddEditGroup(group) }
-            ) {
-                ToDoAppIcon(
-                    icon = ToDoAppIcons.icEdit,
-                    contentDescription = "edit",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
+            )
         }
     }
 }

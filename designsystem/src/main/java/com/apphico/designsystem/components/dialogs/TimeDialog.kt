@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
@@ -27,8 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.NormalButton
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.getLocalTime
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import java.time.LocalTime
@@ -59,20 +58,14 @@ fun TimeDialog(
                     if (isKeyboardMode) TimeInput(state = timePickerState) else TimePicker(state = timePickerState)
                 }
                 Row {
-                    IconButton(
+                    ToDoAppIconButton(
                         modifier = Modifier
                             .padding(start = ToDoAppTheme.spacing.small),
+                        icon = if (isKeyboardMode) ToDoAppIcons.icClock else ToDoAppIcons.icKeyboard,
                         onClick = {
                             isKeyboardMode = !isKeyboardMode
                         }
-                    ) {
-                        ToDoAppIcon(
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically),
-                            icon = if (isKeyboardMode) ToDoAppIcons.icClock else ToDoAppIcons.icKeyboard,
-                            contentDescription = null
-                        )
-                    }
+                    )
                     Row(
                         modifier = Modifier
                             .offset(x = (-8).dp)

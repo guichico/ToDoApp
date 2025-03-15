@@ -2,10 +2,12 @@ package com.apphico.core_repository.calendar.task
 
 import android.util.Log
 import com.apphico.core_model.Task
-import com.apphico.core_repository.calendar.room.AppDatabase
-import com.apphico.core_repository.calendar.room.toCheckListItemDB
-import com.apphico.core_repository.calendar.room.toLocationDB
-import com.apphico.core_repository.calendar.room.toTaskDB
+import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
+import com.apphico.core_repository.calendar.room.dao.LocationDao
+import com.apphico.core_repository.calendar.room.dao.TaskDao
+import com.apphico.core_repository.calendar.room.entities.toCheckListItemDB
+import com.apphico.core_repository.calendar.room.entities.toLocationDB
+import com.apphico.core_repository.calendar.room.entities.toTaskDB
 
 interface TaskRepository {
     suspend fun insertTask(task: Task): Boolean
@@ -14,20 +16,21 @@ interface TaskRepository {
 }
 
 class TaskRepositoryImpl(
-    val appDatabase: AppDatabase
+    private val taskDao: TaskDao,
+    private val locationDao: LocationDao,
+    private val checkListItemDao: CheckListItemDao,
 ) : TaskRepository {
 
     override suspend fun insertTask(task: Task): Boolean {
         return try {
-            val taskId = appDatabase.taskDao()
-                .insert(task.toTaskDB())
+            val taskId = taskDao.insert(task.toTaskDB())
 
             task.location?.let {
-                appDatabase.locationDao()
+                locationDao
                     .insert(it.toLocationDB(taskId))
             }
 
-            appDatabase.checkListItemDao()
+            checkListItemDao
                 .insertAll(task.checkList.map { it.toCheckListItemDB(taskId) })
 
             return true
@@ -39,13 +42,13 @@ class TaskRepositoryImpl(
 
     override suspend fun updateTask(task: Task): Boolean {
         return try {
-            appDatabase.taskDao().update(task.toTaskDB())
+            taskDao.update(task.toTaskDB())
 
             task.location?.let {
-                appDatabase.locationDao().update(it.toLocationDB(task.id))
+                locationDao.update(it.toLocationDB(task.id))
             }
 
-            appDatabase.checkListItemDao()
+            checkListItemDao
                 .updateAll(task.checkList.map { it.toCheckListItemDB(task.id) })
 
             return true
@@ -57,7 +60,7 @@ class TaskRepositoryImpl(
 
     override suspend fun deleteTask(task: Task): Boolean {
         return try {
-            appDatabase.taskDao().delete(task.toTaskDB())
+            taskDao.delete(task.toTaskDB())
 
             return true
         } catch (ex: Exception) {

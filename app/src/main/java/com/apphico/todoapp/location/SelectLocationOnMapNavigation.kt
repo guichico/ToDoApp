@@ -32,7 +32,7 @@ fun NavController.navigateBackToAddEditTask(savedStateHandle: SavedStateHandle, 
 
 fun NavGraphBuilder.selectLocationOnMapScreen(
     previousBackStackEntry: () -> NavBackStackEntry,
-    onBackClick: () -> Unit,
+    onBackClicked: () -> Unit,
     onSearchFinished: (SavedStateHandle, Location?) -> Unit
 ) {
     composable<SelectLocationOnMapRoute, AddEditTaskViewModel>(
@@ -45,7 +45,7 @@ fun NavGraphBuilder.selectLocationOnMapScreen(
         )
     ) { previousSavedStateHandle ->
         SelectLocationOnMapScreen(
-            navigateBack = onBackClick,
+            navigateBack = onBackClicked,
             onSearchFinished = { location -> onSearchFinished(previousSavedStateHandle, location) }
         )
     }

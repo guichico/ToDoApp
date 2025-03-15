@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -34,8 +33,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.CheckListItem
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.textfield.SmallTextField
-import com.apphico.designsystem.theme.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import kotlinx.coroutines.CoroutineScope
@@ -95,43 +94,27 @@ private fun CheckListItemField(
         textStyle = nameStyle,
         leadingIcon = {
             Row {
-                IconButton(
-                    onClick = {
-
-                    }
-                ) {
-                    ToDoAppIcon(
-                        icon = ToDoAppIcons.icReorder,
-                        contentDescription = "checkbox"
-                    )
-                }
-                IconButton(
+                ToDoAppIconButton(
+                    icon = ToDoAppIcons.icReorder,
+                    onClick = {}
+                )
+                ToDoAppIconButton(
+                    icon = if (checkListItem.isDone) ToDoAppIcons.icCheckCircle else ToDoAppIcons.icCircle,
                     modifier = Modifier
                         .offset(x = (-8).dp),
-                    onClick = {
-
-                    }
-                ) {
-                    ToDoAppIcon(
-                        icon = if (checkListItem.isDone) ToDoAppIcons.icCheckCircle else ToDoAppIcons.icCircle,
-                        contentDescription = "checkbox"
-                    )
-                }
+                    onClick = {}
+                )
             }
 
         },
         trailingIcon = {
-            IconButton(
+            ToDoAppIconButton(
+                icon = ToDoAppIcons.icRemove,
                 onClick = {
                     mutableCheckListState.remove(checkListItem)
                     onCheckListChanged(mutableCheckListState.toList())
                 }
-            ) {
-                ToDoAppIcon(
-                    icon = ToDoAppIcons.icRemove,
-                    contentDescription = "remove"
-                )
-            }
+            )
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
@@ -160,16 +143,12 @@ private fun AddItemField(
         placeholder = addNewItemTitle,
         onValueChange = { text = it },
         trailingIcon = {
-            IconButton(
+            ToDoAppIconButton(
+                icon = ToDoAppIcons.icAdd,
                 onClick = {
                     text = addItem(mutableCheckListState, text, onCheckListChanged, coroutineScope, scrollState, addItemHeight)
                 }
-            ) {
-                ToDoAppIcon(
-                    icon = ToDoAppIcons.icAdd,
-                    contentDescription = "add"
-                )
-            }
+            )
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(
