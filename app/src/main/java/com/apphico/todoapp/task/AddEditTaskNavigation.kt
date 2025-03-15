@@ -1,6 +1,8 @@
 package com.apphico.todoapp.task
 
 import android.os.Parcelable
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -32,7 +34,9 @@ fun NavGraphBuilder.addEditTaskScreen(
                 AddEditTaskParameters::class.java,
                 AddEditTaskParameters.serializer()
             )
-        )
+        ),
+        enterTransition = { slideInVertically(initialOffsetY = { it }) },
+        popEnterTransition = { fadeIn() },
     ) { previousSavedStateHandle ->
         AddEditTaskScreen(
             snackBar = snackBar,
