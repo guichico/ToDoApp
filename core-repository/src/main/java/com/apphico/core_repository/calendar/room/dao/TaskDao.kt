@@ -14,15 +14,21 @@ import java.time.LocalDate
 @Dao
 interface TaskDao {
     @Transaction
-    @Query("SELECT * FROM taskdb WHERE (:fromStartDate BETWEEN date(startDate) AND date(endDate)) OR startDate is null ORDER BY startDate")
+    @Query("SELECT * FROM taskdb WHERE (:fromStartDate BETWEEN date(startDate) AND date(endDate)) OR startDate is null OR endDate is null ORDER BY startDate")
     fun getAll(fromStartDate: LocalDate): Flow<List<TaskRelations>>
 
     @Transaction
     @Query(
         "SELECT * FROM taskdb " +
-                "WHERE (daysOfWeek LIKE :dayOfWeek) OR daysOfWeek LIKE '%[]%' " +
-                "AND (:date BETWEEN date(startDate) AND date(endDate)) " +
-                "OR endDate is null " +
+                "WHERE (" +
+                " ((:date BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE :dayOfWeek)) OR " +
+                " ((:date BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE '[]'))" +
+                ") " +
+                "OR (" +
+                " ((date(:date) >= date(startDate) AND endDate is null) AND (daysOfWeek LIKE :dayOfWeek)) OR" +
+                " ((date(:date) == date(startDate) AND endDate is null) AND (daysOfWeek LIKE '[]')) " +
+                ") " +
+                "OR (startDate is null AND endDate is null) " +
                 "ORDER BY time(startDate)"
     )
     fun getFromDay(

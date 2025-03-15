@@ -8,6 +8,7 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.task.TaskRepository
+import com.apphico.extensions.getNowDateTime
 import com.apphico.todoapp.group.GROUP_ARG
 import com.apphico.todoapp.location.LOCATION_ARG
 import com.apphico.todoapp.navigation.CustomNavType
@@ -130,10 +131,17 @@ class AddEditTaskViewModel @Inject constructor(
         var task = editingTask.value
 
         startTime.value?.let { startTime ->
-            task = task.copy(startDate = task.startDate?.withHour(startTime.hour)?.withMinute(startTime.minute))
+            val starDate = task.startDate ?: getNowDateTime()
+            task = task.copy(startDate = starDate.withHour(startTime.hour)?.withMinute(startTime.minute))
         }
         endTime.value?.let { endTime ->
-            task = task.copy(endDate = task.endDate?.withHour(endTime.hour)?.withMinute(endTime.minute))
+            val endDate = task.endDate ?: getNowDateTime()
+            task = task.copy(endDate = endDate.withHour(endTime.hour)?.withMinute(endTime.minute))
+        }
+
+        if (task.endDate != null && task.startDate == null) {
+            // If task has a end date so it should have a star date
+            println("error")
         }
 
         viewModelScope.launch {

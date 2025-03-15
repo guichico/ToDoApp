@@ -184,13 +184,12 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 private fun Task.addFutureTasks(
     selectedDate: LocalDate
 ): List<Task> {
-    if (this.startDate != null && this.endDate != null) {
-        val startDate = selectedDate
-        val endDate = this.endDate!!.toLocalDate().plusDays(1)
+    this.startDate?.let { startDate ->
+        val endDate = (this.endDate ?: startDate.plusYears(1)).toLocalDate().plusDays(1)
 
-        return startDate.datesUntil(endDate)
+        return selectedDate.datesUntil(endDate)
             .filter { it.dayOfWeek.value in this.daysOfWeek }
-            .map { newDate -> this.copy(startDate = LocalDateTime.of(newDate, this.startDate?.toLocalTime())) }
+            .map { newDate -> this.copy(startDate = LocalDateTime.of(newDate, startDate.toLocalTime())) }
             .toList()
     }
 
