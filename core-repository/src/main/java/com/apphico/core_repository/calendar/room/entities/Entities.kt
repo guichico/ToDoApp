@@ -38,7 +38,7 @@ data class TaskDB(
     @ColumnInfo("task_name") val name: String,
     val description: String?,
     val taskGroupId: Long?,
-    val startDate: LocalDate?,
+    val startDate: LocalDate,
     val startTime: LocalTime?,
     val endDate: LocalDate?,
     val endTime: LocalTime?,

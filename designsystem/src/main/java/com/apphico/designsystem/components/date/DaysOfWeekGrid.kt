@@ -67,7 +67,7 @@ fun DaysOfWeekGrid(
                             selectedDaysState
                                 .value
                                 .toMutableList()
-                                .apply { if (!isSelected) add(index) else remove(index) }
+                                .apply { if (!isSelected) add(index + 1) else remove(index + 1) }
                         )
                     },
                 contentAlignment = Alignment.Center,

@@ -20,7 +20,7 @@ interface TaskDao {
     @Transaction
     @Query(
         "SELECT * FROM taskdb " +
-                "WHERE (startDate is null AND endDate is null AND daysOfWeek LIKE :dayOfWeek)" +
+                "WHERE (startDate is null AND daysOfWeek LIKE :dayOfWeek)" +
                 "OR (" +
                 " ((:date BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE :dayOfWeek)) OR " +
                 " ((:date BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE '[]'))" +

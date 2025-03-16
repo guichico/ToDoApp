@@ -89,7 +89,6 @@ private fun CalendarScreenContent(
                 )
             } else {
                 taskRowsAgendaViewMode(
-                    selectedDate = selectedDate,
                     tasks = tasks.value,
                     onTaskClicked = navigateToAddEditTask
                 )
@@ -153,7 +152,6 @@ private fun LazyListScope.taskRowsDayViewMode(
 }
 
 private fun LazyListScope.taskRowsAgendaViewMode(
-    selectedDate: LocalDate,
     tasks: List<Task>,
     onTaskClicked: (Task?) -> Unit
 ) {
@@ -161,8 +159,12 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 
     allTasks.addAll(tasks.filter { it.daysOfWeek.isEmpty() })
     tasks.filter { it.daysOfWeek.isNotEmpty() }
-        .forEach { task -> allTasks.addAll(task.addFutureTasks(selectedDate = selectedDate)) }
-    allTasks.sortBy { LocalDateTime.of(it.startDate, it.startTime) }
+        .forEach { task -> allTasks.addAll(task.addFutureTasks()) }
+    allTasks.sortBy {
+        if (it.startDate != null && it.startTime != null) {
+            LocalDateTime.of(it.startDate, it.startTime)
+        } else null
+    }
 
     itemsIndexed(allTasks) { index, task ->
         task.startDate?.let { date ->
@@ -180,23 +182,15 @@ private fun LazyListScope.taskRowsAgendaViewMode(
     }
 }
 
-private fun Task.addFutureTasks(
-    selectedDate: LocalDate
-): List<Task> {
-    if (startDate != null || startTime != null) {
-
-    }
-
-    this.startDate?.let { startDate ->
+private fun Task.addFutureTasks(): List<Task> {
+    return this.startDate?.let { startDate ->
         val endDate = (this.endDate ?: startDate.plusYears(1)).plusDays(1)
 
-        return selectedDate.datesUntil(endDate)
+        return startDate.datesUntil(endDate)
             .filter { it.dayOfWeek.value in this.daysOfWeek }
             .map { newDate -> this.copy(startDate = newDate) }
             .toList()
-    }
-
-    return emptyList()
+    } ?: emptyList()
 }
 
 class CalendarScreenPreviewProvider : PreviewParameterProvider<List<Task>> {
