@@ -2,14 +2,16 @@ package com.apphico.core_model.fakeData
 
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Task
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.LocalTime
 
 val mockedTask = Task(
     name = "Eat some fruit",
     isDone = true,
-    startDate = LocalDateTime.now(),
-    endDate = LocalDateTime.now(),
+    startDate = LocalDate.now(),
+    startTime = LocalTime.now(),
+    endDate = LocalDate.now(),
+    endTime = LocalTime.now(),
     checkList = listOf(
         CheckListItem(0L, "take dog to a walk", true),
         CheckListItem(0L, "pet the dog", false)

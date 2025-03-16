@@ -130,8 +130,8 @@ private fun LazyListScope.taskRowsDayViewMode(
     tasks: List<Task>,
     onTaskClicked: (Task?) -> Unit
 ) {
-    val oneTimeTask = tasks.filter { it.startDate == null }
-    val routineTask = tasks.filter { it.startDate != null }
+    val oneTimeTask = tasks.filter { it.startDate == null && it.startTime == null }
+    val routineTask = tasks.filter { it.startDate != null || it.startTime != null }
 
     items(oneTimeTask) { task ->
         TaskCard(
@@ -162,15 +162,14 @@ private fun LazyListScope.taskRowsAgendaViewMode(
     allTasks.addAll(tasks.filter { it.daysOfWeek.isEmpty() })
     tasks.filter { it.daysOfWeek.isNotEmpty() }
         .forEach { task -> allTasks.addAll(task.addFutureTasks(selectedDate = selectedDate)) }
-    allTasks.sortBy { it.startDate }
+    allTasks.sortBy { LocalDateTime.of(it.startDate, it.startTime) }
 
     itemsIndexed(allTasks) { index, task ->
         task.startDate?.let { date ->
-            val startDate = date.toLocalDate()
-            val previousDate = if (index > 0) allTasks[index - 1].startDate?.toLocalDate() else null
+            val previousDate = if (index > 0) allTasks[index - 1].startDate else null
 
-            if (startDate != previousDate) {
-                DateHeader(date = startDate)
+            if (date != previousDate) {
+                DateHeader(date = date)
             }
         }
 
@@ -184,12 +183,16 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 private fun Task.addFutureTasks(
     selectedDate: LocalDate
 ): List<Task> {
+    if (startDate != null || startTime != null) {
+
+    }
+
     this.startDate?.let { startDate ->
-        val endDate = (this.endDate ?: startDate.plusYears(1)).toLocalDate().plusDays(1)
+        val endDate = (this.endDate ?: startDate.plusYears(1)).plusDays(1)
 
         return selectedDate.datesUntil(endDate)
             .filter { it.dayOfWeek.value in this.daysOfWeek }
-            .map { newDate -> this.copy(startDate = LocalDateTime.of(newDate, startDate.toLocalTime())) }
+            .map { newDate -> this.copy(startDate = newDate) }
             .toList()
     }
 

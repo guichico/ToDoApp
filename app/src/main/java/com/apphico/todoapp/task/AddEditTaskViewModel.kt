@@ -8,7 +8,6 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.task.TaskRepository
-import com.apphico.extensions.getNowDateTime
 import com.apphico.todoapp.group.GROUP_ARG
 import com.apphico.todoapp.location.LOCATION_ARG
 import com.apphico.todoapp.navigation.CustomNavType
@@ -18,7 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 import kotlin.reflect.typeOf
@@ -35,9 +34,6 @@ class AddEditTaskViewModel @Inject constructor(
 
     val editingTask = MutableStateFlow(task ?: Task())
     val isEditing = task != null
-
-    val startTime = MutableStateFlow(task?.startDate?.toLocalTime())
-    val endTime = MutableStateFlow(task?.endDate?.toLocalTime())
 
     init {
         viewModelScope.launch {
@@ -89,20 +85,20 @@ class AddEditTaskViewModel @Inject constructor(
         editingTask.value = editingTask.value.copy(group = null)
     }
 
-    fun onStartDateChanged(date: LocalDateTime?) {
+    fun onStartDateChanged(date: LocalDate?) {
         editingTask.value = editingTask.value.copy(startDate = date)
     }
 
     fun onStartTimeChanged(time: LocalTime) {
-        startTime.value = time
+        editingTask.value = editingTask.value.copy(startTime = time)
     }
 
-    fun onEndDateChanged(date: LocalDateTime?) {
+    fun onEndDateChanged(date: LocalDate?) {
         editingTask.value = editingTask.value.copy(endDate = date)
     }
 
     fun onEndTimeChanged(time: LocalTime) {
-        endTime.value = time
+        editingTask.value = editingTask.value.copy(endTime = time)
     }
 
     fun onDaysOfWeekChanged(daysOfWeek: List<Int>) {
@@ -130,17 +126,13 @@ class AddEditTaskViewModel @Inject constructor(
 
         var task = editingTask.value
 
-        startTime.value?.let { startTime ->
-            val starDate = task.startDate ?: getNowDateTime()
-            task = task.copy(startDate = starDate.withHour(startTime.hour)?.withMinute(startTime.minute))
-        }
-        endTime.value?.let { endTime ->
-            val endDate = task.endDate ?: getNowDateTime()
-            task = task.copy(endDate = endDate.withHour(endTime.hour)?.withMinute(endTime.minute))
-        }
-
         if (task.endDate != null && task.startDate == null) {
             // If task has a end date so it should have a star date
+            println("error")
+        }
+
+        if (task.endTime != null && task.startTime == null) {
+            // If task has a end time so it should have a star time
             println("error")
         }
 

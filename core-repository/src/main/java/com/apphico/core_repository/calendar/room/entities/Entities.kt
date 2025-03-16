@@ -5,19 +5,19 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.LocalTime
 
 @Entity
 data class GroupDB(
-    @PrimaryKey(autoGenerate = true) val groupId: Long,
+    @PrimaryKey(autoGenerate = true) val groupId: Long = 0,
     @ColumnInfo("group_name") val name: String,
     val color: Int
 )
 
 @Entity
 data class CheckListItemDB(
-    @PrimaryKey(autoGenerate = true) val checkListItemId: Long,
+    @PrimaryKey(autoGenerate = true) val checkListItemId: Long = 0,
     val checkListTaskId: Long,
     val name: String,
     val isDone: Boolean = false,
@@ -25,7 +25,7 @@ data class CheckListItemDB(
 
 @Entity
 data class LocationDB(
-    @PrimaryKey(autoGenerate = true) val locationId: Long,
+    @PrimaryKey(autoGenerate = true) val locationId: Long = 0,
     val locationTaskId: Long,
     val latitude: Double,
     val longitude: Double,
@@ -34,12 +34,14 @@ data class LocationDB(
 
 @Entity
 data class TaskDB(
-    @PrimaryKey(autoGenerate = true) val taskId: Long,
+    @PrimaryKey(autoGenerate = true) val taskId: Long = 0,
     @ColumnInfo("task_name") val name: String,
     val description: String?,
     val taskGroupId: Long?,
-    val startDate: LocalDateTime?,
-    val endDate: LocalDateTime?,
+    val startDate: LocalDate?,
+    val startTime: LocalTime?,
+    val endDate: LocalDate?,
+    val endTime: LocalTime?,
     val daysOfWeek: List<Int>?,
     val reminder: LocalTime?,
     @ColumnInfo("task_is_done") val isDone: Boolean = false

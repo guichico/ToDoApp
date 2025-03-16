@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_name_1">Correr</string>
+    <string name="task_description_1">Correr 2km todas as manhãs</string>
+    <string name="task_name_2">Fazer compras</string>
+    <string name="task_description_2">Lista de compras</string>
+
+    <string name="group_name_1">Trabalho</string>
+    <string name="group_name_2">Saúde</string>
+    <string name="group_name_3">Família</string>
+    <string name="group_name_4">Tarefas domésticas</string>
+    <string name="group_name_5">Estudos</string>
+    <string name="group_name_6">Entretenimento</string>
+    <string name="group_name_7">Produtividade</string>
+
+    <string name="check_list_item_1">Arroz</string>
+    <string name="check_list_item_2">Macarrão</string>
+    <string name="check_list_item_3">Ovos</string>
+    <string name="check_list_item_4">Queijo</string>
+    <string name="check_list_item_5">Leite</string>
+    <string name="check_list_item_6">Bananas</string>
+    <string name="check_list_item_7">Peixe</string>
+</resources>

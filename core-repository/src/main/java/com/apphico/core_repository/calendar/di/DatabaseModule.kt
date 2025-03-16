@@ -43,16 +43,19 @@ class DatabaseModule() {
     @Singleton
     fun providesAppDatabase(
         @ApplicationContext appContext: Context,
-        groupProvider: Provider<GroupDao>,
-        taskProvider: Provider<TaskDao>
+        groupDaoProvider: Provider<GroupDao>,
+        taskDaoProvider: Provider<TaskDao>,
+        checkListDaoProvider: Provider<CheckListItemDao>
     ): AppDatabase = Room.databaseBuilder(
         appContext,
         AppDatabase::class.java, "ToDoAppDB"
     )
         .addCallback(
             AppDatabaseInitializer(
-                groupProvider = groupProvider,
-                taskProvider = taskProvider
+                appContext = appContext,
+                groupDaoProvider = groupDaoProvider,
+                taskDaoProvider = taskDaoProvider,
+                checkListDaoProvider = checkListDaoProvider
             )
         )
         .setQueryCallback(

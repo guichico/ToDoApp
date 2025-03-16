@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
 import java.text.DateFormatSymbols
+import java.time.LocalDate
 import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -43,7 +44,7 @@ fun DaysOfWeekGrid(
         maxItemsInEachRow = 7
     ) {
         daysOfWeek.forEachIndexed { index, dayOfWeek ->
-            val isSelected = selectedDaysState.value.contains(index)
+            val isSelected = selectedDaysState.value.contains(index + 1)
             val backColor = if (isSelected) MaterialTheme.colorScheme.primary else White
             val shape = CircleShape
 

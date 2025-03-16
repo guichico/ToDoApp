@@ -2,7 +2,6 @@ package com.apphico.core_repository.calendar.room.converters
 
 import androidx.room.TypeConverter
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 class DateConverters {
@@ -17,10 +16,4 @@ class DateConverters {
 
     @TypeConverter
     fun fromLocalDate(localDate: String?): LocalDate? = localDate?.let { LocalDate.parse(it) }
-
-    @TypeConverter
-    fun localDateTimeToString(localDateTime: LocalDateTime?): String? = localDateTime?.toString()
-
-    @TypeConverter
-    fun fromLocalDateTime(localDateTime: String?): LocalDateTime? = localDateTime?.let { LocalDateTime.parse(it) }
 }

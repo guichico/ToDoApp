@@ -22,9 +22,11 @@ fun YearMonth.formatLong(): String = this.format(DateTimeFormatter.ofPattern("MM
 
 fun YearMonth.formatLongYear(): String = this.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
 
+fun LocalDate.toMillis() = this.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
 fun LocalDateTime.toMillis() = this.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 
-fun Long.getLocalDateTime(): LocalDateTime = Instant.ofEpochMilli(this).atZone(ZoneId.of("GMT")).toLocalDateTime()
+fun Long.getLocalDate(): LocalDate = Instant.ofEpochMilli(this).atZone(ZoneId.of("GMT")).toLocalDate()
 
 fun Long.formatMediumDate(): String =
     DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).format(Instant.ofEpochMilli(this).atZone(ZoneId.of("GMT")))
@@ -52,5 +54,3 @@ fun LocalDateTime.formatShortTime(): String = DateTimeFormatter.ofLocalizedTime(
 fun LocalTime.formatShortTime(): String = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(this)
 
 fun LocalDate.isCurrentYear() = this.year == getNowDate().year
-
-fun LocalDateTime.isCurrentYear() = this.toLocalDate().isCurrentYear()

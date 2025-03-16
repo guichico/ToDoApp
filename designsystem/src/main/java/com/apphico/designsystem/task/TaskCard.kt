@@ -129,19 +129,19 @@ private fun DateRow(
     textColor: Color
 ) {
     Row {
-        if (task.startDate != null || task.endDate != null) {
+        if (task.startTime != null || task.endTime != null) {
             Row(
                 modifier = Modifier
                     .weight(1f)
             ) {
-                task.startDate?.let { taskDate ->
+                task.startTime?.let { startTime ->
                     Text(
-                        text = taskDate.formatShortTime(),
+                        text = startTime.formatShortTime(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = textColor
                     )
                 }
-                if (task.startDate != null && task.endDate != null) {
+                if (task.startTime != null && task.endTime != null) {
                     Text(
                         modifier = Modifier
                             .padding(horizontal = ToDoAppTheme.spacing.extraSmall),
@@ -150,9 +150,9 @@ private fun DateRow(
                         color = textColor
                     )
                 }
-                task.endDate?.let { taskDate ->
+                task.endTime?.let { endTime ->
                     Text(
-                        text = taskDate.formatShortTime(),
+                        text = endTime.formatShortTime(),
                         style = MaterialTheme.typography.bodyMedium,
                         color = textColor
                     )

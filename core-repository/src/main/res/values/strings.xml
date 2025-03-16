@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="task_name_1">Run</string>
+    <string name="task_description_1">Run 2 miles every morning</string>
+    <string name="task_name_2">Go grocery shopping</string>
+    <string name="task_description_2">Grocery list</string>
+
+    <string name="group_name_1">Work</string>
+    <string name="group_name_2">Health</string>
+    <string name="group_name_3">Family</string>
+    <string name="group_name_4">Home</string>
+    <string name="group_name_5">Studies</string>
+    <string name="group_name_6">Entertainment</string>
+    <string name="group_name_7">Productivity</string>
+
+    <string name="check_list_item_1">Rice</string>
+    <string name="check_list_item_2">Pasta</string>
+    <string name="check_list_item_3">Eggs</string>
+    <string name="check_list_item_4">Cheese</string>
+    <string name="check_list_item_5">Milk</string>
+    <string name="check_list_item_6">Bananas</string>
+    <string name="check_list_item_7">Fish</string>
+</resources>

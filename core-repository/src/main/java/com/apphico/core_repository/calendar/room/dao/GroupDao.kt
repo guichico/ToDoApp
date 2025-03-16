@@ -22,7 +22,7 @@ interface GroupDao {
 
     @Transaction
     @Insert
-    suspend fun insert(groupDB: List<GroupDB>): List<Long>
+    suspend fun insert(groupsDB: List<GroupDB>): List<Long>
 
     @Update
     suspend fun update(groupDB: GroupDB)

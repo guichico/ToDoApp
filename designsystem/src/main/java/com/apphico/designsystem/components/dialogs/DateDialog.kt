@@ -14,20 +14,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.NormalButton
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.extensions.getLocalDateTime
-import java.time.LocalDateTime
+import com.apphico.extensions.getLocalDate
+import java.time.LocalDate
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun DateDialog(
     isDatePickerDialogOpen: MutableState<Boolean>,
     datePickerState: DatePickerState,
-    onDateChanged: (LocalDateTime?) -> Unit
+    onDateChanged: (LocalDate?) -> Unit
 ) {
     DatePickerDialog(
         properties = DialogProperties(
@@ -50,7 +49,7 @@ fun DateDialog(
                 modifier = Modifier
                     .padding(end = ToDoAppTheme.spacing.small),
                 onClick = {
-                    onDateChanged(datePickerState.selectedDateMillis?.getLocalDateTime())
+                    onDateChanged(datePickerState.selectedDateMillis?.getLocalDate())
                     isDatePickerDialogOpen.value = false
                 },
                 text = stringResource(R.string.ok)

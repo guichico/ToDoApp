@@ -55,8 +55,9 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatShortTime
 import com.apphico.extensions.getGMTNowMillis
+import com.apphico.extensions.getNowDate
 import com.apphico.extensions.toMillis
-import java.time.LocalDateTime
+import java.time.LocalDate
 import java.time.LocalTime
 
 @Composable
@@ -69,9 +70,6 @@ fun AddEditTaskScreen(
 ) {
     val editingTask = addEditTaskViewModel.editingTask.collectAsState()
     val isEditing = addEditTaskViewModel.isEditing
-
-    val startTime = addEditTaskViewModel.startTime.collectAsState()
-    val endTime = addEditTaskViewModel.endTime.collectAsState()
 
     val isAlertDialogOpen = remember { mutableStateOf(false) }
     val hasChanges = remember { derivedStateOf { addEditTaskViewModel.hasChanges() } }
@@ -132,10 +130,8 @@ fun AddEditTaskScreen(
             navigateToSelectGroup = navigateToSelectGroup,
             onGroupRemoved = addEditTaskViewModel::onGroupRemoved,
             onStartDateChanged = addEditTaskViewModel::onStartDateChanged,
-            startTime = startTime,
             onStartTimeChanged = addEditTaskViewModel::onStartTimeChanged,
             onEndDateChanged = addEditTaskViewModel::onEndDateChanged,
-            endTime = endTime,
             onEndTimeChanged = addEditTaskViewModel::onEndTimeChanged,
             onDaysOfWeekChanged = addEditTaskViewModel::onDaysOfWeekChanged,
             onCheckListChanged = addEditTaskViewModel::onCheckListChanged,
@@ -155,11 +151,9 @@ private fun AddTaskScreenContent(
     onDescriptionChange: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
     onGroupRemoved: () -> Unit,
-    onStartDateChanged: (LocalDateTime?) -> Unit,
-    startTime: State<LocalTime?>,
+    onStartDateChanged: (LocalDate?) -> Unit,
     onStartTimeChanged: (LocalTime) -> Unit,
-    onEndDateChanged: (LocalDateTime?) -> Unit,
-    endTime: State<LocalTime?>,
+    onEndDateChanged: (LocalDate?) -> Unit,
     onEndTimeChanged: (LocalTime) -> Unit,
     onDaysOfWeekChanged: (List<Int>) -> Unit,
     onCheckListChanged: (List<CheckListItem>) -> Unit,
@@ -199,9 +193,9 @@ private fun AddTaskScreenContent(
 
             Dates(
                 startDate = remember { derivedStateOf { task.value.startDate } },
-                startTime = startTime,
+                startTime = remember { derivedStateOf { task.value.startTime } },
                 endDate = remember { derivedStateOf { task.value.endDate } },
-                endTime = endTime,
+                endTime = remember { derivedStateOf { task.value.endTime } },
                 onStartDateChanged = onStartDateChanged,
                 onStartTimeChanged = onStartTimeChanged,
                 onEndDateChanged = onEndDateChanged,
@@ -262,13 +256,13 @@ private fun AddTaskScreenContent(
 
 @Composable
 private fun Dates(
-    startDate: State<LocalDateTime?>,
+    startDate: State<LocalDate?>,
     startTime: State<LocalTime?>,
-    endDate: State<LocalDateTime?>,
+    endDate: State<LocalDate?>,
     endTime: State<LocalTime?>,
-    onStartDateChanged: (LocalDateTime?) -> Unit,
+    onStartDateChanged: (LocalDate?) -> Unit,
     onStartTimeChanged: (LocalTime) -> Unit,
-    onEndDateChanged: (LocalDateTime?) -> Unit,
+    onEndDateChanged: (LocalDate?) -> Unit,
     onEndTimeChanged: (LocalTime) -> Unit
 ) {
     Column {
@@ -291,9 +285,9 @@ private fun Dates(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun StarDateRow(
-    startDate: State<LocalDateTime?>,
+    startDate: State<LocalDate?>,
     startTime: State<LocalTime?>,
-    onStartDateChanged: (LocalDateTime?) -> Unit,
+    onStartDateChanged: (LocalDate?) -> Unit,
     onStartTimeChanged: (LocalTime) -> Unit
 ) {
     val startDatePickerState = rememberDatePickerState(
@@ -345,16 +339,24 @@ private fun StarDateRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EndDateRow(
-    endDate: State<LocalDateTime?>,
+    endDate: State<LocalDate?>,
     endTime: State<LocalTime?>,
-    onEndDateChanged: (LocalDateTime?) -> Unit,
+    onEndDateChanged: (LocalDate?) -> Unit,
     onEndTimeChanged: (LocalTime) -> Unit
 ) {
+    var initialEndHour = endTime.value?.hour ?: LocalTime.now().hour.plus(1)
+    var initialEndDate = endDate.value ?: getNowDate()
+
+    if (initialEndHour >= 24) {
+        initialEndDate = initialEndDate.plusDays(1)
+        initialEndHour = 0
+    }
+
     val endDatePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = endDate.value?.toMillis() ?: getGMTNowMillis()
+        initialSelectedDateMillis = initialEndDate.toMillis()
     )
     val endTimePickerState = rememberTimePickerState(
-        initialHour = endTime.value?.hour ?: LocalTime.now().hour.plus(1),
+        initialHour = initialEndHour,
         initialMinute = endTime.value?.minute ?: 0
     )
 
@@ -473,8 +475,10 @@ private fun Reminder(
 class AddTaskScreenPreviewProvider : PreviewParameterProvider<Task> {
     override val values = sequenceOf(
         Task(
-            startDate = LocalDateTime.now(),
-            endDate = LocalDateTime.now()
+            startDate = LocalDate.now(),
+            startTime = LocalTime.now(),
+            endDate = LocalDate.now(),
+            endTime = LocalTime.now()
         ),
         mockedTask
     )
@@ -498,9 +502,7 @@ private fun AddTaskScreenPreview(
             onGroupRemoved = {},
             onStartDateChanged = {},
             onStartTimeChanged = {},
-            startTime = remember { mutableStateOf(null) },
             onEndDateChanged = {},
-            endTime = remember { mutableStateOf(null) },
             onEndTimeChanged = {},
             onDaysOfWeekChanged = {},
             onCheckListChanged = {},

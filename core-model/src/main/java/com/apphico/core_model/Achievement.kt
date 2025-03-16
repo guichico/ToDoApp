@@ -31,8 +31,7 @@ sealed class MeasurementType : Parcelable {
         @Serializable
         data class PercentageProgress(
             val progress: Float,
-            @Serializable(with = LocalDateTimeSerializer::class)
-            val date: LocalDateTime,
+            @Serializable(with = LocalDateTimeSerializer::class) val date: LocalDateTime,
             val description: String? = null
         ) : Parcelable
     }
@@ -49,8 +48,7 @@ sealed class MeasurementType : Parcelable {
         @Serializable
         data class TrackedValues(
             val trackedValue: Float,
-            @Serializable(with = LocalDateTimeSerializer::class)
-            val date: LocalDateTime,
+            @Serializable(with = LocalDateTimeSerializer::class) val date: LocalDateTime,
             val description: String? = null
         ) : Parcelable
     }
