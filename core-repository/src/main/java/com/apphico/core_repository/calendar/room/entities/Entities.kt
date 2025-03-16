@@ -38,7 +38,7 @@ data class TaskDB(
     @ColumnInfo("task_name") val name: String,
     val description: String?,
     val taskGroupId: Long?,
-    val startDate: LocalDate,
+    val startDate: LocalDate?,
     val startTime: LocalTime?,
     val endDate: LocalDate?,
     val endTime: LocalTime?,
@@ -47,7 +47,7 @@ data class TaskDB(
     @ColumnInfo("task_is_done") val isDone: Boolean = false
 )
 
-data class TaskRelations(
+data class TaskWithRelations(
     @Embedded val taskDB: TaskDB,
     @Relation(parentColumn = "taskGroupId", entityColumn = "groupId") val groupDB: GroupDB?,
     @Relation(parentColumn = "taskId", entityColumn = "checkListTaskId") val checkList: List<CheckListItemDB>?,

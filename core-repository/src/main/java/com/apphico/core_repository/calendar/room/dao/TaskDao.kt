@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.apphico.core_repository.calendar.room.entities.TaskDB
-import com.apphico.core_repository.calendar.room.entities.TaskRelations
+import com.apphico.core_repository.calendar.room.entities.TaskWithRelations
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -15,7 +15,7 @@ import java.time.LocalDate
 interface TaskDao {
     @Transaction
     @Query("SELECT * FROM taskdb WHERE (:fromStartDate BETWEEN date(startDate) AND date(endDate)) OR startDate is null OR endDate is null ORDER BY startDate, startTime")
-    fun getAll(fromStartDate: LocalDate): Flow<List<TaskRelations>>
+    fun getAll(fromStartDate: LocalDate): Flow<List<TaskWithRelations>>
 
     @Transaction
     @Query(
@@ -35,11 +35,11 @@ interface TaskDao {
     fun getFromDay(
         date: LocalDate,
         dayOfWeek: String = "%${date.dayOfWeek.value}%"
-    ): Flow<List<TaskRelations>>
+    ): Flow<List<TaskWithRelations>>
 
     @Transaction
     @Query("SELECT * FROM taskdb WHERE taskId IN (:taskId)")
-    fun getTask(taskId: Long): Flow<TaskRelations>
+    fun getTask(taskId: Long): Flow<TaskWithRelations>
 
     @Insert
     suspend fun insert(taskDB: TaskDB): Long
