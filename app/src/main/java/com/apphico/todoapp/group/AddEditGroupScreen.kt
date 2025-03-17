@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroup
@@ -36,6 +37,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 @Composable
 fun AddEditGroupScreen(
     addEditGroupViewModel: AddEditGroupViewModel = hiltViewModel(),
+    snackBar: (String) -> Unit,
     navigateBack: () -> Unit
 ) {
     val group = addEditGroupViewModel.editingGroup.collectAsState()
@@ -46,11 +48,27 @@ fun AddEditGroupScreen(
         navigateBack = navigateBack
     )
 
+    val groupSaveSuccess = stringResource(R.string.group_saved)
+    val groupSaveError = stringResource(R.string.group_save_error)
+
+    val groupDeleteSuccess = stringResource(R.string.group_deleted)
+    val groupDeleteError = stringResource(R.string.group_delete_error)
+
     DeleteSaveTopBar(
         title = stringResource(R.string.add_group),
         isEditing = isEditing,
-        onSaveClicked = {},
-        onDeleteClicked = {},
+        onSaveClicked = {
+            addEditGroupViewModel.save { isSuccess ->
+                snackBar(if (isSuccess) groupSaveSuccess else groupSaveError)
+                navigateBack()
+            }
+        },
+        onDeleteClicked = {
+            addEditGroupViewModel.delete { isSuccess ->
+                snackBar(if (isSuccess) groupDeleteSuccess else groupDeleteError)
+                navigateBack()
+            }
+        },
         navigateBack = {
             showDiscardChangesDialogOnBackIfNeed()
         }
@@ -97,7 +115,7 @@ private fun AddEditGroupScreenContent(
                 onValueChange = onNameChanged,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
-            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.extraExtraLarge))
+            Spacer(modifier = Modifier.height(48.dp))
             ColorPicker(
                 selectedColor = color,
                 onColorSelected = onColorChanged

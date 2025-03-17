@@ -67,6 +67,10 @@
     <string name="task_save_error">Erro ao salvar tarefa</string>
     <string name="task_deleted">Tarefa excluída com sucesso</string>
     <string name="task_delete_error">Erro ao excluir tarefa</string>
+    <string name="group_saved">Grupo salvo com sucesso</string>
+    <string name="group_save_error">Erro ao salvar grupo</string>
+    <string name="group_deleted">Groupo excluído com sucesso</string>
+    <string name="group_delete_error">Erro ao excluir grupo</string>
     <string name="location_permission_title">Permissão de localização</string>
     <string name="location_permission_text">Essa permissão é necessária para adicionar a localização a tarefa. Por favor conceda acesso nas configurações do telefone.</string>
     <string name="location_permission_configurations">Configurações</string>

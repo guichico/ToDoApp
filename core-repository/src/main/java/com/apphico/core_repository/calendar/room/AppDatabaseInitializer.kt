@@ -45,11 +45,11 @@ class AppDatabaseInitializer(
         val groups = listOf(
             Group(name = appContext.getString(R.string.group_name_1), color = -8432327), // Work
             Group(name = appContext.getString(R.string.group_name_2), color = -7745552), // Health
-            Group(name = appContext.getString(R.string.group_name_3), color = -12677526), // Family
+            Group(name = appContext.getString(R.string.group_name_3), color = -14198462), // Family
             Group(name = appContext.getString(R.string.group_name_4), color = -402340), // Home
-            Group(name = appContext.getString(R.string.group_name_5), color = -19514), // Studies
+            Group(name = appContext.getString(R.string.group_name_5), color = -1886900), // Studies
             Group(name = appContext.getString(R.string.group_name_6), color = -17587), // Entertainment
-            Group(name = appContext.getString(R.string.group_name_7), color = -6729757), // Productivity
+            Group(name = appContext.getString(R.string.group_name_7), color = -10938214), // Productivity
         )
 
         return groupDaoProvider.get().insert(groups.map { it.toGroupDB() })

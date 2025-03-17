@@ -24,21 +24,39 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.apphico.designsystem.theme.GroupBlue
+import com.apphico.designsystem.theme.GroupDarkBlue
 import com.apphico.designsystem.theme.GroupDarkBrown
-import com.apphico.designsystem.theme.GroupGray
-import com.apphico.designsystem.theme.GroupGreen
+import com.apphico.designsystem.theme.GroupDarkGray
+import com.apphico.designsystem.theme.GroupDarkGreen
+import com.apphico.designsystem.theme.GroupDarkRed
+import com.apphico.designsystem.theme.GroupDarkViolet
+import com.apphico.designsystem.theme.GroupLightBlue
 import com.apphico.designsystem.theme.GroupLightBrown
+import com.apphico.designsystem.theme.GroupLightGray
+import com.apphico.designsystem.theme.GroupLightGreen
+import com.apphico.designsystem.theme.GroupLightRed
+import com.apphico.designsystem.theme.GroupLightViolet
 import com.apphico.designsystem.theme.GroupOrange
 import com.apphico.designsystem.theme.GroupPink
-import com.apphico.designsystem.theme.GroupRed
-import com.apphico.designsystem.theme.GroupViolet
 import com.apphico.designsystem.theme.GroupYellow
 import com.apphico.designsystem.theme.ToDoAppTheme
 
 private val colors = listOf(
-    GroupBlue, GroupGreen, GroupRed, GroupViolet, GroupPink,
-    GroupDarkBrown, GroupLightBrown, GroupOrange, GroupYellow, GroupGray
+    GroupPink,
+    GroupLightRed,
+    GroupDarkRed,
+    GroupLightViolet,
+    GroupDarkViolet,
+    GroupLightBlue,
+    GroupDarkBlue,
+    GroupLightGreen,
+    GroupDarkGreen,
+    GroupYellow,
+    GroupOrange,
+    GroupLightBrown,
+    GroupDarkBrown,
+    GroupLightGray,
+    GroupDarkGray
 )
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -94,7 +112,7 @@ private fun ColorPickerPreview(
 ) {
     ToDoAppTheme {
         ColorPicker(
-            selectedColor = remember { mutableStateOf(GroupGreen) },
+            selectedColor = remember { mutableStateOf(GroupLightGreen) },
             onColorSelected = {}
         )
     }

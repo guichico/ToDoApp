@@ -66,6 +66,7 @@ fun NavGraphBuilder.mainGraph(
         onEditClicked = navController::navigateToAddEditGroup,
     )
     addEditGroupScreen(
+        snackBar = snackBar,
         onBackClicked = navController::navigateBack
     )
     selectLocationOnMapScreen(

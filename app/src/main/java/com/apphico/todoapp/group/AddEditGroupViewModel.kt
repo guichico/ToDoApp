@@ -45,7 +45,7 @@ class AddEditGroupViewModel @Inject constructor(
         editingGroup.value = editingGroup.value.copy(color = color.toArgb())
     }
 
-    fun save() {
+    fun save(onResult: (Boolean) -> Unit) {
         editingGroup.value.let { group ->
             if (group.name.isEmpty()) {
                 return
@@ -56,13 +56,21 @@ class AddEditGroupViewModel @Inject constructor(
 
         viewModelScope
             .launch {
-                if (isEditing) {
-                    groupRepository
-                        .updateGroup(group)
-                } else {
-                    groupRepository
-                        .insertGroup(group)
-                }
+                onResult(
+                    if (isEditing) {
+                        groupRepository.updateGroup(group)
+                    } else {
+                        groupRepository.insertGroup(group)
+                    }
+                )
             }
+    }
+
+    fun delete(onResult: (Boolean) -> Unit) {
+        var group = editingGroup.value
+
+        viewModelScope.launch {
+            onResult(groupRepository.deleteGroup(group))
+        }
     }
 }
