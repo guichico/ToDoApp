@@ -49,8 +49,8 @@ class TaskRepositoryImpl(
                 locationDao.update(it.toLocationDB(task.id))
             }
 
-            checkListItemDao
-                .updateAll(task.checkList.map { it.toCheckListItemDB(task.id) })
+            checkListItemDao.deleteAll(task.id)
+            checkListItemDao.insertAll(task.checkList.map { it.toCheckListItemDB(task.id) })
 
             return true
         } catch (ex: Exception) {

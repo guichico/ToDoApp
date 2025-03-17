@@ -22,10 +22,6 @@ interface CheckListItemDao {
     suspend fun insertAll(checkListItems: List<CheckListItemDB>): List<Long>
 
     @Transaction
-    @Update
-    suspend fun updateAll(checkListItems: List<CheckListItemDB>)
-
-    @Transaction
-    @Delete
-    suspend fun deleteAll(checkListItems: List<CheckListItemDB>)
+    @Query("DELETE FROM checklistitemdb WHERE checkListTaskId = :taskId")
+    suspend fun deleteAll(taskId: Long)
 }
