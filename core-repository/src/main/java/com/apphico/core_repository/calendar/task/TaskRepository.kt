@@ -72,6 +72,8 @@ class TaskRepositoryImpl(
     override suspend fun deleteTask(task: Task): Boolean {
         return try {
             taskDao.delete(task.toTaskDB())
+            locationDao.delete(task.id)
+            checkListItemDao.deleteAll(task.id)
 
             return true
         } catch (ex: Exception) {
