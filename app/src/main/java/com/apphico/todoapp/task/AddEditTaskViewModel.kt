@@ -8,6 +8,7 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.task.TaskRepository
+import com.apphico.designsystem.R
 import com.apphico.todoapp.group.GROUP_ARG
 import com.apphico.todoapp.location.LOCATION_ARG
 import com.apphico.todoapp.navigation.CustomNavType
@@ -35,6 +36,9 @@ class AddEditTaskViewModel @Inject constructor(
     val editingTask = MutableStateFlow(task ?: Task())
     val isEditing = task != null
 
+    val nameError = MutableStateFlow<Int?>(null)
+    val startDateError = MutableStateFlow<Int?>(null)
+
     init {
         viewModelScope.launch {
             savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
@@ -57,24 +61,10 @@ class AddEditTaskViewModel @Inject constructor(
         }
     }
 
-    fun hasChanges(): Boolean {
-        val task = task ?: Task()
-        val editingTask = editingTask.value
-
-        // TODO Implement others
-        return when {
-            editingTask.name != task.name -> true
-            editingTask.description != task.description -> true
-            editingTask.startDate != task.startDate -> true
-            editingTask.endDate != task.endDate -> true
-            editingTask.reminder != task.reminder -> true
-            editingTask.isDone != task.isDone -> true
-            else -> false
-        }
-    }
-
+    // region Fields Changed
     fun onNameChanged(text: String) {
         editingTask.value = editingTask.value.copy(name = text)
+        nameError.value = null
     }
 
     fun onDescriptionChanged(text: String) {
@@ -87,10 +77,12 @@ class AddEditTaskViewModel @Inject constructor(
 
     fun onStartDateChanged(date: LocalDate?) {
         editingTask.value = editingTask.value.copy(startDate = date)
+        startDateError.value = null
     }
 
     fun onStartTimeChanged(time: LocalTime) {
         editingTask.value = editingTask.value.copy(startTime = time)
+        startDateError.value = null
     }
 
     fun onEndDateChanged(date: LocalDate?) {
@@ -116,39 +108,58 @@ class AddEditTaskViewModel @Inject constructor(
     fun onLocationRemoved() {
         editingTask.value = editingTask.value.copy(location = null)
     }
+    // endregion
+
+    fun hasChanges(): Boolean {
+        val task = task ?: Task()
+        val editingTask = editingTask.value
+
+        // TODO Implement others
+        return when {
+            editingTask.name != task.name -> true
+            editingTask.description != task.description -> true
+            editingTask.startDate != task.startDate -> true
+            editingTask.endDate != task.endDate -> true
+            editingTask.reminder != task.reminder -> true
+            editingTask.isDone != task.isDone -> true
+            else -> false
+        }
+    }
 
     fun save(onResult: (Boolean) -> Unit) {
-        editingTask.value.let { task ->
-            if (task.name.isEmpty()) {
-                return
-            }
+        var task = editingTask.value
+        var hasError = false
+
+        if (task.name.isEmpty()) {
+            hasError = true
+            nameError.value = R.string.name_error_message
         }
 
-        var task = editingTask.value
-
-        if (task.endDate != null && task.startDate == null) {
-            // If task has a end date so it should have a star date
-            println("error")
+        if (task.daysOfWeek.isNotEmpty() && task.startDate == null) {
+            hasError = true
+            startDateError.value = R.string.day_of_week_should_have_start_date
         }
 
         if (task.endTime != null && task.startTime == null) {
-            // If task has a end time so it should have a star time
-            println("error")
+            hasError = true
+            startDateError.value = R.string.empty_start_time_error_message
         }
 
-        if (task.daysOfWeek.isNotEmpty()) {
-            // When it repeats it must have a start
-            println("error")
+        if (task.endDate != null && task.startDate == null) {
+            hasError = true
+            startDateError.value = R.string.empty_start_date_error_message
         }
 
-        viewModelScope.launch {
-            onResult(
-                if (isEditing) {
-                    taskRepository.updateTask(task)
-                } else {
-                    taskRepository.insertTask(task)
-                }
-            )
+        if (!hasError) {
+            viewModelScope.launch {
+                onResult(
+                    if (isEditing) {
+                        taskRepository.updateTask(task)
+                    } else {
+                        taskRepository.insertTask(task)
+                    }
+                )
+            }
         }
     }
 

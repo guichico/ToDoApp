@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -29,6 +30,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 fun AddEditHeader(
     nameValue: State<String?>,
     namePlaceholder: String,
+    nameError: State<Int?>,
     onNameChange: (String) -> Unit,
     descriptionValue: State<String?>,
     descriptionPlaceholder: String,
@@ -41,7 +43,7 @@ fun AddEditHeader(
     val focusRequester = FocusRequester()
 
     Column {
-        NameTextField(nameValue, namePlaceholder, onNameChange, focusRequester)
+        NameTextField(nameValue, namePlaceholder, nameError, onNameChange, focusRequester)
 
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
 
@@ -63,6 +65,7 @@ fun AddEditHeader(
 private fun NameTextField(
     nameValue: State<String?>,
     namePlaceholder: String,
+    nameError: State<Int?>,
     onNameChange: (String) -> Unit,
     focusRequester: FocusRequester
 ) {
@@ -71,6 +74,8 @@ private fun NameTextField(
             .fillMaxWidth(),
         value = nameValue.value ?: "",
         placeholder = namePlaceholder,
+        isError = nameError.value != null,
+        errorMessage = nameError.value?.let { stringResource(it) } ?: "",
         onValueChange = onNameChange,
         textStyle = MaterialTheme.typography.titleMedium,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -109,6 +114,7 @@ private fun AddEditHeaderPreview(
     AddEditHeader(
         nameValue = remember { mutableStateOf("") },
         namePlaceholder = "Add name",
+        nameError = remember { mutableStateOf(null) },
         onNameChange = {},
         descriptionValue = remember { mutableStateOf("") },
         descriptionPlaceholder = "Add description",

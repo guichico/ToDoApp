@@ -25,6 +25,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -74,6 +75,15 @@ fun AddEditTaskScreen(
     val isAlertDialogOpen = remember { mutableStateOf(false) }
     val hasChanges = remember { derivedStateOf { addEditTaskViewModel.hasChanges() } }
 
+    val nameError = addEditTaskViewModel.nameError.collectAsState()
+    val startDateError = addEditTaskViewModel.startDateError.collectAsState()
+
+    val taskSaveSuccess = stringResource(R.string.task_saved)
+    val taskSaveError = stringResource(R.string.task_save_error)
+
+    val taskDeleteSuccess = stringResource(R.string.task_deleted)
+    val taskDeleteError = stringResource(R.string.task_delete_error)
+
     DiscardChangesDialog(
         isAlertDialogOpen = isAlertDialogOpen,
         hasChanges = hasChanges,
@@ -84,12 +94,6 @@ fun AddEditTaskScreen(
     val showElevation = remember {
         derivedStateOf { scrollState.isScrollInProgress || scrollState.value != 0 }
     }
-
-    val taskSaveSuccess = stringResource(R.string.task_saved)
-    val taskSaveError = stringResource(R.string.task_save_error)
-
-    val taskDeleteSuccess = stringResource(R.string.task_deleted)
-    val taskDeleteError = stringResource(R.string.task_delete_error)
 
     DeleteSaveTopBar(
         modifier = Modifier
@@ -125,10 +129,12 @@ fun AddEditTaskScreen(
             innerPadding = innerPadding,
             scrollState = scrollState,
             task = editingTask,
+            nameError = nameError,
             onNameChange = addEditTaskViewModel::onNameChanged,
             onDescriptionChange = addEditTaskViewModel::onDescriptionChanged,
             navigateToSelectGroup = navigateToSelectGroup,
             onGroupRemoved = addEditTaskViewModel::onGroupRemoved,
+            startDateError = startDateError,
             onStartDateChanged = addEditTaskViewModel::onStartDateChanged,
             onStartTimeChanged = addEditTaskViewModel::onStartTimeChanged,
             onEndDateChanged = addEditTaskViewModel::onEndDateChanged,
@@ -147,10 +153,12 @@ private fun AddTaskScreenContent(
     innerPadding: PaddingValues,
     scrollState: ScrollState,
     task: State<Task>,
+    nameError: State<Int?>,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
     onGroupRemoved: () -> Unit,
+    startDateError: State<Int?>,
     onStartDateChanged: (LocalDate?) -> Unit,
     onStartTimeChanged: (LocalTime) -> Unit,
     onEndDateChanged: (LocalDate?) -> Unit,
@@ -179,6 +187,7 @@ private fun AddTaskScreenContent(
             AddEditHeader(
                 nameValue = remember { derivedStateOf { task.value.name } },
                 namePlaceholder = stringResource(id = R.string.title),
+                nameError = nameError,
                 onNameChange = onNameChange,
                 descriptionValue = remember { derivedStateOf { task.value.description } },
                 descriptionPlaceholder = stringResource(id = R.string.description),
@@ -197,6 +206,7 @@ private fun AddTaskScreenContent(
                 endDate = remember { derivedStateOf { task.value.endDate } },
                 endTime = remember { derivedStateOf { task.value.endTime } },
                 onStartDateChanged = onStartDateChanged,
+                startDateError = startDateError,
                 onStartTimeChanged = onStartTimeChanged,
                 onEndDateChanged = onEndDateChanged,
                 onEndTimeChanged = onEndTimeChanged
@@ -257,19 +267,21 @@ private fun AddTaskScreenContent(
 @Composable
 private fun Dates(
     startDate: State<LocalDate?>,
-    startTime: State<LocalTime?>,
-    endDate: State<LocalDate?>,
-    endTime: State<LocalTime?>,
     onStartDateChanged: (LocalDate?) -> Unit,
+    startDateError: State<Int?>,
+    startTime: State<LocalTime?>,
     onStartTimeChanged: (LocalTime) -> Unit,
+    endDate: State<LocalDate?>,
     onEndDateChanged: (LocalDate?) -> Unit,
+    endTime: State<LocalTime?>,
     onEndTimeChanged: (LocalTime) -> Unit
 ) {
     Column {
         StarDateRow(
             startDate = startDate,
-            startTime = startTime,
+            startDateError = startDateError,
             onStartDateChanged = onStartDateChanged,
+            startTime = startTime,
             onStartTimeChanged = onStartTimeChanged
         )
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
@@ -286,8 +298,9 @@ private fun Dates(
 @Composable
 private fun StarDateRow(
     startDate: State<LocalDate?>,
-    startTime: State<LocalTime?>,
+    startDateError: State<Int?>,
     onStartDateChanged: (LocalDate?) -> Unit,
+    startTime: State<LocalTime?>,
     onStartTimeChanged: (LocalTime) -> Unit
 ) {
     val startDatePickerState = rememberDatePickerState(
@@ -317,22 +330,37 @@ private fun StarDateRow(
         )
     }
 
-    Row {
-        NormalTextField(
-            modifier = Modifier
-                .weight(0.6f),
-            value = startDate.value?.formatMediumDate() ?: "",
-            placeholder = stringResource(R.string.start_date),
-            onClick = { isStartDatePickerDialogOpen.value = true }
-        )
-        Spacer(modifier = Modifier.weight(0.02f))
-        NormalTextField(
-            modifier = Modifier
-                .weight(0.4f),
-            value = startTime.value?.formatShortTime() ?: "",
-            placeholder = stringResource(R.string.hour),
-            onClick = { isStartTimePickerDialogOpen.value = true }
-        )
+    Column {
+        Row {
+            NormalTextField(
+                modifier = Modifier
+                    .weight(0.6f),
+                value = startDate.value?.formatMediumDate() ?: "",
+                placeholder = stringResource(R.string.start_date),
+                onClick = { isStartDatePickerDialogOpen.value = true }
+            )
+            Spacer(modifier = Modifier.weight(0.02f))
+            NormalTextField(
+                modifier = Modifier
+                    .weight(0.4f),
+                value = startTime.value?.formatShortTime() ?: "",
+                placeholder = stringResource(R.string.hour),
+                onClick = { isStartTimePickerDialogOpen.value = true }
+            )
+        }
+        if (startDateError.value != null) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        vertical = ToDoAppTheme.spacing.extraSmall,
+                        horizontal = ToDoAppTheme.spacing.small
+                    ),
+                text = startDateError.value?.let { stringResource(it) } ?: "",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Red
+            )
+        }
     }
 }
 
@@ -496,10 +524,12 @@ private fun AddTaskScreenPreview(
             innerPadding = PaddingValues(),
             scrollState = ScrollState(0),
             task = remember { mutableStateOf(task) },
+            nameError = remember { mutableStateOf(null) },
             onNameChange = {},
             onDescriptionChange = {},
             navigateToSelectGroup = {},
             onGroupRemoved = {},
+            startDateError = remember { mutableStateOf(null) },
             onStartDateChanged = {},
             onStartTimeChanged = {},
             onEndDateChanged = {},

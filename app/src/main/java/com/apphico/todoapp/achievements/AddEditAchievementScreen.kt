@@ -198,6 +198,7 @@ private fun AddEditAchievementScreenContent(
                 AddEditHeader(
                     nameValue = remember { derivedStateOf { achievement.value.name } },
                     namePlaceholder = stringResource(id = R.string.title),
+                    nameError = remember { mutableStateOf(null) },
                     onNameChange = onNameChange,
                     descriptionValue = remember { derivedStateOf { achievement.value.description } },
                     descriptionPlaceholder = stringResource(id = R.string.description),
