@@ -1,5 +1,6 @@
 package com.apphico.extensions
 
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -54,3 +55,13 @@ fun LocalDateTime.formatShortTime(): String = DateTimeFormatter.ofLocalizedTime(
 fun LocalTime.formatShortTime(): String = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(this)
 
 fun LocalDate.isCurrentYear() = this.year == getNowDate().year
+
+fun DayOfWeek.getInt() = when (this) {
+    DayOfWeek.SUNDAY -> 1
+    DayOfWeek.MONDAY -> 2
+    DayOfWeek.TUESDAY -> 3
+    DayOfWeek.WEDNESDAY -> 4
+    DayOfWeek.THURSDAY -> 5
+    DayOfWeek.FRIDAY -> 6
+    DayOfWeek.SATURDAY -> 7
+}

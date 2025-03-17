@@ -23,7 +23,6 @@ class CalendarRepositoryImpl(
             .map { it.map { it.toTask() } }
     }
 
-
     override fun getFromDay(date: LocalDate): Flow<List<Task>> {
         Log.d(CalendarRepository::class.simpleName, "getFromDay")
         return taskDao.getFromDay(date)

@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskWithRelations
+import com.apphico.extensions.getInt
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -20,8 +21,7 @@ interface TaskDao {
     @Transaction
     @Query(
         "SELECT * FROM taskdb " +
-                "WHERE (startDate is null AND daysOfWeek LIKE :dayOfWeek)" +
-                "OR (" +
+                "WHERE (" +
                 " ((:date BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE :dayOfWeek)) OR " +
                 " ((:date BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE '[]'))" +
                 ") " +
@@ -34,7 +34,7 @@ interface TaskDao {
     )
     fun getFromDay(
         date: LocalDate,
-        dayOfWeek: String = "%${date.dayOfWeek.value}%"
+        dayOfWeek: String = "%${date.dayOfWeek.getInt()}%"
     ): Flow<List<TaskWithRelations>>
 
     @Transaction

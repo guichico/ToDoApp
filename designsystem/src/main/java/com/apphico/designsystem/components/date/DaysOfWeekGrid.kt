@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
 import java.text.DateFormatSymbols
-import java.time.LocalDate
 import java.util.Locale
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -36,6 +35,7 @@ fun DaysOfWeekGrid(
     selectedDaysState: State<List<Int>>,
     onSelectionChanged: (List<Int>) -> Unit
 ) {
+    // TODO Check locatization
     val daysOfWeek = DateFormatSymbols.getInstance()
         .shortWeekdays.filterNot { it.isNullOrEmpty() }.map { it.first().toString().uppercase(Locale.getDefault()) }
 
@@ -89,7 +89,7 @@ fun DaysOfWeekGrid(
 private fun DaysOfWeekGridPreview() {
     ToDoAppTheme {
         DaysOfWeekGrid(
-            selectedDaysState = remember { mutableStateOf(listOf(2, 4)) },
+            selectedDaysState = remember { mutableStateOf(listOf(2, 4, 6)) },
             onSelectionChanged = {}
         )
     }

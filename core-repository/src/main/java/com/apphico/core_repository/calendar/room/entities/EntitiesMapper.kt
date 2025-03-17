@@ -66,7 +66,7 @@ fun Task.toTaskDB(): TaskDB =
         isDone = this.isDone
     )
 
-fun TaskRelations.toTask(): Task =
+fun TaskWithRelations.toTask(): Task =
     Task(
         id = this.taskDB.taskId,
         name = this.taskDB.name,

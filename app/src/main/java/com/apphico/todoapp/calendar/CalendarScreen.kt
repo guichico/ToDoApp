@@ -34,6 +34,7 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatLongDayOfWeekDate
 import com.apphico.extensions.formatShortDayOfWeekDate
+import com.apphico.extensions.getInt
 import com.apphico.extensions.isCurrentYear
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -89,6 +90,7 @@ private fun CalendarScreenContent(
                 )
             } else {
                 taskRowsAgendaViewMode(
+                    selectedDate = selectedDate,
                     tasks = tasks.value,
                     onTaskClicked = navigateToAddEditTask
                 )
@@ -152,6 +154,7 @@ private fun LazyListScope.taskRowsDayViewMode(
 }
 
 private fun LazyListScope.taskRowsAgendaViewMode(
+    selectedDate: LocalDate,
     tasks: List<Task>,
     onTaskClicked: (Task?) -> Unit
 ) {
@@ -159,10 +162,10 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 
     allTasks.addAll(tasks.filter { it.daysOfWeek.isEmpty() })
     tasks.filter { it.daysOfWeek.isNotEmpty() }
-        .forEach { task -> allTasks.addAll(task.addFutureTasks()) }
+        .forEach { task -> allTasks.addAll(task.addFutureTasks(selectedDate)) }
     allTasks.sortBy {
-        if (it.startDate != null && it.startTime != null) {
-            LocalDateTime.of(it.startDate, it.startTime)
+        if (it.startDate != null) {
+            LocalDateTime.of(it.startDate, it.startTime ?: it.startDate?.atStartOfDay()?.toLocalTime())
         } else null
     }
 
@@ -182,15 +185,19 @@ private fun LazyListScope.taskRowsAgendaViewMode(
     }
 }
 
-private fun Task.addFutureTasks(): List<Task> {
-    return this.startDate?.let { startDate ->
-        val endDate = (this.endDate ?: startDate.plusYears(1)).plusDays(1)
+private fun Task.addFutureTasks(
+    selectedDate: LocalDate
+): List<Task> {
+    val startDate = this.startDate
+    // TODO Check how long to view
+    val endDate = (this.endDate ?: selectedDate.plusYears(1)).plusDays(1)
 
-        return startDate.datesUntil(endDate)
-            .filter { it.dayOfWeek.value in this.daysOfWeek }
+    return if (startDate != null && selectedDate < endDate) {
+        selectedDate.datesUntil(endDate)
+            .filter { it.dayOfWeek.getInt() in this.daysOfWeek }
             .map { newDate -> this.copy(startDate = newDate) }
             .toList()
-    } ?: emptyList()
+    } else emptyList()
 }
 
 class CalendarScreenPreviewProvider : PreviewParameterProvider<List<Task>> {

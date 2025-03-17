@@ -136,6 +136,11 @@ class AddEditTaskViewModel @Inject constructor(
             println("error")
         }
 
+        if (task.daysOfWeek.isNotEmpty()) {
+            // When it repeats it must have a start
+            println("error")
+        }
+
         viewModelScope.launch {
             onResult(
                 if (isEditing) {
