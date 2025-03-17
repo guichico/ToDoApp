@@ -97,7 +97,7 @@ class AddEditTaskViewModel @Inject constructor(
     }
 
     fun onDaysOfWeekChanged(daysOfWeek: List<Int>) {
-        editingTask.value = editingTask.value.copy(daysOfWeek = daysOfWeek)
+        editingTask.value = editingTask.value.copy(daysOfWeek = daysOfWeek.sorted())
     }
 
     fun onCheckListChanged(checkList: List<CheckListItem>) {
@@ -117,13 +117,18 @@ class AddEditTaskViewModel @Inject constructor(
         val task = task ?: Task()
         val editingTask = editingTask.value
 
-        // TODO Implement others
         return when {
             editingTask.name != task.name -> true
             editingTask.description != task.description -> true
+            editingTask.group != task.group -> true
             editingTask.startDate != task.startDate -> true
+            editingTask.startTime != task.startTime -> true
             editingTask.endDate != task.endDate -> true
+            editingTask.endTime != task.endTime -> true
+            editingTask.daysOfWeek != task.daysOfWeek -> true
+            editingTask.checkList != task.checkList -> true
             editingTask.reminder != task.reminder -> true
+            editingTask.location != task.location -> true
             editingTask.isDone != task.isDone -> true
             else -> false
         }

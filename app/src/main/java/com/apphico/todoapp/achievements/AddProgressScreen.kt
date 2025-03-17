@@ -15,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -25,9 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.dialogs.DateDialog
-import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
-import com.apphico.designsystem.components.dialogs.navigateBackConfirm
+import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
 import com.apphico.designsystem.components.textfield.DecimalTextField
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
@@ -40,12 +38,8 @@ fun AddEditProgressScreen(
 ) {
     val isEditing = addProgressViewModel.isEditing
 
-    val isAlertDialogOpen = remember { mutableStateOf(false) }
-    val hasChanges = remember { derivedStateOf { addProgressViewModel.hasChanges() } }
-
-    DiscardChangesDialog(
-        isAlertDialogOpen = isAlertDialogOpen,
-        hasChanges = hasChanges,
+    val showDiscardChangesDialogOnBackIfNeed = showDiscardChangesDialogOnBackIfNeed(
+        hasChanges = addProgressViewModel::hasChanges,
         navigateBack = navigateBack
     )
 
@@ -55,11 +49,7 @@ fun AddEditProgressScreen(
         onSaveClicked = {},
         onDeleteClicked = {},
         navigateBack = {
-            navigateBackConfirm(
-                isAlertDialogOpen = isAlertDialogOpen,
-                hasChanges = hasChanges,
-                navigateBack = navigateBack
-            )
+            showDiscardChangesDialogOnBackIfNeed()
         }
     ) { innerPadding ->
         AddEditProgressScreenContent(

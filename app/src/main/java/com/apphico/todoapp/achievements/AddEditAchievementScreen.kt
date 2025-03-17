@@ -56,8 +56,7 @@ import com.apphico.designsystem.components.card.ProgressCard
 import com.apphico.designsystem.components.checklist.CreateCheckList
 import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.DefaultDialog
-import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
-import com.apphico.designsystem.components.dialogs.navigateBackConfirm
+import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.textfield.CurrencyTextField
 import com.apphico.designsystem.components.textfield.DecimalTextField
@@ -100,12 +99,8 @@ fun AddEditAchievementScreen(
     val progress = addEditAchievementViewModel.progress.collectAsState()
     val isEditing = addEditAchievementViewModel.isEditing
 
-    val isAlertDialogOpen = remember { mutableStateOf(false) }
-    val hasChanges = remember { derivedStateOf { addEditAchievementViewModel.hasChanges() } }
-
-    DiscardChangesDialog(
-        isAlertDialogOpen = isAlertDialogOpen,
-        hasChanges = hasChanges,
+    val showDiscardChangesDialogOnBackIfNeed = showDiscardChangesDialogOnBackIfNeed(
+        hasChanges = addEditAchievementViewModel::hasChanges,
         navigateBack = navigateBack
     )
 
@@ -127,11 +122,7 @@ fun AddEditAchievementScreen(
         onSaveClicked = {},
         onDeleteClicked = {},
         navigateBack = {
-            navigateBackConfirm(
-                isAlertDialogOpen = isAlertDialogOpen,
-                hasChanges = hasChanges,
-                navigateBack = navigateBack
-            )
+            showDiscardChangesDialogOnBackIfNeed()
         }
     ) { innerPadding ->
         AddEditAchievementScreenContent(

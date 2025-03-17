@@ -28,8 +28,7 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroup
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.ColorPicker
-import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
-import com.apphico.designsystem.components.dialogs.navigateBackConfirm
+import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppTheme
@@ -42,12 +41,8 @@ fun AddEditGroupScreen(
     val group = addEditGroupViewModel.editingGroup.collectAsState()
     val isEditing = addEditGroupViewModel.isEditing
 
-    val isAlertDialogOpen = remember { mutableStateOf(false) }
-    val hasChanges = remember { derivedStateOf { addEditGroupViewModel.hasChanges() } }
-
-    DiscardChangesDialog(
-        isAlertDialogOpen = isAlertDialogOpen,
-        hasChanges = hasChanges,
+    val showDiscardChangesDialogOnBackIfNeed = showDiscardChangesDialogOnBackIfNeed(
+        hasChanges = addEditGroupViewModel::hasChanges,
         navigateBack = navigateBack
     )
 
@@ -57,11 +52,7 @@ fun AddEditGroupScreen(
         onSaveClicked = {},
         onDeleteClicked = {},
         navigateBack = {
-            navigateBackConfirm(
-                isAlertDialogOpen = isAlertDialogOpen,
-                hasChanges = hasChanges,
-                navigateBack = navigateBack
-            )
+            showDiscardChangesDialogOnBackIfNeed()
         }
     ) { innerPadding ->
         AddEditGroupScreenContent(

@@ -42,9 +42,8 @@ import com.apphico.designsystem.components.card.AddEditHeader
 import com.apphico.designsystem.components.checklist.CreateCheckList
 import com.apphico.designsystem.components.date.DaysOfWeekGrid
 import com.apphico.designsystem.components.dialogs.DateDialog
-import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
-import com.apphico.designsystem.components.dialogs.navigateBackConfirm
+import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.textfield.LocationField
@@ -72,9 +71,6 @@ fun AddEditTaskScreen(
     val editingTask = addEditTaskViewModel.editingTask.collectAsState()
     val isEditing = addEditTaskViewModel.isEditing
 
-    val isAlertDialogOpen = remember { mutableStateOf(false) }
-    val hasChanges = remember { derivedStateOf { addEditTaskViewModel.hasChanges() } }
-
     val nameError = addEditTaskViewModel.nameError.collectAsState()
     val startDateError = addEditTaskViewModel.startDateError.collectAsState()
 
@@ -84,9 +80,8 @@ fun AddEditTaskScreen(
     val taskDeleteSuccess = stringResource(R.string.task_deleted)
     val taskDeleteError = stringResource(R.string.task_delete_error)
 
-    DiscardChangesDialog(
-        isAlertDialogOpen = isAlertDialogOpen,
-        hasChanges = hasChanges,
+    val showDiscardChangesDialogOnBackIfNeed = showDiscardChangesDialogOnBackIfNeed(
+        hasChanges = addEditTaskViewModel::hasChanges,
         navigateBack = navigateBack
     )
 
@@ -118,11 +113,7 @@ fun AddEditTaskScreen(
             }
         },
         navigateBack = {
-            navigateBackConfirm(
-                isAlertDialogOpen = isAlertDialogOpen,
-                hasChanges = hasChanges,
-                navigateBack = navigateBack
-            )
+            showDiscardChangesDialogOnBackIfNeed()
         }
     ) { innerPadding ->
         AddTaskScreenContent(

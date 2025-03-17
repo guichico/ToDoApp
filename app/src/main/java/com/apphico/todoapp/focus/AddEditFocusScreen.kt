@@ -27,8 +27,7 @@ import com.apphico.core_model.FocusMode
 import com.apphico.core_model.fakeData.mockedFocus
 import com.apphico.designsystem.R
 import com.apphico.designsystem.animatedElevation
-import com.apphico.designsystem.components.dialogs.DiscardChangesDialog
-import com.apphico.designsystem.components.dialogs.navigateBackConfirm
+import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppTheme
 
@@ -40,19 +39,15 @@ fun AddEditFocusScreen(
     val editingFocus = addEditFocusViewModel.editingFocus.collectAsState()
     val isEditing = addEditFocusViewModel.isEditing
 
-    val isAlertDialogOpen = remember { mutableStateOf(false) }
-    val hasChanges = remember { derivedStateOf { addEditFocusViewModel.hasChanges() } }
-
-    DiscardChangesDialog(
-        isAlertDialogOpen = isAlertDialogOpen,
-        hasChanges = hasChanges,
-        navigateBack = navigateBack
-    )
-
     val scrollState = rememberScrollState()
     val showElevation = remember {
         derivedStateOf { scrollState.isScrollInProgress || scrollState.value != 0 }
     }
+
+    val showDiscardChangesDialogOnBackIfNeed = showDiscardChangesDialogOnBackIfNeed(
+        hasChanges = addEditFocusViewModel::hasChanges,
+        navigateBack = navigateBack
+    )
 
     DeleteSaveTopBar(
         modifier = Modifier
@@ -67,11 +62,7 @@ fun AddEditFocusScreen(
         onSaveClicked = {},
         onDeleteClicked = {},
         navigateBack = {
-            navigateBackConfirm(
-                isAlertDialogOpen = isAlertDialogOpen,
-                hasChanges = hasChanges,
-                navigateBack = navigateBack
-            )
+            showDiscardChangesDialogOnBackIfNeed()
         }
     ) { innerPadding ->
         AddEditFocusScreenContent(
