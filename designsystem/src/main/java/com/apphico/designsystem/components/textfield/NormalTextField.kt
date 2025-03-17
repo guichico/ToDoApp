@@ -49,6 +49,7 @@ fun NormalTextField(
                 .clickable(onClick = onClick),
             enabled = onClick == emptyLambda,
             value = value,
+            isError = isError,
             onValueChange = onValueChange,
             textStyle = textStyle,
             placeholder = {

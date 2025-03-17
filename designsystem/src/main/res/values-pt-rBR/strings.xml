@@ -7,6 +7,7 @@
     <string name="end_date">Data fim</string>
     <string name="hour">Hora</string>
     <string name="name_error_message">O nome é obrigatório</string>
+    <string name="start_date_after_end_date_error_message">A data de ínicio não pode ser depois da data fim</string>
     <string name="empty_start_date_error_message">Se a tarefa tem um data fim ela deve ter uma data de ínicio</string>
     <string name="day_of_week_should_have_start_date">Quando a tarefa se repete ela deve ter uma data de ínicio</string>
     <string name="empty_start_time_error_message">Se a tarefa tem um hora fim ela deve ter uma hora de ínicio</string>

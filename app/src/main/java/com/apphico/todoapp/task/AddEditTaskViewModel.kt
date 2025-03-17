@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
 import kotlin.reflect.typeOf
@@ -87,10 +88,12 @@ class AddEditTaskViewModel @Inject constructor(
 
     fun onEndDateChanged(date: LocalDate?) {
         editingTask.value = editingTask.value.copy(endDate = date)
+        startDateError.value = null
     }
 
     fun onEndTimeChanged(time: LocalTime) {
         editingTask.value = editingTask.value.copy(endTime = time)
+        startDateError.value = null
     }
 
     fun onDaysOfWeekChanged(daysOfWeek: List<Int>) {
@@ -138,16 +141,30 @@ class AddEditTaskViewModel @Inject constructor(
         if (task.daysOfWeek.isNotEmpty() && task.startDate == null) {
             hasError = true
             startDateError.value = R.string.day_of_week_should_have_start_date
+            return
         }
 
-        if (task.endTime != null && task.startTime == null) {
-            hasError = true
-            startDateError.value = R.string.empty_start_time_error_message
-        }
+        when {
+            task.endTime != null && task.startTime == null -> {
+                hasError = true
+                startDateError.value = R.string.empty_start_time_error_message
+                return
+            }
 
-        if (task.endDate != null && task.startDate == null) {
-            hasError = true
-            startDateError.value = R.string.empty_start_date_error_message
+            task.endDate != null && task.startDate == null -> {
+                hasError = true
+                startDateError.value = R.string.empty_start_date_error_message
+                return
+            }
+
+            (task.startDate != null && task.startTime != null && task.endDate != null && task.endTime != null
+                    && LocalDateTime.of(task.startDate, task.startTime) > LocalDateTime.of(task.endDate, task.endTime))
+                    || (task.startDate != null && task.endDate != null && task.startDate!! > task.endDate)
+                    || (task.startTime != null && task.endTime != null && task.startTime!! > task.endTime) -> {
+                hasError = true
+                startDateError.value = R.string.start_date_after_end_date_error_message
+                return
+            }
         }
 
         if (!hasError) {
