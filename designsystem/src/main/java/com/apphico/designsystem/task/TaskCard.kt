@@ -34,6 +34,7 @@ import com.apphico.designsystem.components.checklist.CheckList
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.extensions.formatDayAndMonth
 import com.apphico.extensions.formatShortTime
 
 @Composable
@@ -158,6 +159,13 @@ private fun DateRow(
                     )
                 }
             }
+        }
+        if (task.daysOfWeek.isEmpty() && task.endDate != null) {
+            Text(
+                text = task.endDate!!.formatDayAndMonth(),
+                style = MaterialTheme.typography.bodyMedium,
+                color = textColor
+            )
         }
         task.reminder?.let { reminderDate ->
             Row {

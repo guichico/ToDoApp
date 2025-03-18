@@ -29,6 +29,7 @@ interface TaskDao {
                 " ((date(:date) >= date(startDate) AND endDate is null) AND (daysOfWeek LIKE :dayOfWeek)) OR" +
                 " ((date(:date) == date(startDate) AND endDate is null) AND (daysOfWeek LIKE '[]')) " +
                 ") " +
+                "OR (startDate is null AND date(:date) <= endDate) " +
                 "OR (startDate is null AND endDate is null AND daysOfWeek LIKE '[]') " +
                 "ORDER BY startTime"
     )
