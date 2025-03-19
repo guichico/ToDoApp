@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Achievement
+import com.apphico.core_model.CheckBoxItem
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
@@ -54,6 +55,7 @@ import com.apphico.designsystem.animatedElevation
 import com.apphico.designsystem.components.card.AddEditHeader
 import com.apphico.designsystem.components.card.ProgressCard
 import com.apphico.designsystem.components.checklist.CreateCheckList
+import com.apphico.designsystem.components.dialogs.CheckBoxDialog
 import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.DefaultDialog
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
@@ -70,14 +72,6 @@ import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getGMTNowMillis
 import java.time.LocalDateTime
-
-private val MeasurementType.title: Int
-    @StringRes get() = when (this) {
-        is MeasurementType.None -> R.string.achievement_goal_type_none
-        is MeasurementType.TaskDone -> R.string.achievement_goal_type_step
-        is MeasurementType.Percentage -> R.string.achievement_goal_type_percentage
-        is MeasurementType.Value -> R.string.achievement_goal_type_value
-    }
 
 private val MeasurementValueUnit.label: Int
     @StringRes get() = when (this) {
@@ -386,58 +380,21 @@ private fun MeasurementTypeDialog(
         }
     )
 
-    Column {
-        if (isDialogOpen) {
-            DefaultDialog(
-                onDismissRequest = { isDialogOpen = false }
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            vertical = ToDoAppTheme.spacing.medium
-                        )
-                ) {
-                    listOf(
-                        MeasurementType.TaskDone(),
-                        MeasurementType.Percentage(),
-                        MeasurementType.Value(startingValue = 0f, goalValue = 0f),
-                        MeasurementType.None
-                    )
-                        .forEach {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        onMeasurementTypeChanged(it)
-                                        isDialogOpen = false
-                                    }
-                            ) {
-                                ToDoAppIcon(
-                                    modifier = Modifier
-                                        .padding(
-                                            start = ToDoAppTheme.spacing.large,
-                                            top = ToDoAppTheme.spacing.large,
-                                            bottom = ToDoAppTheme.spacing.large
-                                        )
-                                        .align(Alignment.CenterVertically),
-                                    icon = if (measurementType.value == it) ToDoAppIcons.icRadioButtonChecked else ToDoAppIcons.icRadioButtonUnchecked,
-                                    contentDescription = "select",
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                                Text(
-                                    modifier = Modifier
-                                        .padding(ToDoAppTheme.spacing.large)
-                                        .align(Alignment.CenterVertically),
-                                    text = stringResource(it.title),
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                }
-            }
-        }
+    if (isDialogOpen) {
+        CheckBoxDialog(
+            values = listOf(
+                MeasurementType.TaskDone(),
+                MeasurementType.Percentage(),
+                MeasurementType.Value(startingValue = 0f, goalValue = 0f),
+                MeasurementType.None
+            ),
+            selectedItem = measurementType.value,
+            onItemSelected = {
+                onMeasurementTypeChanged(it as MeasurementType)
+                isDialogOpen = false
+            },
+            onDismissRequest = { isDialogOpen = false }
+        )
     }
 }
 

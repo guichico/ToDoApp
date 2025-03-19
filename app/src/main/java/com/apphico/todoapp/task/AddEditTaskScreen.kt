@@ -22,8 +22,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -34,6 +36,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Location
+import com.apphico.core_model.RecurringTaskSaveMethod
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
 import com.apphico.designsystem.R
@@ -41,6 +44,7 @@ import com.apphico.designsystem.animatedElevation
 import com.apphico.designsystem.components.card.AddEditHeader
 import com.apphico.designsystem.components.checklist.CreateCheckList
 import com.apphico.designsystem.components.date.DaysOfWeekGrid
+import com.apphico.designsystem.components.dialogs.CheckBoxDialog
 import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
@@ -85,6 +89,40 @@ fun AddEditTaskScreen(
         navigateBack = navigateBack
     )
 
+    var saveMethod by remember { mutableStateOf<RecurringTaskSaveMethod>(RecurringTaskSaveMethod.ThisTask) }
+    var isSaveDialogOpen by remember { mutableStateOf(false) }
+
+    val saveAction = {
+        addEditTaskViewModel.save(
+            saveMethod = saveMethod
+        ) { isSuccess ->
+            snackBar(if (isSuccess) taskSaveSuccess else taskSaveError)
+            if (isSuccess) navigateBack()
+        }
+    }
+
+    if (isSaveDialogOpen) {
+        CheckBoxDialog(
+            title = stringResource(R.string.save_recurring_task),
+            values = listOf(
+                RecurringTaskSaveMethod.ThisTask,
+                RecurringTaskSaveMethod.Future,
+                RecurringTaskSaveMethod.All
+            ),
+            selectedItem = saveMethod,
+            onItemSelected = {
+                saveMethod = it as RecurringTaskSaveMethod
+            },
+            dismissButtonText = stringResource(R.string.cancel),
+            onDismissRequest = { isSaveDialogOpen = false },
+            confirmButtonText = stringResource(R.string.save),
+            onConfirmClicked = {
+                isSaveDialogOpen = false
+                saveAction()
+            }
+        )
+    }
+
     val scrollState = rememberScrollState()
     val showElevation = remember {
         derivedStateOf { scrollState.isScrollInProgress || scrollState.value != 0 }
@@ -101,15 +139,19 @@ fun AddEditTaskScreen(
         title = stringResource(R.string.add_new_task),
         isEditing = isEditing,
         onSaveClicked = {
-            addEditTaskViewModel.save { isSuccess ->
-                snackBar(if (isSuccess) taskSaveSuccess else taskSaveError)
-                navigateBack()
+            val task = editingTask.value
+            val isRepeatable = (task.daysOfWeek.isNotEmpty() || (task.startDate != null && task.startDate!! > task.endDate))
+
+            if (isRepeatable) {
+                isSaveDialogOpen = true
+            } else {
+                saveAction()
             }
         },
         onDeleteClicked = {
             addEditTaskViewModel.delete { isSuccess ->
                 snackBar(if (isSuccess) taskDeleteSuccess else taskDeleteError)
-                navigateBack()
+                if (isSuccess) navigateBack()
             }
         },
         navigateBack = {

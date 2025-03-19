@@ -6,6 +6,7 @@ import androidx.navigation.toRoute
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Location
+import com.apphico.core_model.RecurringTaskSaveMethod
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.designsystem.R
@@ -134,7 +135,10 @@ class AddEditTaskViewModel @Inject constructor(
         }
     }
 
-    fun save(onResult: (Boolean) -> Unit) {
+    fun save(
+        saveMethod: RecurringTaskSaveMethod = RecurringTaskSaveMethod.ThisTask,
+        onResult: (Boolean) -> Unit
+    ) {
         var task = editingTask.value
         var hasError = false
 

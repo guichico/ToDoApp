@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.emptyLambda
+import com.apphico.designsystem.theme.ToDoAppTheme
 
 @Composable
 fun DefaultSurface(
@@ -41,9 +42,12 @@ fun DefaultSurface(
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun DefaultSurfacePreview() {
-    DefaultSurface(
-        modifier = Modifier
-            .fillMaxSize(),
-        onClick = {}
-    ) {}
+    ToDoAppTheme {
+        DefaultSurface(
+            modifier = Modifier
+                .fillMaxSize(),
+            onClick = {},
+            content = {}
+        )
+    }
 }

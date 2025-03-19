@@ -47,8 +47,10 @@ fun DefaultCard(
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun DefaultCardPreview() {
-    DefaultCard(
-        onClick = {},
-        content = {}
-    )
+    ToDoAppTheme {
+        DefaultCard(
+            onClick = {},
+            content = {}
+        )
+    }
 }

@@ -201,7 +201,7 @@ private fun Task.addFutureTasks(
 
                 it.dayOfWeek.getInt() in taskDaysOfWeek
             }
-            .map { newDate -> this.copy(startDate = newDate) }
+            .map { newDate -> this.copy(startDate = newDate, isSaved = false) }
             .toList()
     } else emptyList()
 }

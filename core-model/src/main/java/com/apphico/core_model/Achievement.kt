@@ -11,22 +11,23 @@ enum class MeasurementValueUnit { INT, DECIMAL, CURRENCY }
 
 @Parcelize
 @Serializable
-sealed class MeasurementType : Parcelable {
+sealed class MeasurementType(override val title: Int) : CheckBoxItem() {
 
+    @Parcelize
     @Serializable
-    data object None : MeasurementType()
+    data object None : MeasurementType(R.string.achievement_goal_type_none)
 
     @Parcelize
     @Serializable
     data class TaskDone(
         val checkList: List<CheckListItem> = emptyList()
-    ) : MeasurementType()
+    ) : MeasurementType(R.string.achievement_goal_type_step)
 
     @Parcelize
     @Serializable
     data class Percentage(
         val percentageProgress: List<PercentageProgress> = emptyList()
-    ) : MeasurementType() {
+    ) : MeasurementType(R.string.achievement_goal_type_percentage) {
         @Parcelize
         @Serializable
         data class PercentageProgress(
@@ -43,7 +44,7 @@ sealed class MeasurementType : Parcelable {
         val startingValue: Float,
         val goalValue: Float,
         val trackedValues: List<TrackedValues> = emptyList()
-    ) : MeasurementType() {
+    ) : MeasurementType(R.string.achievement_goal_type_value) {
         @Parcelize
         @Serializable
         data class TrackedValues(

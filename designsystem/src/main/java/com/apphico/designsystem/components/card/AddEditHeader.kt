@@ -111,17 +111,19 @@ class AddEditHeaderPreviewProvider : PreviewParameterProvider<Group> {
 private fun AddEditHeaderPreview(
     @PreviewParameter(AddEditHeaderPreviewProvider::class) group: Group
 ) {
-    AddEditHeader(
-        nameValue = remember { mutableStateOf("") },
-        namePlaceholder = "Add name",
-        nameError = remember { mutableStateOf(null) },
-        onNameChange = {},
-        descriptionValue = remember { mutableStateOf("") },
-        descriptionPlaceholder = "Add description",
-        onDescriptionChange = {},
-        group = remember { mutableStateOf(group) },
-        groupPlaceholder = "Select group",
-        navigateToSelectGroup = {},
-        onGroupRemoved = {}
-    )
+    ToDoAppTheme {
+        AddEditHeader(
+            nameValue = remember { mutableStateOf("") },
+            namePlaceholder = "Add name",
+            nameError = remember { mutableStateOf(null) },
+            onNameChange = {},
+            descriptionValue = remember { mutableStateOf("") },
+            descriptionPlaceholder = "Add description",
+            onDescriptionChange = {},
+            group = remember { mutableStateOf(group) },
+            groupPlaceholder = "Select group",
+            navigateToSelectGroup = {},
+            onGroupRemoved = {}
+        )
+    }
 }

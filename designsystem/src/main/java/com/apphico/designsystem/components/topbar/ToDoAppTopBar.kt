@@ -142,9 +142,11 @@ private fun HeaderWithSubtitle(
 @Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 private fun ToDoAppTopBarPreview() {
-    ToDoAppTopBar(
-        title = "Top bar",
-        subTitle = "subtitle",
-        scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    )
+    ToDoAppTheme {
+        ToDoAppTopBar(
+            title = "Top bar",
+            subTitle = "subtitle",
+            scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+        )
+    }
 }

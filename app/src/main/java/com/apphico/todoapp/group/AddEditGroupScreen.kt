@@ -60,13 +60,13 @@ fun AddEditGroupScreen(
         onSaveClicked = {
             addEditGroupViewModel.save { isSuccess ->
                 snackBar(if (isSuccess) groupSaveSuccess else groupSaveError)
-                navigateBack()
+                if (isSuccess) navigateBack()
             }
         },
         onDeleteClicked = {
             addEditGroupViewModel.delete { isSuccess ->
                 snackBar(if (isSuccess) groupDeleteSuccess else groupDeleteError)
-                navigateBack()
+                if (isSuccess) navigateBack()
             }
         },
         navigateBack = {
