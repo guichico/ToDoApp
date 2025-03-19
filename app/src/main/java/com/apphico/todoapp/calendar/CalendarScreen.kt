@@ -36,6 +36,7 @@ import com.apphico.extensions.formatLongDayOfWeekDate
 import com.apphico.extensions.formatShortDayOfWeekDate
 import com.apphico.extensions.getInt
 import com.apphico.extensions.isCurrentYear
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -160,8 +161,8 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 ) {
     val allTasks = mutableListOf<Task>()
 
-    allTasks.addAll(tasks.filter { it.daysOfWeek.isEmpty() })
-    tasks.filter { it.daysOfWeek.isNotEmpty() }
+    allTasks.addAll(tasks.filter { it.startDate == null })
+    tasks.filter { it.startDate != null }
         .forEach { task -> allTasks.addAll(task.addFutureTasks(selectedDate)) }
     allTasks.sortBy {
         if (it.startDate != null) {
@@ -194,7 +195,12 @@ private fun Task.addFutureTasks(
 
     return if (startDate != null && selectedDate < endDate) {
         selectedDate.datesUntil(endDate)
-            .filter { it.dayOfWeek.getInt() in this.daysOfWeek }
+            .filter {
+                val allDays = DayOfWeek.entries.map { it.getInt() }
+                val taskDaysOfWeek = if (this.daysOfWeek.isEmpty()) allDays else this.daysOfWeek
+
+                it.dayOfWeek.getInt() in taskDaysOfWeek
+            }
             .map { newDate -> this.copy(startDate = newDate) }
             .toList()
     } else emptyList()

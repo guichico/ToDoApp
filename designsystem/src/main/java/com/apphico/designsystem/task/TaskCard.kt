@@ -160,7 +160,7 @@ private fun DateRow(
                 }
             }
         }
-        if (task.daysOfWeek.isEmpty() && task.endDate != null) {
+        if (task.daysOfWeek.isEmpty() && task.startDate == null && task.endDate != null) {
             Text(
                 text = task.endDate!!.formatDayAndMonth(),
                 style = MaterialTheme.typography.bodyMedium,
