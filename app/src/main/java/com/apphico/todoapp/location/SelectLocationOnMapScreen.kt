@@ -15,10 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -26,10 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Coordinates
-import com.apphico.core_model.Location
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
-import com.apphico.designsystem.location.CheckLocationPermission
 import com.apphico.designsystem.map.FullScreenMapView
 import com.apphico.designsystem.theme.ToDoAppTheme
 
@@ -38,22 +33,8 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 fun SelectLocationOnMapScreen(
     selectLocationOnMapViewModel: SelectLocationOnMapViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
-    onSearchFinished: (Location?) -> Unit
+    navigateBackToAddEditLocation: (Coordinates?) -> Unit
 ) {
-    CheckLocationPermission(
-        navigateBack = navigateBack,
-        setDefaultLocation = selectLocationOnMapViewModel::setDefaultLocation
-    )
-
-    val location = selectLocationOnMapViewModel.editingLocation.collectAsState()
-    val isSearchFinished by selectLocationOnMapViewModel.isLocationSearchFinished.collectAsState()
-
-    LaunchedEffect(isSearchFinished) {
-        if (isSearchFinished) {
-            onSearchFinished(location.value)
-        }
-    }
-
     Scaffold(
         modifier = Modifier
             .consumeWindowInsets(WindowInsets.systemBars),
@@ -67,8 +48,8 @@ fun SelectLocationOnMapScreen(
     ) { innerPadding ->
         SelectLocationOnMapScreenContent(
             innerPadding = innerPadding,
-            location = location,
-            onConfirmLocationClicked = selectLocationOnMapViewModel::searchCoordinates
+            coordinates = remember { mutableStateOf(selectLocationOnMapViewModel.coordinates) },
+            onConfirmLocationClicked = navigateBackToAddEditLocation
         )
     }
 }
@@ -77,8 +58,8 @@ fun SelectLocationOnMapScreen(
 @Composable
 private fun SelectLocationOnMapScreenContent(
     innerPadding: PaddingValues,
-    location: State<Location?>,
-    onConfirmLocationClicked: (Coordinates) -> Unit
+    coordinates: State<Coordinates?>,
+    onConfirmLocationClicked: (Coordinates?) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -95,7 +76,7 @@ private fun SelectLocationOnMapScreenContent(
                 .imePadding()
         ) {
             FullScreenMapView(
-                location = location,
+                coordinates = coordinates,
                 onConfirmLocationClicked = onConfirmLocationClicked
             )
         }
@@ -110,7 +91,7 @@ private fun SelectLocationOnMapScreenPreview() {
     ToDoAppTheme {
         SelectLocationOnMapScreenContent(
             innerPadding = PaddingValues(),
-            location = remember { mutableStateOf(null) },
+            coordinates = remember { mutableStateOf(null) },
             onConfirmLocationClicked = {}
         )
     }

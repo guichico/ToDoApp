@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Coordinates
-import com.apphico.core_model.Location
 import com.apphico.core_model.toCoordinates
 import com.apphico.core_model.toLatLng
 import com.apphico.designsystem.components.icons.ToDoAppIcon
@@ -33,7 +32,7 @@ private const val ZOOM = 16f
 
 @Composable
 fun GMap(
-    location: State<Location?>,
+    coordinates: State<Coordinates?>,
     locationUpdates: MutableState<Coordinates?>,
     isControlsEnabled: Boolean
 ) {
@@ -45,7 +44,7 @@ fun GMap(
         locationUpdates.value = cameraPositionUpdates.value
     }
 
-    val locationCoordinates by remember { derivedStateOf { location.value?.coordinates } }
+    val locationCoordinates by remember { derivedStateOf { coordinates.value } }
 
     LaunchedEffect(locationCoordinates) {
         locationCoordinates?.let {

@@ -30,7 +30,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.apphico.core_model.Location
+import com.apphico.core_model.Coordinates
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
@@ -43,18 +43,19 @@ import com.apphico.designsystem.theme.White
 @Composable
 fun MapView(
     modifier: Modifier = Modifier,
-    location: State<Location?>,
+    coordinates: State<Coordinates?>,
+    address: State<String?>,
     onAddressChanged: (String) -> Unit,
     onSearchLocationClicked: (String?) -> Unit,
-    onEditLocationClicked: (Location?) -> Unit
+    onEditLocationClicked: (Coordinates?) -> Unit
 ) {
-    val locationUpdates = remember { mutableStateOf(location.value?.coordinates) }
+    val locationUpdates = remember { mutableStateOf(coordinates.value) }
 
     Column(
         modifier = modifier
     ) {
         AddressField(
-            location = location,
+            address = address,
             onAddressChanged = onAddressChanged,
             onSearchLocationClicked = onSearchLocationClicked
         )
@@ -63,7 +64,7 @@ fun MapView(
             shape = CardDefaults.shape
         ) {
             GMap(
-                location = location,
+                coordinates = coordinates,
                 locationUpdates = locationUpdates,
                 isControlsEnabled = false
             )
@@ -82,7 +83,7 @@ fun MapView(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = White
                     ),
-                    onClick = { onEditLocationClicked(location.value) }
+                    onClick = { onEditLocationClicked(locationUpdates.value) }
                 ) {
                     ToDoAppIcon(
                         modifier = Modifier
@@ -104,11 +105,11 @@ fun MapView(
 
 @Composable
 private fun AddressField(
-    location: State<Location?>,
+    address: State<String?>,
     onAddressChanged: (String) -> Unit,
     onSearchLocationClicked: (String?) -> Unit
 ) {
-    val locationAddress by remember { derivedStateOf { location.value?.address } }
+    val locationAddress by remember { derivedStateOf { address.value } }
 
     LaunchedEffect(locationAddress) {
         locationAddress?.let { onAddressChanged(it) }
@@ -117,18 +118,18 @@ private fun AddressField(
     NormalTextField(
         modifier = Modifier
             .fillMaxWidth(),
-        value = location.value?.address ?: "",
+        value = address.value ?: "",
         placeholder = stringResource(id = R.string.address),
         onValueChange = { onAddressChanged(it) },
         textStyle = MaterialTheme.typography.titleMedium,
         trailingIcon = {
             ToDoAppIconButton(
                 icon = ToDoAppIcons.icSearch,
-                onClick = { onSearchLocationClicked(location.value?.address) }
+                onClick = { onSearchLocationClicked(address.value) }
             )
         },
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(onSearch = { onSearchLocationClicked(location.value?.address) }),
+        keyboardActions = KeyboardActions(onSearch = { onSearchLocationClicked(address.value) }),
     )
 }
 
@@ -140,7 +141,8 @@ private fun MapViewPreview(
     ToDoAppTheme {
         MapView(
             modifier = Modifier.fillMaxSize(),
-            location = remember { mutableStateOf(null) },
+            coordinates = remember { mutableStateOf(null) },
+            address = remember { mutableStateOf(null) },
             onAddressChanged = {},
             onSearchLocationClicked = {},
             onEditLocationClicked = {}

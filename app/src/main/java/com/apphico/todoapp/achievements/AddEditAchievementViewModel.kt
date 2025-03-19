@@ -18,7 +18,7 @@ class AddEditAchievementViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val achievement = savedStateHandle.toRoute<AddEditAchievementRoute>(
+    private val achievement = savedStateHandle.toRoute<AddEditAchievementRoute>(
         typeMap = mapOf(
             typeOf<AddEditAchievementParameters>() to CustomNavType(
                 AddEditAchievementParameters::class.java,

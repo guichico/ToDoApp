@@ -20,16 +20,19 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.apphico.core_model.Coordinates
 import com.apphico.core_model.Location
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.NormalButton
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
+import com.apphico.designsystem.location.CheckLocationPermission
 import com.apphico.designsystem.map.MapView
 import com.apphico.designsystem.theme.ToDoAppTheme
 
@@ -37,11 +40,17 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 @Composable
 fun AddEditLocationScreen(
     addEditLocationViewModel: AddEditLocationViewModel = hiltViewModel(),
-    navigateToSelectLocationOnMap: (Location?) -> Unit,
-    onConfirmClicked: (Location?) -> Unit,
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navigateToSelectLocationOnMap: (Coordinates?) -> Unit,
+    onConfirmClicked: (Location?) -> Unit
 ) {
     val location = addEditLocationViewModel.editingLocation.collectAsState()
+    val address = addEditLocationViewModel.editingAddress.collectAsState()
+
+    CheckLocationPermission(
+        navigateBack = navigateBack,
+        onLocationPermissionGranted = addEditLocationViewModel::setDefaultLocation
+    )
 
     Scaffold(
         modifier = Modifier
@@ -57,6 +66,7 @@ fun AddEditLocationScreen(
         AddEditLocationScreenContent(
             innerPadding = innerPadding,
             location = location,
+            address = address,
             onAddressChanged = addEditLocationViewModel::onAddressTextChanged,
             onSearchLocationClicked = addEditLocationViewModel::searchLocation,
             onConfirmClicked = onConfirmClicked,
@@ -70,10 +80,11 @@ fun AddEditLocationScreen(
 private fun AddEditLocationScreenContent(
     innerPadding: PaddingValues,
     location: State<Location?>,
+    address: State<String?>,
     onAddressChanged: (String) -> Unit,
     onSearchLocationClicked: (String?) -> Unit,
+    navigateToSelectLocationOnMap: (Coordinates?) -> Unit,
     onConfirmClicked: (Location?) -> Unit,
-    navigateToSelectLocationOnMap: (Location?) -> Unit,
     navigateBack: () -> Unit
 ) {
     Box(
@@ -94,7 +105,8 @@ private fun AddEditLocationScreenContent(
                 modifier = Modifier
                     .weight(1f)
                     .padding(bottom = ToDoAppTheme.spacing.extraLarge),
-                location = location,
+                coordinates = remember { derivedStateOf { location.value?.coordinates } },
+                address = address,
                 onAddressChanged = onAddressChanged,
                 onSearchLocationClicked = onSearchLocationClicked,
                 onEditLocationClicked = navigateToSelectLocationOnMap
@@ -126,6 +138,7 @@ private fun AddEditLocationScreenPreview() {
         AddEditLocationScreenContent(
             innerPadding = PaddingValues(),
             location = remember { mutableStateOf(null) },
+            address = remember { mutableStateOf(null) },
             onAddressChanged = {},
             onSearchLocationClicked = {},
             onConfirmClicked = {},

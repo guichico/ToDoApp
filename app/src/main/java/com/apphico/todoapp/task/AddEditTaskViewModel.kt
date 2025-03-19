@@ -30,7 +30,7 @@ class AddEditTaskViewModel @Inject constructor(
     val taskRepository: TaskRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
-    val task = savedStateHandle.toRoute<AddEditTaskRoute>(
+    private val task = savedStateHandle.toRoute<AddEditTaskRoute>(
         typeMap = mapOf(typeOf<AddEditTaskParameters>() to CustomNavType(AddEditTaskParameters::class.java, AddEditTaskParameters.serializer()))
     ).addEditTaskParameters.task
 

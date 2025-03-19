@@ -17,7 +17,7 @@ class AddEditFocusViewModel @Inject constructor(
     private val focusRepository: FocusRepository
 ) : ViewModel() {
 
-    val focusMode = savedStateHandle.toRoute<AddEditFocusRoute>(
+    private val focusMode = savedStateHandle.toRoute<AddEditFocusRoute>(
         typeMap = mapOf(typeOf<AddEditFocusParameters>() to CustomNavType(AddEditFocusParameters::class.java, AddEditFocusParameters.serializer()))
     ).addEditFocusParameters.focusMode
 

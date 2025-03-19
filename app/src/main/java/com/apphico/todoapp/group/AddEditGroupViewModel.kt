@@ -21,7 +21,7 @@ class AddEditGroupViewModel @Inject constructor(
     private val groupRepository: GroupRepository
 ) : ViewModel() {
 
-    val group = savedStateHandle.toRoute<AddEditGroupRoute>(
+    private val group = savedStateHandle.toRoute<AddEditGroupRoute>(
         typeMap = mapOf(
             typeOf<AddEditGroupParameters>() to CustomNavType(
                 AddEditGroupParameters::class.java,

@@ -18,7 +18,7 @@ import com.apphico.extensions.hasCoarseLocationPermission
 @Composable
 fun CheckLocationPermission(
     navigateBack: () -> Unit,
-    setDefaultLocation: () -> Unit
+    onLocationPermissionGranted: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -29,7 +29,7 @@ fun CheckLocationPermission(
         context = context,
         onAnyGranted = {
             isAnyLocationPermissionAlreadyGranted.value = true
-            setDefaultLocation()
+            onLocationPermissionGranted()
         },
         onAllDenied = {
             isAllLocationPermissionsDeniedDialogOpen.value = true
@@ -43,7 +43,7 @@ fun CheckLocationPermission(
                     isAnyLocationPermissionAlreadyGranted.value = true
                     isAllLocationPermissionsDeniedDialogOpen.value = false
 
-                    setDefaultLocation()
+                    onLocationPermissionGranted()
                 }
             }
 

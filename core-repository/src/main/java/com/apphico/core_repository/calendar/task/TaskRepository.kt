@@ -45,8 +45,9 @@ class TaskRepositoryImpl(
         return try {
             taskDao.update(task.toTaskDB())
 
+            locationDao.delete(task.id)
             task.location?.let {
-                locationDao.update(it.toLocationDB(task.id))
+                locationDao.insert(it.toLocationDB(task.id))
             }
 
             checkListItemDao.deleteAll(task.id)

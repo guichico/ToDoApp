@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Coordinates
-import com.apphico.core_model.Location
 import com.apphico.designsystem.R
 import com.apphico.designsystem.theme.ChiliRed
 import com.apphico.designsystem.theme.ToDoAppTheme
@@ -29,16 +28,16 @@ import com.apphico.designsystem.theme.White
 
 @Composable
 fun FullScreenMapView(
-    location: State<Location?>,
-    onConfirmLocationClicked: (Coordinates) -> Unit
+    coordinates: State<Coordinates?>,
+    onConfirmLocationClicked: (Coordinates?) -> Unit
 ) {
-    val locationUpdates = remember { mutableStateOf(location.value?.coordinates) }
+    val locationUpdates = remember { mutableStateOf(coordinates.value) }
 
     Surface(
         shape = CardDefaults.shape
     ) {
         GMap(
-            location = location,
+            coordinates = coordinates,
             locationUpdates = locationUpdates,
             isControlsEnabled = true
         )
@@ -58,9 +57,7 @@ fun FullScreenMapView(
                     containerColor = ChiliRed
                 ),
                 onClick = {
-                    locationUpdates.value?.let {
-                        onConfirmLocationClicked(it)
-                    }
+                    onConfirmLocationClicked(locationUpdates.value)
                 }
             ) {
                 Text(
@@ -81,7 +78,7 @@ private fun FullScreenMapViewPreview(
 ) {
     ToDoAppTheme {
         FullScreenMapView(
-            location = remember { mutableStateOf(null) },
+            coordinates = remember { mutableStateOf(null) },
             onConfirmLocationClicked = {}
         )
     }

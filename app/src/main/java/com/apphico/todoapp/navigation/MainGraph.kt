@@ -26,7 +26,9 @@ import com.apphico.todoapp.group.navigateToAddEditGroup
 import com.apphico.todoapp.group.navigateToSelectGroup
 import com.apphico.todoapp.group.selectGroupScreen
 import com.apphico.todoapp.location.addEditLocationScreen
+import com.apphico.todoapp.location.navigateBackToAddEditLocation
 import com.apphico.todoapp.location.navigateBackToAddEditTask
+import com.apphico.todoapp.location.navigateToAddEditLocation
 import com.apphico.todoapp.location.navigateToSelectLocationOnMap
 import com.apphico.todoapp.location.selectLocationOnMapScreen
 import com.apphico.todoapp.task.addEditTaskScreen
@@ -57,7 +59,7 @@ fun NavGraphBuilder.mainGraph(
         snackBar = snackBar,
         onBackClicked = navController::navigateBack,
         onSelectGroupClicked = navController::navigateToSelectGroup,
-        onSelectLocationClicked = navController::navigateToSelectLocationOnMap
+        onSelectLocationClicked = navController::navigateToAddEditLocation
     )
     selectGroupScreen(
         previousBackStackEntry = previousBackStackEntry,
@@ -69,19 +71,16 @@ fun NavGraphBuilder.mainGraph(
         snackBar = snackBar,
         onBackClicked = navController::navigateBack
     )
+    addEditLocationScreen(
+        previousBackStackEntry = previousBackStackEntry,
+        onBackClicked = navController::navigateBack,
+        onSelectLocationOnMapClicked = navController::navigateToSelectLocationOnMap,
+        onConfirmClicked = navController::navigateBackToAddEditTask
+    )
     selectLocationOnMapScreen(
         previousBackStackEntry = previousBackStackEntry,
         onBackClicked = navController::navigateBack,
-        onSearchFinished = navController::navigateBackToAddEditTask
-    )
-    addEditLocationScreen(
-        onBackClicked = navController::navigateBack,
-        onSelectLocationOnMapClicked = { location ->
-            // navController.navigateToSelectLocationOnMap(task, location)
-        },
-        onConfirmClicked = { location ->
-            // navController.navigateBackToAddEditTask(task, location)
-        }
+        navigateBackToAddEditLocation = navController::navigateBackToAddEditLocation
     )
     addEditFocusScreen(
         onBackClicked = navController::navigateBack

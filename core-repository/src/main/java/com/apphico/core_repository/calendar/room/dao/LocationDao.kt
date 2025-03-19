@@ -19,9 +19,6 @@ interface LocationDao {
     @Insert
     suspend fun insert(location: LocationDB): Long
 
-    @Update
-    suspend fun update(location: LocationDB)
-
     @Query("DELETE FROM locationdb WHERE locationTaskId = :taskId")
     suspend fun delete(taskId: Long)
 }
