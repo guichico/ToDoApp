@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
@@ -344,65 +346,24 @@ private fun StarDateRow(
         initialMinute = startTime.value?.minute ?: 0
     )
 
-    val isStartDatePickerDialogOpen = remember { mutableStateOf(false) }
-    val isStartTimePickerDialogOpen = remember { mutableStateOf(false) }
-
-    if (isStartDatePickerDialogOpen.value) {
-        DateDialog(
-            isDatePickerDialogOpen = isStartDatePickerDialogOpen,
-            datePickerState = startDatePickerState,
-            onDateChanged = onStartDateChanged
-        )
-    }
-
-    if (isStartTimePickerDialogOpen.value) {
-        TimeDialog(
-            isTimePickerDialogOpen = isStartTimePickerDialogOpen,
-            timePickerState = startTimePickerState,
-            onTimeChanged = onStartTimeChanged
-        )
-    }
-
-    Column {
-        Row {
-            NormalTextField(
-                modifier = Modifier
-                    .weight(0.6f),
-                value = startDate.value?.formatMediumDate() ?: "",
-                placeholder = stringResource(R.string.start_date),
-                onClick = { isStartDatePickerDialogOpen.value = true }
-            )
-            Spacer(modifier = Modifier.weight(0.02f))
-            NormalTextField(
-                modifier = Modifier
-                    .weight(0.4f),
-                value = startTime.value?.formatShortTime() ?: "",
-                placeholder = stringResource(R.string.hour),
-                onClick = { isStartTimePickerDialogOpen.value = true }
-            )
-        }
-        if (startDateError.value != null) {
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        vertical = ToDoAppTheme.spacing.extraSmall,
-                        horizontal = ToDoAppTheme.spacing.small
-                    ),
-                text = startDateError.value?.let { stringResource(it) } ?: "",
-                style = MaterialTheme.typography.bodySmall,
-                color = Color.Red
-            )
-        }
-    }
+    DateRow(
+        date = startDate,
+        datePlaceholder = stringResource(R.string.start_date),
+        datePickerState = startDatePickerState,
+        onDateChanged = onStartDateChanged,
+        dateError = startDateError,
+        time = startTime,
+        timePickerState = startTimePickerState,
+        onTimeChanged = onStartTimeChanged
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EndDateRow(
     endDate: State<LocalDate?>,
-    endTime: State<LocalTime?>,
     onEndDateChanged: (LocalDate?) -> Unit,
+    endTime: State<LocalTime?>,
     onEndTimeChanged: (LocalTime) -> Unit
 ) {
     var initialEndHour = endTime.value?.hour ?: LocalTime.now().hour.plus(1)
@@ -421,40 +382,80 @@ private fun EndDateRow(
         initialMinute = endTime.value?.minute ?: 0
     )
 
-    val isEndDatePickerDialogOpen = remember { mutableStateOf(false) }
-    val isEndTimePickerDialogOpen = remember { mutableStateOf(false) }
+    DateRow(
+        date = endDate,
+        datePlaceholder = stringResource(R.string.end_date),
+        datePickerState = endDatePickerState,
+        onDateChanged = onEndDateChanged,
+        dateError = remember { mutableStateOf(null) },
+        time = endTime,
+        timePickerState = endTimePickerState,
+        onTimeChanged = onEndTimeChanged
+    )
+}
 
-    if (isEndDatePickerDialogOpen.value) {
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DateRow(
+    date: State<LocalDate?>,
+    datePlaceholder: String,
+    datePickerState: DatePickerState,
+    onDateChanged: (LocalDate?) -> Unit,
+    dateError: State<Int?>,
+    time: State<LocalTime?>,
+    timePickerState: TimePickerState,
+    onTimeChanged: (LocalTime) -> Unit,
+) {
+    val isStartDatePickerDialogOpen = remember { mutableStateOf(false) }
+    val isStartTimePickerDialogOpen = remember { mutableStateOf(false) }
+
+    if (isStartDatePickerDialogOpen.value) {
         DateDialog(
-            isDatePickerDialogOpen = isEndDatePickerDialogOpen,
-            datePickerState = endDatePickerState,
-            onDateChanged = onEndDateChanged
+            isDatePickerDialogOpen = isStartDatePickerDialogOpen,
+            datePickerState = datePickerState,
+            onDateChanged = onDateChanged
         )
     }
 
-    if (isEndTimePickerDialogOpen.value) {
+    if (isStartTimePickerDialogOpen.value) {
         TimeDialog(
-            isTimePickerDialogOpen = isEndTimePickerDialogOpen,
-            timePickerState = endTimePickerState,
-            onTimeChanged = onEndTimeChanged
+            isTimePickerDialogOpen = isStartTimePickerDialogOpen,
+            timePickerState = timePickerState,
+            onTimeChanged = onTimeChanged
         )
     }
-    Row {
-        NormalTextField(
-            modifier = Modifier
-                .weight(0.6f),
-            value = endDate.value?.formatMediumDate() ?: "",
-            placeholder = stringResource(R.string.end_date),
-            onClick = { isEndDatePickerDialogOpen.value = true }
-        )
-        Spacer(modifier = Modifier.weight(0.02f))
-        NormalTextField(
-            modifier = Modifier
-                .weight(0.4f),
-            value = endTime.value?.formatShortTime() ?: "",
-            placeholder = stringResource(R.string.hour),
-            onClick = { isEndTimePickerDialogOpen.value = true }
-        )
+
+    Column {
+        Row {
+            NormalTextField(
+                modifier = Modifier
+                    .weight(0.6f),
+                value = date.value?.formatMediumDate() ?: "",
+                placeholder = datePlaceholder,
+                onClick = { isStartDatePickerDialogOpen.value = true }
+            )
+            Spacer(modifier = Modifier.weight(0.02f))
+            NormalTextField(
+                modifier = Modifier
+                    .weight(0.4f),
+                value = time.value?.formatShortTime() ?: "",
+                placeholder = stringResource(R.string.hour),
+                onClick = { isStartTimePickerDialogOpen.value = true }
+            )
+        }
+        if (dateError.value != null) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        vertical = ToDoAppTheme.spacing.extraSmall,
+                        horizontal = ToDoAppTheme.spacing.small
+                    ),
+                text = dateError.value?.let { stringResource(it) } ?: "",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Red
+            )
+        }
     }
 }
 
