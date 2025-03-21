@@ -78,5 +78,7 @@ fun TaskWithRelations.toTask(): Task =
         endTime = this.taskDB.endTime,
         daysOfWeek = this.taskDB.daysOfWeek ?: emptyList(),
         reminder = this.taskDB.reminder,
-        location = this.locationDB?.toLocation()
+        location = this.locationDB?.toLocation(),
+        hasDone = this.hasDone,
+        doneDates = this.doneDates
     )

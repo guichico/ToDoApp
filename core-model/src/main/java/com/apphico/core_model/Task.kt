@@ -1,6 +1,8 @@
 package com.apphico.core_model
 
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.apphico.core_model.serializers.LocalDateSerializer
 import com.apphico.core_model.serializers.LocalTimeSerializer
 import kotlinx.parcelize.Parcelize
@@ -16,6 +18,8 @@ sealed class RecurringTaskSaveMethod(override val title: Int) : CheckBoxItem() {
     data object All : RecurringTaskSaveMethod(R.string.recurring_task_all)
 }
 
+@Stable
+@Immutable
 @Parcelize
 @Serializable
 data class Task(
@@ -31,5 +35,10 @@ data class Task(
     @Serializable(with = LocalTimeSerializer::class) val endTime: LocalTime? = null,
     val daysOfWeek: List<Int> = emptyList(),
     @Serializable(with = LocalTimeSerializer::class) val reminder: LocalTime? = null,
-    val location: Location? = null
-) : Parcelable
+    val location: Location? = null,
+    val hasDone: Boolean? = null,
+    val doneDates: String? = ""
+) : Parcelable {
+    fun isRepeatable() = (startDate != null && endDate != null && startDate > endDate) || daysOfWeek.isNotEmpty()
+    fun isDone(): Boolean = doneDates?.contains(startDate.toString()) == true || (startDate == null && hasDone == true)
+}

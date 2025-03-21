@@ -21,6 +21,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 
 @Composable
 fun DefaultCard(
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onClick: () -> Unit,
     content: @Composable BoxScope.() -> Unit
@@ -31,7 +32,7 @@ fun DefaultCard(
     val shape = RoundedCornerShape(8.dp)
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(vertical = ToDoAppTheme.spacing.small)

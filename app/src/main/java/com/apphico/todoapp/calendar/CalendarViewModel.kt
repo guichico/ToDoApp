@@ -53,10 +53,6 @@ class CalendarViewModel @Inject constructor(
         selectedDate.value = date
     }
 
-    fun isTaskDone(task: Task) = calendarRepository
-        .isTaskDone(task)
-        .flowOn(Dispatchers.IO)
-
     fun setTaskDone(task: Task, isDone: Boolean) = viewModelScope.launch {
         calendarRepository.changeTaskDone(task, isDone)
     }

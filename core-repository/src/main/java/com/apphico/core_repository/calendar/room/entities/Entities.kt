@@ -58,5 +58,7 @@ data class TaskWithRelations(
     @Embedded val taskDB: TaskDB,
     @Relation(parentColumn = "taskGroupId", entityColumn = "groupId") val groupDB: GroupDB?,
     @Relation(parentColumn = "taskId", entityColumn = "checkListTaskId") val checkList: List<CheckListItemDB>?,
-    @Relation(parentColumn = "taskId", entityColumn = "locationTaskId") val locationDB: LocationDB?
+    @Relation(parentColumn = "taskId", entityColumn = "locationTaskId") val locationDB: LocationDB?,
+    @ColumnInfo("hasDone") val hasDone: Boolean?,
+    @ColumnInfo("doneDates") val doneDates: String?,
 )

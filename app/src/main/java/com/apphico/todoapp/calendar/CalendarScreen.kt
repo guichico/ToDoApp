@@ -34,13 +34,9 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatLongDayOfWeekDate
 import com.apphico.extensions.formatShortDayOfWeekDate
-import com.apphico.extensions.getInt
 import com.apphico.extensions.isCurrentYear
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import java.time.DayOfWeek
+import com.apphico.extensions.toMillis
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 @Composable
 fun CalendarScreen(
@@ -59,9 +55,6 @@ fun CalendarScreen(
         calendarViewMode = calendarViewMode.value,
         tasks = calendar,
         navigateToAddEditTask = navigateToAddEditTask,
-        isTaskDone = { task ->
-            calendarViewModel.isTaskDone(task)
-        },
         onDoneCheckedChange = { task, isDone -> calendarViewModel.setTaskDone(task, isDone) }
     )
 }
@@ -72,7 +65,6 @@ private fun CalendarScreenContent(
     calendarViewMode: CalendarViewMode,
     tasks: State<List<Task>>,
     navigateToAddEditTask: (Task?) -> Unit,
-    isTaskDone: (Task) -> Flow<Boolean>,
     onDoneCheckedChange: (Task, Boolean) -> Unit
 ) {
     Box(
@@ -95,15 +87,12 @@ private fun CalendarScreenContent(
                 taskRowsDayViewMode(
                     selectedDate = selectedDate,
                     tasks = tasks.value,
-                    isTaskDone = isTaskDone,
                     onTaskClicked = navigateToAddEditTask,
                     onDoneCheckedChange = onDoneCheckedChange
                 )
             } else {
                 taskRowsAgendaViewMode(
-                    selectedDate = selectedDate,
                     tasks = tasks.value,
-                    isTaskDone = isTaskDone,
                     onTaskClicked = navigateToAddEditTask,
                     onDoneCheckedChange = onDoneCheckedChange
                 )
@@ -142,7 +131,6 @@ private fun DateHeader(
 private fun LazyListScope.taskRowsDayViewMode(
     selectedDate: LocalDate,
     tasks: List<Task>,
-    isTaskDone: (Task) -> Flow<Boolean>,
     onTaskClicked: (Task?) -> Unit,
     onDoneCheckedChange: (Task, Boolean) -> Unit
 ) {
@@ -152,7 +140,6 @@ private fun LazyListScope.taskRowsDayViewMode(
     items(oneTimeTask) { task ->
         TaskCard(
             task = task,
-            isTaskDone = isTaskDone,
             onClick = { onTaskClicked(task) },
             onDoneCheckedChange = { onDoneCheckedChange(task, it) }
         )
@@ -165,7 +152,6 @@ private fun LazyListScope.taskRowsDayViewMode(
     items(routineTask) { task ->
         TaskCard(
             task = task,
-            isTaskDone = isTaskDone,
             onClick = { onTaskClicked(task) },
             onDoneCheckedChange = { onDoneCheckedChange(task, it) }
         )
@@ -173,26 +159,16 @@ private fun LazyListScope.taskRowsDayViewMode(
 }
 
 private fun LazyListScope.taskRowsAgendaViewMode(
-    selectedDate: LocalDate,
     tasks: List<Task>,
-    isTaskDone: (Task) -> Flow<Boolean>,
     onTaskClicked: (Task?) -> Unit,
     onDoneCheckedChange: (Task, Boolean) -> Unit
 ) {
-    val allTasks = mutableListOf<Task>()
-
-    allTasks.addAll(tasks.filter { it.startDate == null })
-    tasks.filter { it.startDate != null }
-        .forEach { task -> allTasks.addAll(task.addFutureTasks(selectedDate)) }
-    allTasks.sortBy {
-        if (it.startDate != null) {
-            LocalDateTime.of(it.startDate, it.startTime ?: it.startDate?.atStartOfDay()?.toLocalTime())
-        } else null
-    }
-
-    itemsIndexed(allTasks) { index, task ->
+    itemsIndexed(
+        items = tasks,
+        key = { _, task -> task.id + (task.startDate?.toMillis() ?: 0L) }
+    ) { index, task ->
         task.startDate?.let { date ->
-            val previousDate = if (index > 0) allTasks[index - 1].startDate else null
+            val previousDate = if (index > 0) tasks[index - 1].startDate else null
 
             if (date != previousDate) {
                 DateHeader(date = date)
@@ -201,31 +177,10 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 
         TaskCard(
             task = task,
-            isTaskDone = isTaskDone,
             onClick = { onTaskClicked(task) },
             onDoneCheckedChange = { onDoneCheckedChange(task, it) }
         )
     }
-}
-
-private fun Task.addFutureTasks(
-    selectedDate: LocalDate
-): List<Task> {
-    val startDate = this.startDate
-    // TODO Check how long to view
-    val endDate = (this.endDate ?: selectedDate.plusYears(1)).plusDays(1)
-
-    return if (startDate != null && selectedDate < endDate) {
-        selectedDate.datesUntil(endDate)
-            .filter {
-                val allDays = DayOfWeek.entries.map { it.getInt() }
-                val taskDaysOfWeek = if (this.daysOfWeek.isEmpty()) allDays else this.daysOfWeek
-
-                it.dayOfWeek.getInt() in taskDaysOfWeek
-            }
-            .map { newDate -> this.copy(startDate = newDate, isSaved = false) }
-            .toList()
-    } else emptyList()
 }
 
 class CalendarScreenPreviewProvider : PreviewParameterProvider<List<Task>> {
@@ -245,7 +200,6 @@ private fun CalendarScreenPreview(
             calendarViewMode = CalendarViewMode.DAY,
             tasks = remember { mutableStateOf(tasks) },
             navigateToAddEditTask = {},
-            isTaskDone = { flow { false } },
             onDoneCheckedChange = { _, _ -> }
         )
     }

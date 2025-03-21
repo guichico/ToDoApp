@@ -2,12 +2,16 @@ package com.apphico.core_model
 
 import android.location.Address
 import android.os.Parcelable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 typealias Coordinates = Pair<Double, Double>
 
+@Stable
+@Immutable
 @Parcelize
 @Serializable
 data class Location(

@@ -142,9 +142,8 @@ fun AddEditTaskScreen(
         isEditing = isEditing,
         onSaveClicked = {
             val task = editingTask.value
-            val isRepeatable = (task.daysOfWeek.isNotEmpty() || (task.startDate != null && task.startDate!! > task.endDate))
 
-            if (isRepeatable) {
+            if (task.isRepeatable()) {
                 isSaveDialogOpen = true
             } else {
                 saveAction()
