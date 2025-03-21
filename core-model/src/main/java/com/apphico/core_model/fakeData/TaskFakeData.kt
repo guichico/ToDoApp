@@ -7,7 +7,6 @@ import java.time.LocalTime
 
 val mockedTask = Task(
     name = "Eat some fruit",
-    isDone = true,
     startDate = LocalDate.now(),
     startTime = LocalTime.now(),
     endDate = LocalDate.now(),
@@ -24,7 +23,6 @@ val mockedTask = Task(
 val mockedTasks = listOf(
     mockedTask,
     Task(
-        name = "Taking the dog for a walk",
-        isDone = false
+        name = "Taking the dog for a walk"
     )
 )

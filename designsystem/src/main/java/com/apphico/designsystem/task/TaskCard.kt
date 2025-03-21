@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,11 +38,15 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatDayAndMonth
 import com.apphico.extensions.formatShortTime
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 @Composable
 fun TaskCard(
     task: Task,
-    onClick: () -> Unit
+    isTaskDone: (Task) -> Flow<Boolean>,
+    onClick: () -> Unit,
+    onDoneCheckedChange: (Boolean) -> Unit
 ) {
     DefaultCard(
         onClick = onClick
@@ -75,7 +81,9 @@ fun TaskCard(
             ) {
                 Header(
                     task = task,
-                    textColor = MaterialTheme.colorScheme.primary
+                    isTaskDone = isTaskDone,
+                    textColor = MaterialTheme.colorScheme.primary,
+                    onDoneCheckedChange = onDoneCheckedChange
                 )
                 DateRow(
                     task = task,
@@ -99,13 +107,17 @@ fun TaskCard(
 @Composable
 private fun Header(
     task: Task,
-    textColor: Color
+    isTaskDone: (Task) -> Flow<Boolean>,
+    textColor: Color,
+    onDoneCheckedChange: (Boolean) -> Unit
 ) {
+    val isTaskDone by isTaskDone(task).collectAsState(false)
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        val nameStyle = if (task.isDone) MaterialTheme.typography.titleMedium.copy(textDecoration = TextDecoration.LineThrough)
+        val nameStyle = if (isTaskDone) MaterialTheme.typography.titleMedium.copy(textDecoration = TextDecoration.LineThrough)
         else MaterialTheme.typography.titleMedium
 
         Text(
@@ -117,8 +129,8 @@ private fun Header(
         )
         CircleCheckbox(
             modifier = Modifier,
-            checked = task.isDone,
-            onCheckedChange = { },
+            checked = isTaskDone,
+            onCheckedChange = onDoneCheckedChange,
             tint = textColor
         )
     }
@@ -202,7 +214,9 @@ private fun TaskCardPreview(
     ToDoAppTheme {
         TaskCard(
             task = task,
-            onClick = {}
+            isTaskDone = { flow { false } },
+            onClick = {},
+            onDoneCheckedChange = {}
         )
     }
 }

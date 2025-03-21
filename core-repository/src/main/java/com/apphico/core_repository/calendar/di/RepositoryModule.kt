@@ -12,6 +12,7 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
+import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.core_repository.calendar.task.TaskRepositoryImpl
 import dagger.Module
@@ -26,7 +27,10 @@ class RepositoryModule() {
 
     @Provides
     @Singleton
-    fun providesCalendarRepository(taskDao: TaskDao): CalendarRepository = CalendarRepositoryImpl(taskDao)
+    fun providesCalendarRepository(
+        taskDao: TaskDao,
+        taskDoneDao: TaskDoneDao
+    ): CalendarRepository = CalendarRepositoryImpl(taskDao, taskDoneDao)
 
     @Provides
     @Singleton

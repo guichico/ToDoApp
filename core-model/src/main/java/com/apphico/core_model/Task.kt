@@ -31,6 +31,5 @@ data class Task(
     @Serializable(with = LocalTimeSerializer::class) val endTime: LocalTime? = null,
     val daysOfWeek: List<Int> = emptyList(),
     @Serializable(with = LocalTimeSerializer::class) val reminder: LocalTime? = null,
-    val location: Location? = null,
-    val isDone: Boolean = false
+    val location: Location? = null
 ) : Parcelable

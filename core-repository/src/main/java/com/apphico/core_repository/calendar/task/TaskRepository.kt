@@ -12,7 +12,6 @@ import com.apphico.core_repository.calendar.room.entities.toTaskDB
 interface TaskRepository {
     suspend fun insertTask(task: Task): Boolean
     suspend fun updateTask(task: Task): Boolean
-    suspend fun changeDone(task: Task): Boolean
     suspend fun deleteTask(task: Task): Boolean
 }
 
@@ -53,16 +52,6 @@ class TaskRepositoryImpl(
             checkListItemDao.deleteAll(task.id)
             checkListItemDao.insertAll(task.checkList.map { it.toCheckListItemDB(task.id) })
 
-            return true
-        } catch (ex: Exception) {
-            Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
-            return false
-        }
-    }
-
-    override suspend fun changeDone(task: Task): Boolean {
-        return try {
-            taskDao.update(task.toTaskDB())
             return true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())

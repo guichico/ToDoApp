@@ -10,6 +10,7 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
+import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,6 +31,10 @@ class DatabaseModule() {
     @Provides
     @Singleton
     fun provideTaskDao(appDatabase: AppDatabase): TaskDao = appDatabase.taskDao()
+
+    @Provides
+    @Singleton
+    fun provideTaskDoneDao(appDatabase: AppDatabase): TaskDoneDao = appDatabase.taskDoneDao()
 
     @Provides
     @Singleton

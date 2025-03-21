@@ -36,6 +36,8 @@ import com.apphico.extensions.formatLongDayOfWeekDate
 import com.apphico.extensions.formatShortDayOfWeekDate
 import com.apphico.extensions.getInt
 import com.apphico.extensions.isCurrentYear
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -56,7 +58,11 @@ fun CalendarScreen(
         selectedDate = selectedDate.value,
         calendarViewMode = calendarViewMode.value,
         tasks = calendar,
-        navigateToAddEditTask = navigateToAddEditTask
+        navigateToAddEditTask = navigateToAddEditTask,
+        isTaskDone = { task ->
+            calendarViewModel.isTaskDone(task)
+        },
+        onDoneCheckedChange = { task, isDone -> calendarViewModel.setTaskDone(task, isDone) }
     )
 }
 
@@ -65,7 +71,9 @@ private fun CalendarScreenContent(
     selectedDate: LocalDate,
     calendarViewMode: CalendarViewMode,
     tasks: State<List<Task>>,
-    navigateToAddEditTask: (Task?) -> Unit
+    navigateToAddEditTask: (Task?) -> Unit,
+    isTaskDone: (Task) -> Flow<Boolean>,
+    onDoneCheckedChange: (Task, Boolean) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -87,13 +95,17 @@ private fun CalendarScreenContent(
                 taskRowsDayViewMode(
                     selectedDate = selectedDate,
                     tasks = tasks.value,
-                    onTaskClicked = navigateToAddEditTask
+                    isTaskDone = isTaskDone,
+                    onTaskClicked = navigateToAddEditTask,
+                    onDoneCheckedChange = onDoneCheckedChange
                 )
             } else {
                 taskRowsAgendaViewMode(
                     selectedDate = selectedDate,
                     tasks = tasks.value,
-                    onTaskClicked = navigateToAddEditTask
+                    isTaskDone = isTaskDone,
+                    onTaskClicked = navigateToAddEditTask,
+                    onDoneCheckedChange = onDoneCheckedChange
                 )
             }
         }
@@ -130,7 +142,9 @@ private fun DateHeader(
 private fun LazyListScope.taskRowsDayViewMode(
     selectedDate: LocalDate,
     tasks: List<Task>,
-    onTaskClicked: (Task?) -> Unit
+    isTaskDone: (Task) -> Flow<Boolean>,
+    onTaskClicked: (Task?) -> Unit,
+    onDoneCheckedChange: (Task, Boolean) -> Unit
 ) {
     val oneTimeTask = tasks.filter { it.startDate == null && it.startTime == null }
     val routineTask = tasks.filter { it.startDate != null || it.startTime != null }
@@ -138,7 +152,9 @@ private fun LazyListScope.taskRowsDayViewMode(
     items(oneTimeTask) { task ->
         TaskCard(
             task = task,
-            onClick = { onTaskClicked(task) }
+            isTaskDone = isTaskDone,
+            onClick = { onTaskClicked(task) },
+            onDoneCheckedChange = { onDoneCheckedChange(task, it) }
         )
     }
     if (routineTask.isNotEmpty()) {
@@ -146,10 +162,12 @@ private fun LazyListScope.taskRowsDayViewMode(
             DateHeader(date = selectedDate)
         }
     }
-    items(routineTask) { event ->
+    items(routineTask) { task ->
         TaskCard(
-            task = event,
-            onClick = { onTaskClicked(event) }
+            task = task,
+            isTaskDone = isTaskDone,
+            onClick = { onTaskClicked(task) },
+            onDoneCheckedChange = { onDoneCheckedChange(task, it) }
         )
     }
 }
@@ -157,7 +175,9 @@ private fun LazyListScope.taskRowsDayViewMode(
 private fun LazyListScope.taskRowsAgendaViewMode(
     selectedDate: LocalDate,
     tasks: List<Task>,
-    onTaskClicked: (Task?) -> Unit
+    isTaskDone: (Task) -> Flow<Boolean>,
+    onTaskClicked: (Task?) -> Unit,
+    onDoneCheckedChange: (Task, Boolean) -> Unit
 ) {
     val allTasks = mutableListOf<Task>()
 
@@ -181,7 +201,9 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 
         TaskCard(
             task = task,
-            onClick = { onTaskClicked(task) }
+            isTaskDone = isTaskDone,
+            onClick = { onTaskClicked(task) },
+            onDoneCheckedChange = { onDoneCheckedChange(task, it) }
         )
     }
 }
@@ -222,7 +244,9 @@ private fun CalendarScreenPreview(
             selectedDate = LocalDate.now(),
             calendarViewMode = CalendarViewMode.DAY,
             tasks = remember { mutableStateOf(tasks) },
-            navigateToAddEditTask = {}
+            navigateToAddEditTask = {},
+            isTaskDone = { flow { false } },
+            onDoneCheckedChange = { _, _ -> }
         )
     }
 }

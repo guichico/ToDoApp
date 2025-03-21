@@ -130,7 +130,6 @@ class AddEditTaskViewModel @Inject constructor(
             editingTask.checkList != task.checkList -> true
             editingTask.reminder != task.reminder -> true
             editingTask.location != task.location -> true
-            editingTask.isDone != task.isDone -> true
             else -> false
         }
     }

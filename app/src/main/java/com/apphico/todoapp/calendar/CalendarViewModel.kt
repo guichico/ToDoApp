@@ -2,6 +2,7 @@ package com.apphico.todoapp.calendar
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.extensions.combine
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -21,7 +23,7 @@ enum class CalendarViewMode { AGENDA, DAY }
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    calendarRepository: CalendarRepository
+    private val calendarRepository: CalendarRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
     private val calendarViewMode = MutableStateFlow(CalendarViewMode.DAY)
@@ -49,5 +51,13 @@ class CalendarViewModel @Inject constructor(
 
     fun setDate(date: LocalDate) {
         selectedDate.value = date
+    }
+
+    fun isTaskDone(task: Task) = calendarRepository
+        .isTaskDone(task)
+        .flowOn(Dispatchers.IO)
+
+    fun setTaskDone(task: Task, isDone: Boolean) = viewModelScope.launch {
+        calendarRepository.changeTaskDone(task, isDone)
     }
 }

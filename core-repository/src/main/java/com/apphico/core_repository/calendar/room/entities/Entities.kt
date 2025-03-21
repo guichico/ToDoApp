@@ -43,8 +43,15 @@ data class TaskDB(
     val endDate: LocalDate?,
     val endTime: LocalTime?,
     val daysOfWeek: List<Int>?,
-    val reminder: LocalTime?,
-    @ColumnInfo("task_is_done") val isDone: Boolean = false
+    val reminder: LocalTime?
+)
+
+@Entity
+data class TaskDoneDB(
+    @PrimaryKey(autoGenerate = true) val doneId: Long = 0,
+    val taskDoneId: Long,
+    val doneDate: LocalDate,
+    val taskDate: LocalDate?
 )
 
 data class TaskWithRelations(

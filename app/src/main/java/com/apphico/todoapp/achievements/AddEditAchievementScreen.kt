@@ -45,7 +45,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Achievement
-import com.apphico.core_model.CheckBoxItem
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
