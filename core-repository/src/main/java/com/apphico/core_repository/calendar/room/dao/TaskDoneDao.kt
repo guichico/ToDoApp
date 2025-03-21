@@ -12,12 +12,12 @@ import java.time.LocalDate
 interface TaskDoneDao {
 
     @Transaction
-    @Query("SELECT * FROM taskDoneDB WHERE taskDoneId = :taskId AND taskDate = :taskDate")
-    fun getDone(taskId: Long, taskDate: LocalDate): Flow<TaskDoneDB?>
+    @Query("SELECT * FROM taskDoneDB WHERE taskDoneId = :taskId AND (taskDate = :taskDate OR taskDate is null)")
+    fun getDone(taskId: Long, taskDate: LocalDate?): Flow<TaskDoneDB?>
 
     @Insert
     suspend fun insert(taskDoneDB: TaskDoneDB): Long
 
-    @Query("DELETE FROM taskDoneDB WHERE taskDoneId = :taskId AND taskDate = :taskDate")
-    suspend fun delete(taskId: Long, taskDate: LocalDate)
+    @Query("DELETE FROM taskDoneDB WHERE taskDoneId = :taskId AND (taskDate = :taskDate OR taskDate is null)")
+    suspend fun delete(taskId: Long, taskDate: LocalDate?)
 }

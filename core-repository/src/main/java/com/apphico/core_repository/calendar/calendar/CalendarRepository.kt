@@ -38,7 +38,7 @@ class CalendarRepositoryImpl(
     }
 
     override fun isTaskDone(task: Task): Flow<Boolean> =
-        taskDoneDao.getDone(task.id, task.startDate!!)
+        taskDoneDao.getDone(task.id, task.startDate)
             .map { it != null }
 
     override suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean {
@@ -46,7 +46,7 @@ class CalendarRepositoryImpl(
             if (isDone) {
                 taskDoneDao.insert(TaskDoneDB(taskDoneId = task.id, doneDate = getNowDate(), taskDate = task.startDate))
             } else {
-                taskDoneDao.delete(task.id, task.startDate!!)
+                taskDoneDao.delete(task.id, task.startDate)
             }
 
             return true
