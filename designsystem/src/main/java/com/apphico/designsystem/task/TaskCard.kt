@@ -1,6 +1,7 @@
 package com.apphico.designsystem.task
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.apphico.core_model.Group
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
 import com.apphico.designsystem.components.card.DefaultCard
@@ -48,7 +50,10 @@ fun TaskCard(
     onClick: () -> Unit,
     onDoneCheckedChange: (Boolean) -> Unit
 ) {
+    val isTaskDone by isTaskDone(task).collectAsState(false)
+
     DefaultCard(
+        enabled = !isTaskDone,
         onClick = onClick
     ) {
         Row(
@@ -56,19 +61,9 @@ fun TaskCard(
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth()
         ) {
-            task.group?.color?.let {
-                Box(
-                    modifier = Modifier
-                        .padding(ToDoAppTheme.spacing.small),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .width(8.dp)
-                            .background(color = Color(it), shape = CircleShape)
-                    )
-                }
-            } ?: Spacer(modifier = Modifier.width(ToDoAppTheme.spacing.medium))
+            GroupIndicator(
+                group = task.group
+            )
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -80,13 +75,14 @@ fun TaskCard(
                     )
             ) {
                 Header(
-                    task = task,
+                    taskName = task.name,
                     isTaskDone = isTaskDone,
                     textColor = MaterialTheme.colorScheme.primary,
                     onDoneCheckedChange = onDoneCheckedChange
                 )
                 DateRow(
                     task = task,
+                    isTaskDone = isTaskDone,
                     textColor = MaterialTheme.colorScheme.primary
                 )
                 if (task.checkList.isNotEmpty()) {
@@ -105,13 +101,32 @@ fun TaskCard(
 }
 
 @Composable
+private fun GroupIndicator(
+    group: Group?
+) {
+    group?.color?.let {
+        Box(
+            modifier = Modifier
+                .padding(ToDoAppTheme.spacing.small),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(8.dp)
+                    .background(color = Color(it), shape = CircleShape)
+            )
+        }
+    } ?: Spacer(modifier = Modifier.width(ToDoAppTheme.spacing.medium))
+}
+
+@Composable
 private fun Header(
-    task: Task,
-    isTaskDone: (Task) -> Flow<Boolean>,
+    taskName: String,
+    isTaskDone: Boolean,
     textColor: Color,
     onDoneCheckedChange: (Boolean) -> Unit
 ) {
-    val isTaskDone by isTaskDone(task).collectAsState(false)
+    val animatedColor by animateColorAsState(if (!isTaskDone) textColor else textColor.copy(alpha = 0.5f))
 
     Row(
         modifier = Modifier
@@ -123,15 +138,15 @@ private fun Header(
         Text(
             modifier = Modifier
                 .weight(1f),
-            text = task.name,
+            text = taskName,
             style = nameStyle,
-            color = textColor
+            color = animatedColor
         )
         CircleCheckbox(
             modifier = Modifier,
             checked = isTaskDone,
             onCheckedChange = onDoneCheckedChange,
-            tint = textColor
+            tint = animatedColor
         )
     }
 }
@@ -139,8 +154,11 @@ private fun Header(
 @Composable
 private fun DateRow(
     task: Task,
+    isTaskDone: Boolean,
     textColor: Color
 ) {
+    val animatedColor by animateColorAsState(if (!isTaskDone) textColor else textColor.copy(alpha = 0.5f))
+
     Row {
         if (task.startTime != null || task.endTime != null) {
             Row(
@@ -151,7 +169,7 @@ private fun DateRow(
                     Text(
                         text = startTime.formatShortTime(),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = textColor
+                        color = animatedColor
                     )
                 }
                 if (task.startTime != null && task.endTime != null) {
@@ -160,14 +178,14 @@ private fun DateRow(
                             .padding(horizontal = ToDoAppTheme.spacing.extraSmall),
                         text = "-",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = textColor
+                        color = animatedColor
                     )
                 }
                 task.endTime?.let { endTime ->
                     Text(
                         text = endTime.formatShortTime(),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = textColor
+                        color = animatedColor
                     )
                 }
             }

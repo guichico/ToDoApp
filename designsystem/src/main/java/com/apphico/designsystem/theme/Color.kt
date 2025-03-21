@@ -14,11 +14,11 @@ val MediumGray = Color(0XFFADB5BD)
 val DarkGray = Color(0XFF495057)
 val ChiliRed = Color(0xFFE23D28)
 
-val LightBlue = Color(0xFFEEF0F6)
+val LightBlue = Color(0XFFF5F7FD)
 val MediumBlue = Color(0XFFCEE5FF)
 val RippleBlue = Color(0XFFCDD3E5)
 
-val MainContainer = Color(0XFFDDE2EE)
+val MainContainer = Color(0XFFE0E0E9)
 val MainText = Color(0xFF495D92)
 val SecondaryText = Color(0XFF556CAA)
 

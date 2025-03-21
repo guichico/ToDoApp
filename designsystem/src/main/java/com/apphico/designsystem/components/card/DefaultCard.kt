@@ -1,44 +1,51 @@
 package com.apphico.designsystem.components.card
 
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardElevation
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import com.apphico.core_model.Group
-import com.apphico.core_model.fakeData.mockedGroup
+import com.apphico.designsystem.theme.MainContainer
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.getBgColor
-import com.apphico.designsystem.theme.getStrokeColor
 
 @Composable
 fun DefaultCard(
+    enabled: Boolean = true,
     onClick: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable BoxScope.() -> Unit
 ) {
-    Card(
+    val animatedBackgroundColor by animateColorAsState(if (enabled) MainContainer else MainContainer.copy(alpha = 0.5f))
+    val animatedElevation by animateDpAsState(if (enabled) 8.dp else 0.dp)
+
+    val shape = RoundedCornerShape(8.dp)
+
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                vertical = ToDoAppTheme.spacing.small
+            .clickable(onClick = onClick)
+            .padding(vertical = ToDoAppTheme.spacing.small)
+            .background(
+                color = animatedBackgroundColor,
+                shape = shape
             )
-            .clip(CardDefaults.shape)
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+            .shadow(
+                elevation = animatedElevation,
+                ambientColor = animatedBackgroundColor,
+                spotColor = animatedBackgroundColor,
+                shape = shape,
+                clip = true
+            ),
         content = content
     )
 }
