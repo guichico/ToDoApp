@@ -16,8 +16,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface CalendarRepository {
-    fun getAll(fromStartDate: LocalDate): Flow<List<Task>>
     fun getFromDay(date: LocalDate): Flow<List<Task>>
+    fun getAll(fromStartDate: LocalDate): Flow<List<Task>>
     suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean
 }
 
@@ -26,9 +26,19 @@ class CalendarRepositoryImpl(
     private val taskDoneDao: TaskDoneDao
 ) : CalendarRepository {
 
-    override fun getAll(fromStartDate: LocalDate): Flow<List<Task>> {
-        Log.d(CalendarRepository::class.simpleName, "getAll")
+    override fun getFromDay(date: LocalDate): Flow<List<Task>> {
+        return taskDao.getFromDay(date)
+            .map {
+                it.map {
+                    val task = it.toTask()
+                    task.startDate?.let {
+                        task.copy(startDate = date)
+                    } ?: task
+                }
+            }
+    }
 
+    override fun getAll(fromStartDate: LocalDate): Flow<List<Task>> {
         return taskDao.getAll(fromStartDate)
             .map { it.map { it.toTask() } }
             .map { tasks ->
@@ -39,10 +49,10 @@ class CalendarRepositoryImpl(
                         tasks.filter { it.startDate != null }
                             .forEach { task -> addAll(task.addFutureTasks(fromStartDate)) }
 
-                        sortBy {
-                            if (it.startDate != null) {
-                                LocalDateTime.of(it.startDate, it.startTime ?: it.startDate?.atStartOfDay()?.toLocalTime())
-                            } else null
+                        sortBy { task ->
+                            task.startDate?.let {
+                                LocalDateTime.of(it, task.startTime ?: it.atStartOfDay().toLocalTime())
+                            }
                         }
                     }
             }
@@ -66,12 +76,6 @@ class CalendarRepositoryImpl(
                 .map { newDate -> this.copy(startDate = newDate, isSaved = false) }
                 .toList()
         } else emptyList()
-    }
-
-    override fun getFromDay(date: LocalDate): Flow<List<Task>> {
-        Log.d(CalendarRepository::class.simpleName, "getFromDay")
-        return taskDao.getFromDay(date)
-            .map { it.map { it.toTask() } }
     }
 
     override suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean {
