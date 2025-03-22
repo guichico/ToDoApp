@@ -153,7 +153,25 @@ private fun DateRow(
     val animatedColor by animateColorAsState(if (!task.isDone()) textColor else textColor.copy(alpha = 0.5f))
 
     Row {
-        if (task.startTime != null || task.endTime != null) {
+        if (task.daysOfWeek.isEmpty() && task.startDate == null && task.endDate != null) {
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                Text(
+                    text = task.endDate!!.formatDayAndMonth(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = animatedColor
+                )
+                task.endTime?.let {
+                    Text(
+                        text = " às ${it.formatShortTime()}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = animatedColor
+                    )
+                }
+            }
+        } else if (task.startTime != null || task.endTime != null) {
             Row(
                 modifier = Modifier
                     .weight(1f)
@@ -183,29 +201,25 @@ private fun DateRow(
                 }
             }
         }
-        if (task.daysOfWeek.isEmpty() && task.startDate == null && task.endDate != null) {
-            Text(
-                text = task.endDate!!.formatDayAndMonth(),
-                style = MaterialTheme.typography.bodyMedium,
-                color = textColor
-            )
-        }
         task.reminder?.let { reminderDate ->
-            Row {
+            Row(
+                modifier = Modifier
+                    .padding(top = 2.dp)
+            ) {
                 ToDoAppIcon(
                     modifier = Modifier
                         .size(12.dp)
                         .align(Alignment.CenterVertically),
                     icon = ToDoAppIcons.icReminder,
                     contentDescription = "reminder",
-                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
                 )
                 Text(
                     modifier = Modifier
                         .padding(start = ToDoAppTheme.spacing.extraSmall),
                     text = reminderDate.formatShortTime(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
+                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
                 )
             }
         }
