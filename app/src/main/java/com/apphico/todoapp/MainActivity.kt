@@ -1,6 +1,7 @@
 package com.apphico.todoapp
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,6 +24,9 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen()
         enableEdgeToEdge()
+
+        // TODO Deprecated
+        window.setDecorFitsSystemWindows(true)
 
         setContent {
             ToDoAppTheme {

@@ -8,8 +8,11 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.RecurringTaskSaveMethod
 import com.apphico.core_model.Task
+import com.apphico.core_repository.calendar.CheckListRepository
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.designsystem.R
+import com.apphico.extensions.isEqualToBy
+import com.apphico.extensions.update
 import com.apphico.todoapp.group.GROUP_ARG
 import com.apphico.todoapp.location.LOCATION_ARG
 import com.apphico.todoapp.navigation.CustomNavType
@@ -28,7 +31,8 @@ import kotlin.reflect.typeOf
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val taskRepository: TaskRepository
+    val taskRepository: TaskRepository,
+    private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
     private val task = savedStateHandle.toRoute<AddEditTaskRoute>(
@@ -37,6 +41,8 @@ class AddEditTaskViewModel @Inject constructor(
 
     val editingTask = MutableStateFlow(task ?: Task())
     val isEditing = task != null
+
+    val editingCheckList = MutableStateFlow(task?.checkList ?: emptyList())
 
     val nameError = MutableStateFlow<Int?>(null)
     val startDateError = MutableStateFlow<Int?>(null)
@@ -102,7 +108,20 @@ class AddEditTaskViewModel @Inject constructor(
     }
 
     fun onCheckListChanged(checkList: List<CheckListItem>) {
-        editingTask.value = editingTask.value.copy(checkList = checkList)
+        editingCheckList.value = checkList
+    }
+
+    fun setCheckListItemDone(checkListItem: CheckListItem, taskDate: LocalDate?, isDone: Boolean) = viewModelScope.launch {
+        if (checkListRepository.changeCheckListItemDone(checkListItem, taskDate, isDone)) {
+            val newDoneDates = if (isDone) {
+                checkListItem.doneDates + "${if (checkListItem.doneDates.isNullOrEmpty()) "" else ", "}, $taskDate"
+            } else {
+                checkListItem.doneDates?.replace(taskDate.toString(), "")
+            }
+            val newItem = checkListItem.copy(hasDone = isDone, doneDates = newDoneDates)
+
+            editingCheckList.value = editingCheckList.value.update(checkListItem, newItem)
+        }
     }
 
     fun onReminderTimeChanged(time: LocalTime?) {
@@ -127,7 +146,7 @@ class AddEditTaskViewModel @Inject constructor(
             editingTask.endDate != task.endDate -> true
             editingTask.endTime != task.endTime -> true
             editingTask.daysOfWeek != task.daysOfWeek -> true
-            editingTask.checkList != task.checkList -> true
+            !editingTask.checkList.isEqualToBy(editingCheckList.value) { it.name } -> true
             editingTask.reminder != task.reminder -> true
             editingTask.location != task.location -> true
             else -> false
@@ -163,6 +182,8 @@ class AddEditTaskViewModel @Inject constructor(
         }
 
         if (!hasError) {
+            task = task.copy(checkList = editingCheckList.value)
+
             viewModelScope.launch {
                 onResult(
                     if (isEditing) {

@@ -40,13 +40,12 @@ fun SmallTextField(
     onValueChange: (String) -> Unit = {},
     onClick: () -> Unit = emptyLambda,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    textColor: Color = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
-    val textColor = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black
-
     BasicTextField(
         modifier = modifier
             .heightIn(min = 42.dp)

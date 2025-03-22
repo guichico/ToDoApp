@@ -1,13 +1,18 @@
 package com.apphico.designsystem.components.checklist
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowColumn
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -16,16 +21,16 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -33,34 +38,44 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.CheckListItem
+import com.apphico.designsystem.components.checkbox.CircleCheckbox
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.textfield.SmallTextField
+import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.designsystem.theme.White
+import com.apphico.designsystem.theme.isColorDark
+import com.apphico.extensions.add
 import com.apphico.extensions.getNowDate
+import com.apphico.extensions.remove
+import com.apphico.extensions.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CreateCheckList(
     scrollState: ScrollState,
     addNewItemTitle: String,
     checkList: State<List<CheckListItem>>,
     parentDate: State<LocalDate?>,
-    onCheckListChanged: (List<CheckListItem>) -> Unit
+    onCheckListChanged: (List<CheckListItem>) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
 ) {
-    val mutableCheckListState = remember { mutableStateListOf<CheckListItem>().apply { addAll(checkList.value) } }
-
-    Column {
-        mutableCheckListState.toList()
-            .forEachIndexed { index, checkListItem ->
+    FlowColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        checkList.value
+            .forEach { checkListItem ->
                 CheckListItemField(
-                    mutableCheckListState = mutableCheckListState,
-                    index = index,
                     checkListItem = checkListItem,
                     parentDate = parentDate.value,
-                    onCheckListChanged = onCheckListChanged
+                    onNameChanged = { name -> onCheckListChanged(checkList.value.update(checkListItem, checkListItem.copy(name = name))) },
+                    onItemRemoved = { onCheckListChanged(checkList.value.remove(it)) },
+                    onCheckListItemDoneChanged = { checkListItem, isDone -> onCheckListItemDoneChanged(checkListItem, parentDate.value, isDone) }
                 )
 
                 Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
@@ -68,8 +83,7 @@ fun CreateCheckList(
 
         AddItemField(
             addNewItemTitle = addNewItemTitle,
-            mutableCheckListState = mutableCheckListState,
-            onCheckListChanged = onCheckListChanged,
+            onItemAdded = { onCheckListChanged(checkList.value.add(it)) },
             scrollState = scrollState
         )
     }
@@ -77,48 +91,55 @@ fun CreateCheckList(
 
 @Composable
 private fun CheckListItemField(
-    mutableCheckListState: SnapshotStateList<CheckListItem>,
-    index: Int,
     checkListItem: CheckListItem,
     parentDate: LocalDate?,
-    onCheckListChanged: (List<CheckListItem>) -> Unit
+    onNameChanged: (String) -> Unit,
+    onItemRemoved: (CheckListItem) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, Boolean) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
+    val isCheckListItemDone = checkListItem.isDone(parentDate)
+
     val nameStyle =
-        if (checkListItem.isDone(parentDate)) MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.LineThrough) else MaterialTheme.typography.bodyLarge
+        if (isCheckListItemDone) MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.LineThrough) else MaterialTheme.typography.bodyLarge
+    val textColor = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black
+    val animatedColor by animateColorAsState(if (!isCheckListItemDone) textColor else textColor.copy(alpha = 0.5f))
+
+    var text by remember { mutableStateOf(checkListItem.name) }
 
     SmallTextField(
         modifier = Modifier
             .fillMaxWidth(),
-        value = mutableCheckListState[index].name,
-        onValueChange = { value ->
-            mutableCheckListState[index] = checkListItem.copy(name = value)
-            onCheckListChanged(mutableCheckListState.toList())
+        value = text,
+        onValueChange = {
+            text = it
+            onNameChanged(it)
         },
         textStyle = nameStyle,
+        textColor = animatedColor,
         leadingIcon = {
             Row {
                 ToDoAppIconButton(
                     icon = ToDoAppIcons.icReorder,
                     onClick = {}
                 )
-                ToDoAppIconButton(
-                    icon = if (checkListItem.isDone(parentDate)) ToDoAppIcons.icCheckCircle else ToDoAppIcons.icCircle,
+                CircleCheckbox(
                     modifier = Modifier
-                        .offset(x = (-8).dp),
-                    onClick = {}
+                        .offset(x = (-8).dp)
+                        .align(Alignment.CenterVertically),
+                    checked = isCheckListItemDone,
+                    onCheckedChanged = {
+                        onCheckListItemDoneChanged(checkListItem, it)
+                    },
+                    tint = animatedColor
                 )
             }
-
         },
         trailingIcon = {
             ToDoAppIconButton(
                 icon = ToDoAppIcons.icRemove,
-                onClick = {
-                    mutableCheckListState.remove(checkListItem)
-                    onCheckListChanged(mutableCheckListState.toList())
-                }
+                onClick = { onItemRemoved(checkListItem) }
             )
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
@@ -129,8 +150,7 @@ private fun CheckListItemField(
 @Composable
 private fun AddItemField(
     addNewItemTitle: String,
-    mutableCheckListState: SnapshotStateList<CheckListItem>,
-    onCheckListChanged: (List<CheckListItem>) -> Unit,
+    onItemAdded: (CheckListItem) -> Unit,
     scrollState: ScrollState
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -151,28 +171,27 @@ private fun AddItemField(
             ToDoAppIconButton(
                 icon = ToDoAppIcons.icAdd,
                 onClick = {
-                    text = addItem(mutableCheckListState, text, onCheckListChanged, coroutineScope, scrollState, addItemHeight)
+                    text = addItem(onItemAdded, text, coroutineScope, scrollState, addItemHeight)
                 }
             )
         },
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
         keyboardActions = KeyboardActions(
             onNext = {
-                text = addItem(mutableCheckListState, text, onCheckListChanged, coroutineScope, scrollState, addItemHeight)
-            })
+                text = addItem(onItemAdded, text, coroutineScope, scrollState, addItemHeight)
+            }
+        )
     )
 }
 
 private fun addItem(
-    mutableCheckListState: SnapshotStateList<CheckListItem>,
+    onItemAdded: (CheckListItem) -> Unit,
     text: String,
-    onCheckListChanged: (List<CheckListItem>) -> Unit,
     coroutineScope: CoroutineScope,
     scrollState: ScrollState,
     addItemHeight: Float
 ): String {
-    mutableCheckListState.add(CheckListItem(name = text))
-    onCheckListChanged(mutableCheckListState.toList())
+    onItemAdded(CheckListItem(name = text))
 
     coroutineScope.launch {
         scrollState.animateScrollBy(addItemHeight)
@@ -198,7 +217,8 @@ private fun TaskCreateCheckListPreview() {
                 )
             },
             parentDate = remember { mutableStateOf(getNowDate()) },
-            onCheckListChanged = {}
+            onCheckListChanged = {},
+            onCheckListItemDoneChanged = { _, _, _ -> }
         )
     }
 }

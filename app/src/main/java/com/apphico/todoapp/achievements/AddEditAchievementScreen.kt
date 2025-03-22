@@ -415,7 +415,8 @@ private fun MeasurementTypeCheckList(
             addNewItemTitle = stringResource(R.string.add_checklist_item),
             checkList = checkList,
             parentDate = remember { mutableStateOf(getNowDate()) }, // TODO Change it
-            onCheckListChanged = {}
+            onCheckListChanged = {},
+            onCheckListItemDoneChanged = { _, _, _ -> }
         )
     }
 }

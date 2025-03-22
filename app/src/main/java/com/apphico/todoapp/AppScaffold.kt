@@ -59,6 +59,7 @@ fun AppScaffold(
     val coroutine = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
 
+    // TODO Check orientation changed
     val bottomBarSelectedItem = topLevelRoutes.firstOrNull { navBackStackEntry?.destination?.hasRoute(it.route::class) == true }
 
     var isBottomBarVisible by remember { mutableStateOf(true) }
