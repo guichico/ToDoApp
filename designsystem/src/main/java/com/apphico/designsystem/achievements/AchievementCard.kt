@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextDecoration
@@ -32,15 +31,11 @@ import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.fakeData.mockedAchievement
 import com.apphico.designsystem.components.card.DefaultCard
 import com.apphico.designsystem.components.checklist.CheckList
-import com.apphico.designsystem.theme.Black
-import com.apphico.designsystem.theme.DarkGray
 import com.apphico.designsystem.theme.LightBlue
 import com.apphico.designsystem.theme.MediumBlue
-import com.apphico.designsystem.theme.RippleBlue
-import com.apphico.designsystem.theme.SecondaryText
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 import com.apphico.extensions.formatShortDate
+import com.apphico.extensions.getNowDate
 
 @Composable
 fun AchievementCard(
@@ -112,7 +107,9 @@ fun AchievementCard(
                             .offset(x = (-2).dp)
                             .padding(top = ToDoAppTheme.spacing.extraSmall),
                         checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList,
-                        textColor = MaterialTheme.colorScheme.primary
+                        parentDate = getNowDate(), // TODO Change it
+                        textColor = MaterialTheme.colorScheme.primary,
+                        onCheckListItemDoneChanged = { _, _ -> }
                     )
                 }
                 if (achievement.getProgress() < 1f) {

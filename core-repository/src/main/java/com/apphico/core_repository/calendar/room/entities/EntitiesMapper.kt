@@ -24,15 +24,15 @@ fun CheckListItem.toCheckListItemDB(taskId: Long): CheckListItemDB =
     CheckListItemDB(
         checkListItemId = this.id,
         checkListTaskId = taskId,
-        name = this.name,
-        isDone = this.isDone
+        name = this.name
     )
 
-fun CheckListItemDB.tCheckListItem(): CheckListItem =
+fun CheckListWithDone.toCheckListItem(): CheckListItem =
     CheckListItem(
-        id = this.checkListItemId,
-        name = this.name,
-        isDone = this.isDone
+        id = this.checkListItem.checkListItemId,
+        name = this.checkListItem.name,
+        hasDone = this.checkListItemHasDone,
+        doneDates = this.checkListItemDoneDates
     )
 
 fun Location.toLocationDB(taskId: Long): LocationDB =
@@ -71,7 +71,7 @@ fun TaskWithRelations.toTask(): Task =
         name = this.taskDB.name,
         description = this.taskDB.description,
         group = this.groupDB?.toGroup(),
-        checkList = this.checkList?.map { it.tCheckListItem() } ?: emptyList(),
+        checkList = this.checkList?.map { it.toCheckListItem() } ?: emptyList(),
         startDate = this.taskDB.startDate,
         startTime = this.taskDB.startTime,
         endDate = this.taskDB.endDate,

@@ -1,6 +1,7 @@
 package com.apphico.core_repository.calendar.room.entities
 
 import androidx.room.ColumnInfo
+import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -19,8 +20,15 @@ data class GroupDB(
 data class CheckListItemDB(
     @PrimaryKey(autoGenerate = true) val checkListItemId: Long = 0,
     val checkListTaskId: Long,
-    val name: String,
-    val isDone: Boolean = false,
+    val name: String
+)
+
+@Entity
+data class CheckListItemDoneDB(
+    @PrimaryKey(autoGenerate = true) val doneId: Long = 0,
+    val checkListItemDoneId: Long,
+    val doneDate: LocalDate,
+    val taskDate: LocalDate?
 )
 
 @Entity
@@ -57,8 +65,25 @@ data class TaskDoneDB(
 data class TaskWithRelations(
     @Embedded val taskDB: TaskDB,
     @Relation(parentColumn = "taskGroupId", entityColumn = "groupId") val groupDB: GroupDB?,
-    @Relation(parentColumn = "taskId", entityColumn = "checkListTaskId") val checkList: List<CheckListItemDB>?,
+    @Relation(parentColumn = "taskId", entityColumn = "checkListTaskId") val checkList: List<CheckListWithDone>?,
     @Relation(parentColumn = "taskId", entityColumn = "locationTaskId") val locationDB: LocationDB?,
     @ColumnInfo("hasDone") val hasDone: Boolean?,
     @ColumnInfo("doneDates") val doneDates: String?,
+)
+
+@DatabaseView(
+    "SELECT checklistitemdb.*, checkListDoneDates.checkListItemHasDone, checkListDoneDates.checkListItemDoneDates " +
+            "FROM checklistitemdb " +
+            "LEFT OUTER JOIN " +
+            "( " +
+            "    SELECT checkListItemDoneId, 1 AS checkListItemHasDone, group_concat(taskDate) AS checkListItemDoneDates " +
+            "    FROM checklistitemdonedb " +
+            "    GROUP BY checkListItemDoneId " +
+            ") AS checkListDoneDates " +
+            "ON checklistitemdb.checkListItemId = checkListDoneDates.checkListItemDoneId"
+)
+data class CheckListWithDone(
+    @Embedded val checkListItem: CheckListItemDB,
+    @ColumnInfo("checkListItemHasDone") val checkListItemHasDone: Boolean?,
+    @ColumnInfo("checkListItemDoneDates") val checkListItemDoneDates: String?,
 )

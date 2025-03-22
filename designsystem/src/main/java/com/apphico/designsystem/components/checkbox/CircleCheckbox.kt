@@ -18,7 +18,7 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 fun CircleCheckbox(
     modifier: Modifier = Modifier,
     checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
+    onCheckedChanged: (Boolean) -> Unit,
     tint: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
 ) {
     Crossfade(
@@ -37,7 +37,7 @@ fun CircleCheckbox(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null
                 ) {
-                    onCheckedChange(!isChecked)
+                    onCheckedChanged(!isChecked)
                 },
             icon = icon.value,
             tint = tint,

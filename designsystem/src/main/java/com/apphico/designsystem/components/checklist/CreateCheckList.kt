@@ -37,14 +37,17 @@ import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.textfield.SmallTextField
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @Composable
 fun CreateCheckList(
     scrollState: ScrollState,
     addNewItemTitle: String,
     checkList: State<List<CheckListItem>>,
+    parentDate: State<LocalDate?>,
     onCheckListChanged: (List<CheckListItem>) -> Unit
 ) {
     val mutableCheckListState = remember { mutableStateListOf<CheckListItem>().apply { addAll(checkList.value) } }
@@ -56,6 +59,7 @@ fun CreateCheckList(
                     mutableCheckListState = mutableCheckListState,
                     index = index,
                     checkListItem = checkListItem,
+                    parentDate = parentDate.value,
                     onCheckListChanged = onCheckListChanged
                 )
 
@@ -76,12 +80,13 @@ private fun CheckListItemField(
     mutableCheckListState: SnapshotStateList<CheckListItem>,
     index: Int,
     checkListItem: CheckListItem,
+    parentDate: LocalDate?,
     onCheckListChanged: (List<CheckListItem>) -> Unit
 ) {
     val focusManager = LocalFocusManager.current
 
     val nameStyle =
-        if (checkListItem.isDone) MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.LineThrough) else MaterialTheme.typography.bodyLarge
+        if (checkListItem.isDone(parentDate)) MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.LineThrough) else MaterialTheme.typography.bodyLarge
 
     SmallTextField(
         modifier = Modifier
@@ -99,7 +104,7 @@ private fun CheckListItemField(
                     onClick = {}
                 )
                 ToDoAppIconButton(
-                    icon = if (checkListItem.isDone) ToDoAppIcons.icCheckCircle else ToDoAppIcons.icCircle,
+                    icon = if (checkListItem.isDone(parentDate)) ToDoAppIcons.icCheckCircle else ToDoAppIcons.icCircle,
                     modifier = Modifier
                         .offset(x = (-8).dp),
                     onClick = {}
@@ -192,6 +197,7 @@ private fun TaskCreateCheckListPreview() {
                     )
                 )
             },
+            parentDate = remember { mutableStateOf(getNowDate()) },
             onCheckListChanged = {}
         )
     }

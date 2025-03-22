@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.AppDatabaseInitializer
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
+import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
@@ -43,6 +44,10 @@ class DatabaseModule() {
     @Provides
     @Singleton
     fun provideCheckListItemDao(appDatabase: AppDatabase): CheckListItemDao = appDatabase.checkListItemDao()
+
+    @Provides
+    @Singleton
+    fun provideCheckListItemDoneDao(appDatabase: AppDatabase): CheckListItemDoneDao = appDatabase.checkListItemDoneDao()
 
     @Provides
     @Singleton

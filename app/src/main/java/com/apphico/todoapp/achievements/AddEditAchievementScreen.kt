@@ -70,6 +70,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getGMTNowMillis
+import com.apphico.extensions.getNowDate
 import java.time.LocalDateTime
 
 private val MeasurementValueUnit.label: Int
@@ -413,6 +414,7 @@ private fun MeasurementTypeCheckList(
             scrollState = scrollState,
             addNewItemTitle = stringResource(R.string.add_checklist_item),
             checkList = checkList,
+            parentDate = remember { mutableStateOf(getNowDate()) }, // TODO Change it
             onCheckListChanged = {}
         )
     }

@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
 import com.apphico.designsystem.components.icons.ToDoAppIcon
@@ -55,7 +56,8 @@ fun CalendarScreen(
         calendarViewMode = calendarViewMode.value,
         tasks = calendar,
         navigateToAddEditTask = navigateToAddEditTask,
-        onDoneCheckedChange = { task, isDone -> calendarViewModel.setTaskDone(task, isDone) }
+        onDoneCheckedChanged = { task, isDone -> calendarViewModel.setTaskDone(task, isDone) },
+        onCheckListItemDoneChanged = { checkListItem, task, isDone -> calendarViewModel.setCheckListItemDone(checkListItem, task, isDone) }
     )
 }
 
@@ -65,7 +67,8 @@ private fun CalendarScreenContent(
     calendarViewMode: CalendarViewMode,
     tasks: State<List<Task>>,
     navigateToAddEditTask: (Task?) -> Unit,
-    onDoneCheckedChange: (Task, Boolean) -> Unit
+    onDoneCheckedChanged: (Task, Boolean) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -88,13 +91,15 @@ private fun CalendarScreenContent(
                     selectedDate = selectedDate,
                     tasks = tasks.value,
                     onTaskClicked = navigateToAddEditTask,
-                    onDoneCheckedChange = onDoneCheckedChange
+                    onDoneCheckedChanged = onDoneCheckedChanged,
+                    onCheckListItemDoneChanged = onCheckListItemDoneChanged
                 )
             } else {
                 taskRowsAgendaViewMode(
                     tasks = tasks.value,
                     onTaskClicked = navigateToAddEditTask,
-                    onDoneCheckedChange = onDoneCheckedChange
+                    onDoneCheckedChanged = onDoneCheckedChanged,
+                    onCheckListItemDoneChanged = onCheckListItemDoneChanged
                 )
             }
         }
@@ -132,7 +137,8 @@ private fun LazyListScope.taskRowsDayViewMode(
     selectedDate: LocalDate,
     tasks: List<Task>,
     onTaskClicked: (Task?) -> Unit,
-    onDoneCheckedChange: (Task, Boolean) -> Unit
+    onDoneCheckedChanged: (Task, Boolean) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit
 ) {
     val oneTimeTask = tasks.filter { it.startDate == null && it.startTime == null }
     val routineTask = tasks.filter { it.startDate != null || it.startTime != null }
@@ -141,7 +147,8 @@ private fun LazyListScope.taskRowsDayViewMode(
         TaskCard(
             task = task,
             onClick = { onTaskClicked(task) },
-            onDoneCheckedChange = { onDoneCheckedChange(task, it) }
+            onDoneCheckedChanged = { onDoneCheckedChanged(task, it) },
+            onCheckListItemDoneChanged = { checkListItem, isDone -> onCheckListItemDoneChanged(checkListItem, task, isDone) }
         )
     }
     if (routineTask.isNotEmpty()) {
@@ -153,7 +160,8 @@ private fun LazyListScope.taskRowsDayViewMode(
         TaskCard(
             task = task,
             onClick = { onTaskClicked(task) },
-            onDoneCheckedChange = { onDoneCheckedChange(task, it) }
+            onDoneCheckedChanged = { onDoneCheckedChanged(task, it) },
+            onCheckListItemDoneChanged = { checkListItem, isDone -> onCheckListItemDoneChanged(checkListItem, task, isDone) }
         )
     }
 }
@@ -161,7 +169,8 @@ private fun LazyListScope.taskRowsDayViewMode(
 private fun LazyListScope.taskRowsAgendaViewMode(
     tasks: List<Task>,
     onTaskClicked: (Task?) -> Unit,
-    onDoneCheckedChange: (Task, Boolean) -> Unit
+    onDoneCheckedChanged: (Task, Boolean) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit
 ) {
     itemsIndexed(
         items = tasks,
@@ -178,7 +187,8 @@ private fun LazyListScope.taskRowsAgendaViewMode(
         TaskCard(
             task = task,
             onClick = { onTaskClicked(task) },
-            onDoneCheckedChange = { onDoneCheckedChange(task, it) }
+            onDoneCheckedChanged = { onDoneCheckedChanged(task, it) },
+            onCheckListItemDoneChanged = { checkListItem, isDone -> onCheckListItemDoneChanged(checkListItem, task, isDone) }
         )
     }
 }
@@ -200,7 +210,8 @@ private fun CalendarScreenPreview(
             calendarViewMode = CalendarViewMode.DAY,
             tasks = remember { mutableStateOf(tasks) },
             navigateToAddEditTask = {},
-            onDoneCheckedChange = { _, _ -> }
+            onDoneCheckedChanged = { _, _ -> },
+            onCheckListItemDoneChanged = { _, _, _ -> }
         )
     }
 }

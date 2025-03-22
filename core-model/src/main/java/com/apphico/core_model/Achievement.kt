@@ -71,7 +71,8 @@ data class Achievement(
     fun getProgress() = when {
         doneDate != null -> 1.0f
         measurementType is MeasurementType.TaskDone -> {
-            val doneTasksCount = measurementType.checkList.filter { it.isDone }.size
+            // TODO Check it
+            val doneTasksCount = measurementType.checkList.filter { it.isDone(this.doneDate) }.size
             doneTasksCount.toFloat() / measurementType.checkList.size.toFloat()
         }
 

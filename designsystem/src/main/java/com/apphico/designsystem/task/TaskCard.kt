@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
@@ -45,7 +46,8 @@ fun TaskCard(
     modifier: Modifier = Modifier,
     task: Task,
     onClick: () -> Unit,
-    onDoneCheckedChange: (Boolean) -> Unit
+    onDoneCheckedChanged: (Boolean) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, Boolean) -> Unit
 ) {
     DefaultCard(
         modifier = modifier,
@@ -73,7 +75,7 @@ fun TaskCard(
                 Header(
                     task = task,
                     textColor = MaterialTheme.colorScheme.primary,
-                    onDoneCheckedChange = onDoneCheckedChange
+                    onDoneCheckedChanged = onDoneCheckedChanged
                 )
                 DateRow(
                     task = task,
@@ -86,7 +88,9 @@ fun TaskCard(
                             .offset(x = (-2).dp)
                             .padding(top = ToDoAppTheme.spacing.extraSmall),
                         checkList = task.checkList,
-                        textColor = MaterialTheme.colorScheme.primary
+                        parentDate = task.startDate,
+                        textColor = MaterialTheme.colorScheme.primary,
+                        onCheckListItemDoneChanged = onCheckListItemDoneChanged
                     )
                 }
             }
@@ -117,7 +121,7 @@ private fun GroupIndicator(
 private fun Header(
     task: Task,
     textColor: Color,
-    onDoneCheckedChange: (Boolean) -> Unit
+    onDoneCheckedChanged: (Boolean) -> Unit
 ) {
     val isTaskDone = task.isDone()
     val animatedColor by animateColorAsState(if (!isTaskDone) textColor else textColor.copy(alpha = 0.5f))
@@ -139,7 +143,7 @@ private fun Header(
         CircleCheckbox(
             modifier = Modifier,
             checked = isTaskDone,
-            onCheckedChange = onDoneCheckedChange,
+            onCheckedChanged = onDoneCheckedChanged,
             tint = animatedColor
         )
     }
@@ -240,7 +244,8 @@ private fun TaskCardPreview(
         TaskCard(
             task = task,
             onClick = {},
-            onDoneCheckedChange = {}
+            onDoneCheckedChanged = {},
+            onCheckListItemDoneChanged = { _, _ -> }
         )
     }
 }

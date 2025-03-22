@@ -267,6 +267,7 @@ private fun AddTaskScreenContent(
             CheckList(
                 scrollState = scrollState,
                 checkList = remember { derivedStateOf { task.value.checkList } },
+                parentDate = remember { derivedStateOf { task.value.startDate } },
                 onCheckListChanged = onCheckListChanged
             )
 
@@ -462,6 +463,7 @@ private fun DateRow(
 private fun CheckList(
     scrollState: ScrollState,
     checkList: State<List<CheckListItem>>,
+    parentDate: State<LocalDate?>,
     onCheckListChanged: (List<CheckListItem>) -> Unit
 ) {
     Text(
@@ -477,6 +479,7 @@ private fun CheckList(
         scrollState = scrollState,
         addNewItemTitle = stringResource(R.string.add_checklist_item),
         checkList = checkList,
+        parentDate = parentDate,
         onCheckListChanged = onCheckListChanged
     )
 }

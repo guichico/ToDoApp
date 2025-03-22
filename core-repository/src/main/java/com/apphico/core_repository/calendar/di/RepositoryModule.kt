@@ -1,5 +1,7 @@
 package com.apphico.core_repository.calendar.di
 
+import com.apphico.core_repository.calendar.CheckListRepository
+import com.apphico.core_repository.calendar.CheckListRepositoryImpl
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.calendar.CalendarRepositoryImpl
 import com.apphico.core_repository.calendar.focus.FocusRepository
@@ -9,6 +11,7 @@ import com.apphico.core_repository.calendar.group.GroupRepositoryImpl
 import com.apphico.core_repository.calendar.location.LocationRepository
 import com.apphico.core_repository.calendar.location.LocationRepositoryImpl
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
+import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
@@ -34,6 +37,10 @@ class RepositoryModule() {
 
     @Provides
     @Singleton
+    fun providesFocusRepository(): FocusRepository = FocusRepositoryImpl()
+
+    @Provides
+    @Singleton
     fun providesTaskRepository(
         taskDao: TaskDao,
         locationDao: LocationDao,
@@ -42,14 +49,16 @@ class RepositoryModule() {
 
     @Provides
     @Singleton
-    fun providesFocusRepository(): FocusRepository = FocusRepositoryImpl()
+    fun providesGroupRepository(groupDao: GroupDao): GroupRepository = GroupRepositoryImpl(groupDao)
+
+    @Provides
+    @Singleton
+    fun providesCheckListRepository(
+        checkListItemDoneDao: CheckListItemDoneDao
+    ): CheckListRepository = CheckListRepositoryImpl(checkListItemDoneDao)
 
     @Provides
     @Singleton
     fun providesLocationRepository(): LocationRepository = LocationRepositoryImpl()
-
-    @Provides
-    @Singleton
-    fun providesGroupRepository(groupDao: GroupDao): GroupRepository = GroupRepositoryImpl(groupDao)
 
 }

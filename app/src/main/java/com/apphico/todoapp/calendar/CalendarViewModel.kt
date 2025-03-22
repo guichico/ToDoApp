@@ -2,7 +2,9 @@ package com.apphico.todoapp.calendar
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Task
+import com.apphico.core_repository.calendar.CheckListRepository
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.extensions.combine
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
@@ -23,7 +25,8 @@ enum class CalendarViewMode { AGENDA, DAY }
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val calendarRepository: CalendarRepository
+    private val calendarRepository: CalendarRepository,
+    private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
     private val calendarViewMode = MutableStateFlow(CalendarViewMode.DAY)
@@ -55,5 +58,9 @@ class CalendarViewModel @Inject constructor(
 
     fun setTaskDone(task: Task, isDone: Boolean) = viewModelScope.launch {
         calendarRepository.changeTaskDone(task, isDone)
+    }
+
+    fun setCheckListItemDone(checkListItem: CheckListItem, task: Task, isDone: Boolean) = viewModelScope.launch {
+        checkListRepository.changeCheckListItemDone(checkListItem, task.startDate, isDone)
     }
 }
