@@ -25,8 +25,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroups
 import com.apphico.designsystem.components.date.CalendarView
@@ -52,20 +53,20 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 @Composable
-fun AppScaffold(
-    navController: NavHostController,
-    navBackStackEntry: NavBackStackEntry?
-) {
-    val coroutine = rememberCoroutineScope()
-    val snackBarHostState = remember { SnackbarHostState() }
+fun AppScaffold() {
+    val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
-    // TODO Check orientation changed
-    val bottomBarSelectedItem = topLevelRoutes.firstOrNull { navBackStackEntry?.destination?.hasRoute(it.route::class) == true }
+    val bottomBarSelectedItem = topLevelRoutes.firstOrNull { currentDestination?.hasRoute(it.route::class) == true }
 
     var isBottomBarVisible by remember { mutableStateOf(true) }
     LaunchedEffect(bottomBarSelectedItem) {
-        isBottomBarVisible = bottomBarSelectedItem != null || navBackStackEntry?.destination?.route == null
+        isBottomBarVisible = bottomBarSelectedItem != null && currentDestination?.route != null
     }
+
+    val coroutine = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
 
     val calendarViewMode = remember { mutableStateOf(CalendarViewMode.DAY) }
     val selectedDate = remember { mutableStateOf(getNowDate()) }
