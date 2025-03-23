@@ -15,6 +15,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
+const val REMOVE_LOCATION_ARG = "remove_location"
 const val LOCATION_ARG = "location"
 
 @Serializable
@@ -26,8 +27,13 @@ data class AddEditLocationParameters(val location: Location?) : Parcelable
 
 fun NavController.navigateToAddEditLocation(location: Location?) = navigate(AddEditLocationRoute(AddEditLocationParameters(location)))
 
-fun NavController.navigateBackToAddEditTask(savedStateHandle: SavedStateHandle, location: Location?) {
+fun NavController.navigateBackToAddEditTaskWithAddLocation(savedStateHandle: SavedStateHandle, location: Location?) {
     savedStateHandle.set<Location>(LOCATION_ARG, location)
+    popBackStack<AddEditTaskRoute>(inclusive = false)
+}
+
+fun NavController.navigateBackToAddEditTaskWithRemoveLocation(savedStateHandle: SavedStateHandle) {
+    savedStateHandle.set<Boolean>(REMOVE_LOCATION_ARG, true)
     popBackStack<AddEditTaskRoute>(inclusive = false)
 }
 
@@ -35,6 +41,7 @@ fun NavGraphBuilder.addEditLocationScreen(
     previousBackStackEntry: () -> NavBackStackEntry,
     onBackClicked: () -> Unit,
     onSelectLocationOnMapClicked: (Coordinates?) -> Unit,
+    onRemoveClicked: (SavedStateHandle) -> Unit,
     onConfirmClicked: (SavedStateHandle, Location?) -> Unit
 ) {
     composable<AddEditLocationRoute, AddEditTaskViewModel>(
@@ -49,6 +56,7 @@ fun NavGraphBuilder.addEditLocationScreen(
         AddEditLocationScreen(
             navigateBack = onBackClicked,
             navigateToSelectLocationOnMap = onSelectLocationOnMapClicked,
+            onRemoveClicked = { onRemoveClicked(previousSavedStateHandle) },
             onConfirmClicked = { location -> onConfirmClicked(previousSavedStateHandle, location) }
         )
     }

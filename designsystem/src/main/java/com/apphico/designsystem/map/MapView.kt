@@ -8,11 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -47,7 +49,8 @@ fun MapView(
     address: State<String?>,
     onAddressChanged: (String) -> Unit,
     onSearchLocationClicked: (String?) -> Unit,
-    onEditLocationClicked: (Coordinates?) -> Unit
+    onEditLocationClicked: (Coordinates?) -> Unit,
+    isLoadingLocation: State<Boolean>
 ) {
     val locationUpdates = remember { mutableStateOf(coordinates.value) }
 
@@ -57,7 +60,8 @@ fun MapView(
         AddressField(
             address = address,
             onAddressChanged = onAddressChanged,
-            onSearchLocationClicked = onSearchLocationClicked
+            onSearchLocationClicked = onSearchLocationClicked,
+            isLoadingLocation = isLoadingLocation
         )
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.extraLarge))
         Surface(
@@ -107,7 +111,8 @@ fun MapView(
 private fun AddressField(
     address: State<String?>,
     onAddressChanged: (String) -> Unit,
-    onSearchLocationClicked: (String?) -> Unit
+    onSearchLocationClicked: (String?) -> Unit,
+    isLoadingLocation: State<Boolean>
 ) {
     val locationAddress by remember { derivedStateOf { address.value } }
 
@@ -123,10 +128,18 @@ private fun AddressField(
         onValueChange = { onAddressChanged(it) },
         textStyle = MaterialTheme.typography.titleMedium,
         trailingIcon = {
-            ToDoAppIconButton(
-                icon = ToDoAppIcons.icSearch,
-                onClick = { onSearchLocationClicked(address.value) }
-            )
+            if (isLoadingLocation.value) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(24.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                ToDoAppIconButton(
+                    icon = ToDoAppIcons.icSearch,
+                    onClick = { onSearchLocationClicked(address.value) }
+                )
+            }
         },
         keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences, imeAction = ImeAction.Search),
         keyboardActions = KeyboardActions(onSearch = { onSearchLocationClicked(address.value) }),
@@ -145,7 +158,8 @@ private fun MapViewPreview(
             address = remember { mutableStateOf(null) },
             onAddressChanged = {},
             onSearchLocationClicked = {},
-            onEditLocationClicked = {}
+            onEditLocationClicked = {},
+            isLoadingLocation = remember { mutableStateOf(false) }
         )
     }
 }

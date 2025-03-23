@@ -178,11 +178,12 @@ fun AddEditTaskScreen(
             onEndDateChanged = addEditTaskViewModel::onEndDateChanged,
             onEndTimeChanged = addEditTaskViewModel::onEndTimeChanged,
             onDaysOfWeekChanged = addEditTaskViewModel::onDaysOfWeekChanged,
-            onCheckListChanged = addEditTaskViewModel::onCheckListChanged,
+            onCheckListItemChanged = addEditTaskViewModel::onCheckListItemChanged,
+            onCheckListItemItemAdded = addEditTaskViewModel::onCheckListItemItemAdded,
+            onCheckListItemItemRemoved = addEditTaskViewModel::onCheckListItemItemRemoved,
             onCheckListItemDoneChanged = addEditTaskViewModel::setCheckListItemDone,
             onReminderTimeChanged = addEditTaskViewModel::onReminderTimeChanged,
-            navigateToSelectLocation = navigateToSelectLocation,
-            onLocationRemoved = addEditTaskViewModel::onLocationRemoved
+            navigateToSelectLocation = navigateToSelectLocation
         )
     }
 }
@@ -192,7 +193,6 @@ private fun AddTaskScreenContent(
     innerPadding: PaddingValues,
     scrollState: ScrollState,
     task: State<Task>,
-    checkList: State<List<CheckListItem>>,
     nameError: State<Int?>,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
@@ -204,11 +204,13 @@ private fun AddTaskScreenContent(
     onEndDateChanged: (LocalDate?) -> Unit,
     onEndTimeChanged: (LocalTime) -> Unit,
     onDaysOfWeekChanged: (List<Int>) -> Unit,
-    onCheckListChanged: (List<CheckListItem>) -> Unit,
+    checkList: State<List<CheckListItem>>,
+    onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
+    onCheckListItemItemAdded: (CheckListItem) -> Unit,
+    onCheckListItemItemRemoved: (CheckListItem) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit,
     onReminderTimeChanged: (LocalTime?) -> Unit,
-    navigateToSelectLocation: (Location?) -> Unit,
-    onLocationRemoved: () -> Unit
+    navigateToSelectLocation: (Location?) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -275,7 +277,9 @@ private fun AddTaskScreenContent(
                 scrollState = scrollState,
                 checkList = checkList,
                 parentDate = remember { derivedStateOf { task.value.startDate } },
-                onCheckListChanged = onCheckListChanged,
+                onCheckListItemChanged = onCheckListItemChanged,
+                onCheckListItemItemAdded = onCheckListItemItemAdded,
+                onCheckListItemItemRemoved = onCheckListItemItemRemoved,
                 onCheckListItemDoneChanged = onCheckListItemDoneChanged
             )
 
@@ -300,8 +304,7 @@ private fun AddTaskScreenContent(
             LocationField(
                 modifier = Modifier.fillMaxWidth(),
                 task = task,
-                navigateToSelectLocation = navigateToSelectLocation,
-                onLocationRemoved = onLocationRemoved
+                navigateToSelectLocation = navigateToSelectLocation
             )
         }
     }
@@ -472,7 +475,9 @@ private fun CheckList(
     scrollState: ScrollState,
     checkList: State<List<CheckListItem>>,
     parentDate: State<LocalDate?>,
-    onCheckListChanged: (List<CheckListItem>) -> Unit,
+    onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
+    onCheckListItemItemAdded: (CheckListItem) -> Unit,
+    onCheckListItemItemRemoved: (CheckListItem) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
 ) {
     Text(
@@ -489,7 +494,9 @@ private fun CheckList(
         addNewItemTitle = stringResource(R.string.add_checklist_item),
         checkList = checkList,
         parentDate = parentDate,
-        onCheckListChanged = onCheckListChanged,
+        onCheckListItemChanged = onCheckListItemChanged,
+        onCheckListItemItemAdded = onCheckListItemItemAdded,
+        onCheckListItemItemRemoved = onCheckListItemItemRemoved,
         onCheckListItemDoneChanged = onCheckListItemDoneChanged
     )
 }
@@ -570,7 +577,6 @@ private fun AddTaskScreenPreview(
             innerPadding = PaddingValues(),
             scrollState = ScrollState(0),
             task = remember { mutableStateOf(task) },
-            checkList = remember { mutableStateOf(emptyList()) },
             nameError = remember { mutableStateOf(null) },
             onNameChange = {},
             onDescriptionChange = {},
@@ -582,11 +588,13 @@ private fun AddTaskScreenPreview(
             onEndDateChanged = {},
             onEndTimeChanged = {},
             onDaysOfWeekChanged = {},
-            onCheckListChanged = {},
+            checkList = remember { mutableStateOf(emptyList()) },
+            onCheckListItemChanged = { _, _ -> },
+            onCheckListItemItemAdded = {},
+            onCheckListItemItemRemoved = {},
             onCheckListItemDoneChanged = { _, _, _ -> },
             onReminderTimeChanged = {},
-            navigateToSelectLocation = {},
-            onLocationRemoved = {}
+            navigateToSelectLocation = {}
         )
     }
 }

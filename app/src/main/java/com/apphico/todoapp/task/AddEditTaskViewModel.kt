@@ -1,6 +1,7 @@
 package com.apphico.todoapp.task
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.apphico.core_model.CheckListItem
@@ -11,10 +12,14 @@ import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.CheckListRepository
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.designsystem.R
+import com.apphico.extensions.add
+import com.apphico.extensions.ifTrue
 import com.apphico.extensions.isEqualToBy
+import com.apphico.extensions.remove
 import com.apphico.extensions.update
 import com.apphico.todoapp.group.GROUP_ARG
 import com.apphico.todoapp.location.LOCATION_ARG
+import com.apphico.todoapp.location.REMOVE_LOCATION_ARG
 import com.apphico.todoapp.navigation.CustomNavType
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -67,6 +72,15 @@ class AddEditTaskViewModel @Inject constructor(
                     editingTask.value = editingTask.value.copy(location = location)
                 }
         }
+
+        viewModelScope.launch {
+            savedStateHandle.getLiveData<Boolean>(REMOVE_LOCATION_ARG, false).asFlow()
+                .mapNotNull { it }
+                .ifTrue()
+                .collectLatest {
+                    editingTask.value = editingTask.value.copy(location = null)
+                }
+        }
     }
 
     // region Fields Changed
@@ -107,8 +121,16 @@ class AddEditTaskViewModel @Inject constructor(
         editingTask.value = editingTask.value.copy(daysOfWeek = daysOfWeek.sorted())
     }
 
-    fun onCheckListChanged(checkList: List<CheckListItem>) {
-        editingCheckList.value = checkList
+    fun onCheckListItemChanged(oldItem: CheckListItem, newItem: CheckListItem) {
+        editingCheckList.value = editingCheckList.value.update(oldItem, newItem)
+    }
+
+    fun onCheckListItemItemAdded(checkListItem: CheckListItem) {
+        editingCheckList.value = editingCheckList.value.add(checkListItem)
+    }
+
+    fun onCheckListItemItemRemoved(checkListItem: CheckListItem) {
+        editingCheckList.value = editingCheckList.value.remove(checkListItem)
     }
 
     fun setCheckListItemDone(checkListItem: CheckListItem, taskDate: LocalDate?, isDone: Boolean) = viewModelScope.launch {
@@ -128,9 +150,6 @@ class AddEditTaskViewModel @Inject constructor(
         editingTask.value = editingTask.value.copy(reminder = time)
     }
 
-    fun onLocationRemoved() {
-        editingTask.value = editingTask.value.copy(location = null)
-    }
     // endregion
 
     fun hasChanges(): Boolean {

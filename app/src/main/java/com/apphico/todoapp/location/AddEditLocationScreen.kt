@@ -42,10 +42,13 @@ fun AddEditLocationScreen(
     addEditLocationViewModel: AddEditLocationViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
     navigateToSelectLocationOnMap: (Coordinates?) -> Unit,
-    onConfirmClicked: (Location?) -> Unit
+    onConfirmClicked: (Location?) -> Unit,
+    onRemoveClicked: () -> Unit,
 ) {
     val location = addEditLocationViewModel.editingLocation.collectAsState()
     val address = addEditLocationViewModel.editingAddress.collectAsState()
+
+    val isLoadingDefaultLocation = addEditLocationViewModel.isLoadingDefaultLocation.collectAsState()
 
     CheckLocationPermission(
         navigateBack = navigateBack,
@@ -69,9 +72,10 @@ fun AddEditLocationScreen(
             address = address,
             onAddressChanged = addEditLocationViewModel::onAddressTextChanged,
             onSearchLocationClicked = addEditLocationViewModel::searchLocation,
-            onConfirmClicked = onConfirmClicked,
             navigateToSelectLocationOnMap = navigateToSelectLocationOnMap,
-            navigateBack = navigateBack
+            onConfirmClicked = onConfirmClicked,
+            onRemoveClicked = onRemoveClicked,
+            isLoadingDefaultLocation = isLoadingDefaultLocation
         )
     }
 }
@@ -85,7 +89,8 @@ private fun AddEditLocationScreenContent(
     onSearchLocationClicked: (String?) -> Unit,
     navigateToSelectLocationOnMap: (Coordinates?) -> Unit,
     onConfirmClicked: (Location?) -> Unit,
-    navigateBack: () -> Unit
+    onRemoveClicked: () -> Unit,
+    isLoadingDefaultLocation: State<Boolean>
 ) {
     Box(
         modifier = Modifier
@@ -109,7 +114,8 @@ private fun AddEditLocationScreenContent(
                 address = address,
                 onAddressChanged = onAddressChanged,
                 onSearchLocationClicked = onSearchLocationClicked,
-                onEditLocationClicked = navigateToSelectLocationOnMap
+                onEditLocationClicked = navigateToSelectLocationOnMap,
+                isLoadingLocation = isLoadingDefaultLocation
             )
             Row(
                 modifier = Modifier
@@ -117,8 +123,8 @@ private fun AddEditLocationScreenContent(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 NormalButton(
-                    text = stringResource(R.string.cancel),
-                    onClick = navigateBack
+                    text = stringResource(R.string.remove),
+                    onClick = onRemoveClicked
                 )
                 NormalButton(
                     text = stringResource(R.string.confirm),
@@ -141,9 +147,10 @@ private fun AddEditLocationScreenPreview() {
             address = remember { mutableStateOf(null) },
             onAddressChanged = {},
             onSearchLocationClicked = {},
-            onConfirmClicked = {},
             navigateToSelectLocationOnMap = {},
-            navigateBack = {}
+            onConfirmClicked = {},
+            onRemoveClicked = {},
+            isLoadingDefaultLocation = remember { mutableStateOf(false) }
         )
     }
 }

@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.flowOf
 
 interface LocationRepository {
 
+    fun getLastKnownLocation(context: Context): Flow<Location?>
+
     fun getMyLocationCoordinates(context: Context): Flow<Location?>
 
     fun getMyLocationFullAddress(context: Context): Flow<Location?>
@@ -28,6 +30,26 @@ interface LocationRepository {
 }
 
 class LocationRepositoryImpl : LocationRepository {
+
+    @SuppressLint("MissingPermission")
+    override fun getLastKnownLocation(context: Context): Flow<Location?> =
+        callbackFlow {
+            LocationServices.getFusedLocationProviderClient(context)
+                .lastLocation
+                .addOnSuccessListener { location ->
+                    trySend(
+                        location?.let {
+                            Location(
+                                coordinates = Pair(it.latitude, it.longitude),
+                                address = null
+                            )
+                        }
+                    )
+                }.addOnCanceledListener { trySend(null) }
+                .addOnFailureListener { trySend(null) }
+
+            awaitClose()
+        }
 
     @SuppressLint("MissingPermission")
     override fun getMyLocationCoordinates(context: Context): Flow<Location?> =

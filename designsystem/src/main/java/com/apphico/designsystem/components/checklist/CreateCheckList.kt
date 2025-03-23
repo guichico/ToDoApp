@@ -6,13 +6,10 @@ import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowColumn
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -46,10 +43,7 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
 import com.apphico.designsystem.theme.isColorDark
-import com.apphico.extensions.add
 import com.apphico.extensions.getNowDate
-import com.apphico.extensions.remove
-import com.apphico.extensions.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -61,7 +55,9 @@ fun CreateCheckList(
     addNewItemTitle: String,
     checkList: State<List<CheckListItem>>,
     parentDate: State<LocalDate?>,
-    onCheckListChanged: (List<CheckListItem>) -> Unit,
+    onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
+    onCheckListItemItemAdded: (CheckListItem) -> Unit,
+    onCheckListItemItemRemoved: (CheckListItem) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
 ) {
     FlowColumn(
@@ -73,8 +69,8 @@ fun CreateCheckList(
                 CheckListItemField(
                     checkListItem = checkListItem,
                     parentDate = parentDate.value,
-                    onNameChanged = { name -> onCheckListChanged(checkList.value.update(checkListItem, checkListItem.copy(name = name))) },
-                    onItemRemoved = { onCheckListChanged(checkList.value.remove(it)) },
+                    onNameChanged = { name -> onCheckListItemChanged(checkListItem, checkListItem.copy(name = name)) },
+                    onItemRemoved = { onCheckListItemItemRemoved(it) },
                     onCheckListItemDoneChanged = { checkListItem, isDone -> onCheckListItemDoneChanged(checkListItem, parentDate.value, isDone) }
                 )
 
@@ -83,7 +79,7 @@ fun CreateCheckList(
 
         AddItemField(
             addNewItemTitle = addNewItemTitle,
-            onItemAdded = { onCheckListChanged(checkList.value.add(it)) },
+            onItemAdded = { onCheckListItemItemAdded(it) },
             scrollState = scrollState
         )
     }
@@ -217,7 +213,9 @@ private fun TaskCreateCheckListPreview() {
                 )
             },
             parentDate = remember { mutableStateOf(getNowDate()) },
-            onCheckListChanged = {},
+            onCheckListItemChanged = { _, _ -> },
+            onCheckListItemItemAdded = {},
+            onCheckListItemItemRemoved = {},
             onCheckListItemDoneChanged = { _, _, _ -> }
         )
     }

@@ -40,6 +40,8 @@ class AddEditLocationViewModel @Inject constructor(
     val editingLocation = MutableStateFlow(location)
     val editingAddress = MutableStateFlow(location?.address)
 
+    val isLoadingDefaultLocation = MutableStateFlow(true)
+
     init {
         viewModelScope.launch {
             savedStateHandle.getStateFlow<Coordinates?>(COORDINATES_ARG, null)
@@ -52,7 +54,10 @@ class AddEditLocationViewModel @Inject constructor(
         viewModelScope.launch {
             editingLocation
                 .map { it?.address }
-                .collectLatest(editingAddress::emit)
+                .collectLatest { address ->
+                    if (address?.isNotEmpty() == true) isLoadingDefaultLocation.emit(false)
+                    editingAddress.emit(address)
+                }
         }
     }
 
@@ -60,11 +65,22 @@ class AddEditLocationViewModel @Inject constructor(
         editingAddress.value = text
     }
 
-    fun setDefaultLocation() = viewModelScope.launch {
+    fun setDefaultLocation() {
         if (editingLocation.value == null) {
-            locationRepository.getMyLocationFullAddress(context)
-                .flowOn(Dispatchers.IO)
-                .collectLatest(editingLocation::emit)
+            viewModelScope.launch {
+                locationRepository.getLastKnownLocation(context)
+                    .flowOn(Dispatchers.IO)
+                    .collectLatest(editingLocation::emit)
+            }
+
+            viewModelScope.launch {
+                locationRepository.getMyLocationFullAddress(context)
+                    .flowOn(Dispatchers.IO)
+                    .collectLatest { location ->
+                        editingLocation.emit(location)
+                        isLoadingDefaultLocation.emit(false)
+                    }
+            }
         }
     }
 

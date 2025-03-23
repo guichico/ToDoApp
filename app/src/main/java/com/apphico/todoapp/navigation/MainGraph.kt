@@ -27,7 +27,8 @@ import com.apphico.todoapp.group.navigateToSelectGroup
 import com.apphico.todoapp.group.selectGroupScreen
 import com.apphico.todoapp.location.addEditLocationScreen
 import com.apphico.todoapp.location.navigateBackToAddEditLocation
-import com.apphico.todoapp.location.navigateBackToAddEditTask
+import com.apphico.todoapp.location.navigateBackToAddEditTaskWithAddLocation
+import com.apphico.todoapp.location.navigateBackToAddEditTaskWithRemoveLocation
 import com.apphico.todoapp.location.navigateToAddEditLocation
 import com.apphico.todoapp.location.navigateToSelectLocationOnMap
 import com.apphico.todoapp.location.selectLocationOnMapScreen
@@ -75,7 +76,8 @@ fun NavGraphBuilder.mainGraph(
         previousBackStackEntry = previousBackStackEntry,
         onBackClicked = navController::navigateBack,
         onSelectLocationOnMapClicked = navController::navigateToSelectLocationOnMap,
-        onConfirmClicked = navController::navigateBackToAddEditTask
+        onRemoveClicked = navController::navigateBackToAddEditTaskWithRemoveLocation,
+        onConfirmClicked = navController::navigateBackToAddEditTaskWithAddLocation
     )
     selectLocationOnMapScreen(
         previousBackStackEntry = previousBackStackEntry,
