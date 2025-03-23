@@ -13,6 +13,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,13 +24,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.apphico.core_model.Group
-import com.apphico.core_model.fakeData.mockedGroups
 import com.apphico.designsystem.components.date.CalendarView
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.snackbar.SnackBar
@@ -37,13 +37,13 @@ import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.views.FilterView
-import com.apphico.designsystem.views.Status
 import com.apphico.extensions.formatDayAndMonth
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.isCurrentYear
 import com.apphico.todoapp.calendar.CalendarRoute
 import com.apphico.todoapp.calendar.CalendarViewMode
+import com.apphico.todoapp.calendar.CalendarViewModel
 import com.apphico.todoapp.focus.FocusRoute
 import com.apphico.todoapp.navigation.ToDoAppBottomBar
 import com.apphico.todoapp.navigation.TopLevelRoute
@@ -68,8 +68,10 @@ fun AppScaffold() {
     val coroutine = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    val calendarViewMode = remember { mutableStateOf(CalendarViewMode.DAY) }
-    val selectedDate = remember { mutableStateOf(getNowDate()) }
+    val calendarViewModel: CalendarViewModel = hiltViewModel()
+
+    val selectedDate = calendarViewModel.selectedDate.collectAsState()
+    val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
     Scaffold(
         snackbarHost = {
@@ -82,17 +84,13 @@ fun AppScaffold() {
         topBar = {
             if (isBottomBarVisible) {
                 TopBar(
+                    calendarViewModel = calendarViewModel,
                     navBackStackEntry = navBackStackEntry,
                     bottomBarSelectedItem = bottomBarSelectedItem,
                     calendarViewMode = calendarViewMode,
-                    onViewModeChanged = {
-                        calendarViewMode.value = when (calendarViewMode.value) {
-                            CalendarViewMode.DAY -> CalendarViewMode.AGENDA
-                            CalendarViewMode.AGENDA -> CalendarViewMode.DAY
-                        }
-                    },
+                    onViewModeChanged = calendarViewModel::onViewModeChanged,
                     selectedDate = selectedDate,
-                    onSelectedDateChanged = { selectedDate.value = it }
+                    onSelectedDateChanged = calendarViewModel::onSelectedDateChanged
                 )
             }
         },
@@ -115,8 +113,7 @@ fun AppScaffold() {
                         snackBarHostState.showSnackbar(it)
                     }
                 },
-                calendarViewMode = calendarViewMode,
-                selectedDate = selectedDate
+                calendarViewModel = calendarViewModel
             )
         }
     }
@@ -125,6 +122,7 @@ fun AppScaffold() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
+    calendarViewModel: CalendarViewModel,
     navBackStackEntry: NavBackStackEntry?,
     bottomBarSelectedItem: TopLevelRoute<*>?,
     calendarViewMode: State<CalendarViewMode>,
@@ -162,9 +160,6 @@ private fun TopBar(
         isCalendarExpanded.value = !isCalendarExpanded.value
     }
 
-    val selectedStatus = remember { mutableStateOf(Status.ALL) }
-    val selectedGroups = remember { mutableStateOf(mockedGroups.dropLast(2)) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -193,14 +188,21 @@ private fun TopBar(
             selectedDate = selectedDate,
             onSelectedDateChanged = onSelectedDateChanged
         )
+
+        val groups = calendarViewModel.groups.collectAsState()
+
+        val selectedStatus = calendarViewModel.selectedStatus.collectAsState()
+        val selectedGroups = calendarViewModel.selectedGroups.collectAsState()
+
         FilterView(
             isFilterExpanded = isFilterExpanded,
             showStatusFilter = !isFocusSelected,
             selectedStatus = selectedStatus,
-            onStatusChanged = { selectedStatus.value = it },
-            groups = remember { mutableStateOf(mockedGroups) },
+            onStatusChanged = calendarViewModel::onSelectedStatusChanged,
+            groups = groups,
             selectedGroups = selectedGroups,
-            onGroupSelected = { selectedGroups.value = selectedGroups.value.addOrRemoveGroup(it) }
+            onGroupSelected = calendarViewModel::onSelectedGroupChanged,
+            onSearchClicked = calendarViewModel::onSearchClicked
         )
     }
 }
@@ -228,15 +230,5 @@ private fun FiltersButtonsRow(
             icon = ToDoAppIcons.icFilter,
             onClick = onOpenFiltersClicked
         )
-    }
-}
-
-private fun List<Group>.addOrRemoveGroup(group: Group): List<Group> {
-    return this.toMutableList().apply {
-        if (this.contains(group)) {
-            remove(group)
-        } else {
-            add(group)
-        }
     }
 }

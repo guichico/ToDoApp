@@ -1,7 +1,6 @@
 package com.apphico.designsystem.views
 
 import android.content.res.Configuration
-import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -44,6 +43,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Group
+import com.apphico.core_model.TaskStatus
 import com.apphico.core_model.fakeData.mockedGroups
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.SmallButton
@@ -53,22 +53,18 @@ import com.apphico.designsystem.theme.MediumGray
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 
-enum class Status(@StringRes val title: Int) {
-    ALL(R.string.all),
-    DONE(R.string.finished),
-    UNDONE(R.string.unfinished)
-}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterView(
     isFilterExpanded: State<Boolean>,
     showStatusFilter: Boolean = true,
-    selectedStatus: State<Status>,
-    onStatusChanged: (Status) -> Unit,
+    selectedStatus: State<TaskStatus>,
+    onStatusChanged: (TaskStatus) -> Unit,
     groups: State<List<Group>>,
     selectedGroups: State<List<Group>>,
-    onGroupSelected: (Group) -> Unit
+    onGroupSelected: (Group) -> Unit,
+    onSearchClicked: () -> Unit
 ) {
     AnimatedVisibility(
         visible = isFilterExpanded.value,
@@ -99,7 +95,7 @@ fun FilterView(
                         horizontalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
                         maxItemsInEachRow = 3
                     ) {
-                        Status.entries.forEach { status ->
+                        TaskStatus.entries.forEach { status ->
                             StatusRow(
                                 selectedStatus = selectedStatus,
                                 status = status,
@@ -131,8 +127,8 @@ fun FilterView(
                     modifier = Modifier
                         .padding(top = ToDoAppTheme.spacing.small)
                         .align(Alignment.End),
-                    onClick = { /*TODO*/ },
-                    text = "Aplicar"
+                    onClick = onSearchClicked,
+                    text = stringResource(R.string.search_btn)
                 )
             }
         }
@@ -141,8 +137,8 @@ fun FilterView(
 
 @Composable
 private fun StatusRow(
-    status: Status,
-    selectedStatus: State<Status>,
+    status: TaskStatus,
+    selectedStatus: State<TaskStatus>,
     onStatusChanged: () -> Unit
 ) {
     val isSelected = selectedStatus.value == status
@@ -250,11 +246,12 @@ private fun FilterViewPreview(
     ToDoAppTheme {
         FilterView(
             isFilterExpanded = remember { mutableStateOf(true) },
-            selectedStatus = remember { mutableStateOf(Status.ALL) },
+            selectedStatus = remember { mutableStateOf(TaskStatus.ALL) },
             onStatusChanged = {},
             groups = remember { mutableStateOf(groups) },
             selectedGroups = remember { mutableStateOf(groups.dropLast(3)) },
-            onGroupSelected = {}
+            onGroupSelected = {},
+            onSearchClicked = {}
         )
     }
 }

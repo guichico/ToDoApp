@@ -1,7 +1,6 @@
 package com.apphico.todoapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -15,7 +14,7 @@ import com.apphico.todoapp.achievements.achievementScreen
 import com.apphico.todoapp.achievements.addEditAchievementScreen
 import com.apphico.todoapp.achievements.addEditProgressScreen
 import com.apphico.todoapp.achievements.navigateToAddEditAchievement
-import com.apphico.todoapp.calendar.CalendarViewMode
+import com.apphico.todoapp.calendar.CalendarViewModel
 import com.apphico.todoapp.calendar.calendarScreen
 import com.apphico.todoapp.focus.addEditFocusScreen
 import com.apphico.todoapp.focus.focusScreen
@@ -34,14 +33,12 @@ import com.apphico.todoapp.location.navigateToSelectLocationOnMap
 import com.apphico.todoapp.location.selectLocationOnMapScreen
 import com.apphico.todoapp.task.addEditTaskScreen
 import com.apphico.todoapp.task.navigateToAddEditTask
-import java.time.LocalDate
 import kotlin.reflect.KType
 
 fun NavGraphBuilder.mainGraph(
     navController: NavController,
     snackBar: (String) -> Unit,
-    calendarViewMode: State<CalendarViewMode>,
-    selectedDate: State<LocalDate>
+    calendarViewModel: CalendarViewModel,
 ) {
     val previousBackStackEntry = { navController.previousBackStackEntry!! }
 
@@ -49,8 +46,7 @@ fun NavGraphBuilder.mainGraph(
         onFocusClicked = navController::navigateToAddEditFocus
     )
     calendarScreen(
-        calendarViewMode = calendarViewMode,
-        selectedDate = selectedDate,
+        calendarViewModel = calendarViewModel,
         onTaskClicked = navController::navigateToAddEditTask
     )
     achievementScreen(

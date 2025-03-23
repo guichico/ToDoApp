@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
@@ -35,25 +34,24 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatLongDayOfWeekDate
 import com.apphico.extensions.formatShortDayOfWeekDate
+import com.apphico.extensions.getNowDate
 import com.apphico.extensions.isCurrentYear
 import com.apphico.extensions.toMillis
 import java.time.LocalDate
 
 @Composable
 fun CalendarScreen(
-    calendarViewModel: CalendarViewModel = hiltViewModel(),
-    calendarViewMode: State<CalendarViewMode>,
-    selectedDate: State<LocalDate>,
+    calendarViewModel: CalendarViewModel,
     navigateToAddEditTask: (Task?) -> Unit
 ) {
     val calendar = calendarViewModel.calendar.collectAsState()
 
-    calendarViewModel.setViewMode(calendarViewMode.value)
-    calendarViewModel.setDate(selectedDate.value)
+    val selectedDate = calendarViewModel.selectedDate.collectAsState()
+    val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
     CalendarScreenContent(
-        selectedDate = selectedDate.value,
-        calendarViewMode = calendarViewMode.value,
+        selectedDate = selectedDate,
+        calendarViewMode = calendarViewMode,
         tasks = calendar,
         navigateToAddEditTask = navigateToAddEditTask,
         onDoneCheckedChanged = { task, isDone -> calendarViewModel.setTaskDone(task, isDone) },
@@ -63,8 +61,8 @@ fun CalendarScreen(
 
 @Composable
 private fun CalendarScreenContent(
-    selectedDate: LocalDate,
-    calendarViewMode: CalendarViewMode,
+    selectedDate: State<LocalDate>,
+    calendarViewMode: State<CalendarViewMode>,
     tasks: State<List<Task>>,
     navigateToAddEditTask: (Task?) -> Unit,
     onDoneCheckedChanged: (Task, Boolean) -> Unit,
@@ -86,7 +84,7 @@ private fun CalendarScreenContent(
                 bottom = 80.dp
             )
         ) {
-            if (calendarViewMode == CalendarViewMode.DAY) {
+            if (calendarViewMode.value == CalendarViewMode.DAY) {
                 taskRowsDayViewMode(
                     selectedDate = selectedDate,
                     tasks = tasks.value,
@@ -134,7 +132,7 @@ private fun DateHeader(
 }
 
 private fun LazyListScope.taskRowsDayViewMode(
-    selectedDate: LocalDate,
+    selectedDate: State<LocalDate>,
     tasks: List<Task>,
     onTaskClicked: (Task?) -> Unit,
     onDoneCheckedChanged: (Task, Boolean) -> Unit,
@@ -153,7 +151,7 @@ private fun LazyListScope.taskRowsDayViewMode(
     }
     if (routineTask.isNotEmpty()) {
         item {
-            DateHeader(date = selectedDate)
+            DateHeader(date = selectedDate.value)
         }
     }
     items(routineTask) { task ->
@@ -206,8 +204,8 @@ private fun CalendarScreenPreview(
 ) {
     ToDoAppTheme {
         CalendarScreenContent(
-            selectedDate = LocalDate.now(),
-            calendarViewMode = CalendarViewMode.DAY,
+            selectedDate = remember { mutableStateOf(getNowDate()) },
+            calendarViewMode = remember { mutableStateOf(CalendarViewMode.DAY) },
             tasks = remember { mutableStateOf(tasks) },
             navigateToAddEditTask = {},
             onDoneCheckedChanged = { _, _ -> },

@@ -1,7 +1,10 @@
 package com.apphico.core_repository.calendar.calendar
 
 import android.util.Log
+import androidx.room.RoomRawQuery
+import com.apphico.core_model.Group
 import com.apphico.core_model.Task
+import com.apphico.core_model.TaskStatus
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
 import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
@@ -16,8 +19,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 interface CalendarRepository {
-    fun getFromDay(date: LocalDate): Flow<List<Task>>
-    fun getAll(fromStartDate: LocalDate): Flow<List<Task>>
+    fun getFromDay(date: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>>
+    fun getAll(fromStartDate: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>>
     suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean
 }
 
@@ -26,7 +29,7 @@ class CalendarRepositoryImpl(
     private val taskDoneDao: TaskDoneDao
 ) : CalendarRepository {
 
-    override fun getFromDay(date: LocalDate): Flow<List<Task>> {
+    override fun getFromDay(date: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>> {
         return taskDao.getFromDay(date)
             .map {
                 it.map {
@@ -38,7 +41,7 @@ class CalendarRepositoryImpl(
             }
     }
 
-    override fun getAll(fromStartDate: LocalDate): Flow<List<Task>> {
+    override fun getAll(fromStartDate: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>> {
         return taskDao.getAll(fromStartDate)
             .map { it.map { it.toTask() } }
             .map { tasks ->

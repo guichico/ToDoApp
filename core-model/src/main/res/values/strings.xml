@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="status_all">Todas</string>
+    <string name="status_finished">Concluídas</string>
+    <string name="status_unfinished">Não concluídas</string>
     <string name="recurring_task_this">Esta tarefa</string>
     <string name="recurring_task_future">Esta e as tarefas seguintes</string>
     <string name="recurring_task_all">Todas as tarefas</string>
