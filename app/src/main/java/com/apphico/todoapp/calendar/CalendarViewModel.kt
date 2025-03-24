@@ -91,10 +91,10 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun setTaskDone(task: Task, isDone: Boolean) = viewModelScope.launch {
-        calendarRepository.changeTaskDone(task, isDone)
+        if (calendarRepository.changeTaskDone(task, isDone)) onSearchClicked()
     }
 
     fun setCheckListItemDone(checkListItem: CheckListItem, task: Task, isDone: Boolean) = viewModelScope.launch {
-        checkListRepository.changeCheckListItemDone(checkListItem, task.startDate, isDone)
+        if (checkListRepository.changeCheckListItemDone(checkListItem, task.startDate, isDone)) onSearchClicked()
     }
 }

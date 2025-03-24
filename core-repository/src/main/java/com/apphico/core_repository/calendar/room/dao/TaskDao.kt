@@ -3,61 +3,19 @@ package com.apphico.core_repository.calendar.room.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.room.RoomRawQuery
 import androidx.room.Transaction
 import androidx.room.Update
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskWithRelations
-import com.apphico.extensions.getInt
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
 
 @Dao
 interface TaskDao {
     @Transaction
-    @Query(
-        "SELECT taskDB.*, taskDoneDates.hasDone, taskDoneDates.doneDates " +
-                "FROM taskDB " +
-                "LEFT OUTER JOIN " +
-                "( " +
-                "SELECT taskDoneId, 1 AS hasDone, group_concat(taskDate) AS doneDates " +
-                "FROM TaskDoneDb " +
-                "GROUP BY taskDoneId " +
-                ") AS taskDoneDates " +
-                "ON taskDB.taskId = taskDoneDates.taskDoneId " +
-                "WHERE " +
-                "(:fromStartDate BETWEEN date(startDate) AND date(endDate)) OR startDate is null OR endDate is null " +
-                "ORDER BY startDate, startTime"
-    )
-    fun getAll(fromStartDate: LocalDate): Flow<List<TaskWithRelations>>
-
-    @Transaction
-    @Query(
-        "SELECT taskDB.*, taskDoneDates.hasDone, taskDoneDates.doneDates " +
-                "FROM taskDB " +
-                "LEFT OUTER JOIN " +
-                "( " +
-                "SELECT taskDoneId, 1 AS hasDone, group_concat(taskDate) AS doneDates " +
-                "FROM TaskDoneDb " +
-                "GROUP BY taskDoneId " +
-                ") AS taskDoneDates " +
-                "ON taskDB.taskId = taskDoneDates.taskDoneId " +
-                "WHERE " +
-                "(((:date BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE :dayOfWeek)) OR " +
-                " ((:date BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE '[]'))" +
-                ") " +
-                "OR (" +
-                " ((date(:date) >= date(startDate) AND endDate is null) AND (daysOfWeek LIKE :dayOfWeek)) OR" +
-                " ((date(:date) == date(startDate) AND endDate is null) AND (daysOfWeek LIKE '[]')) " +
-                ") " +
-                "OR (startDate is null AND date(:date) <= endDate) " +
-                "OR (startDate is null AND endDate is null AND daysOfWeek LIKE '[]') " +
-                "ORDER BY startTime"
-    )
-    fun getFromDay(
-        date: LocalDate,
-        dayOfWeek: String = "%${date.dayOfWeek.getInt()}%"
-    ): Flow<List<TaskWithRelations>>
+    @RawQuery
+    fun getTasks(query: RoomRawQuery): Flow<List<TaskWithRelations>>
 
     @Insert
     suspend fun insert(taskDB: TaskDB): Long
