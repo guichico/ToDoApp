@@ -1,6 +1,7 @@
 package com.apphico.core_repository.calendar.room.entities
 
 import androidx.room.ColumnInfo
+import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -38,11 +39,35 @@ data class TaskDeletedDB(
     val taskDate: LocalDate?
 )
 
-data class TaskWithRelations(
+@DatabaseView(
+    "SELECT taskDB.*, taskDoneDates.hasDone, taskDoneDates.doneDates, taskDeletedDates.hasDeleted, taskDeletedDates.deletedDates " +
+            "FROM taskDB " +
+            "LEFT OUTER JOIN " +
+            "( " +
+            "SELECT taskDoneId, 1 AS hasDone, group_concat(taskDate) AS doneDates " +
+            "FROM taskDoneDb " +
+            "GROUP BY taskDoneId " +
+            ") AS taskDoneDates " +
+            "ON taskId = taskDoneId " +
+            "LEFT OUTER JOIN " +
+            "( " +
+            "SELECT taskDeleteId, 1 AS hasDeleted, group_concat(taskDate) AS deletedDates " +
+            "FROM TaskDeletedDb " +
+            "GROUP BY taskDeleteId " +
+            ") AS taskDeletedDates " +
+            "ON taskId = taskDeleteId "
+)
+data class TaskComplete(
     @Embedded val taskDB: TaskDB,
+    @ColumnInfo("hasDone") val hasDone: Boolean?,
+    @ColumnInfo("doneDates") val doneDates: String?,
+    @ColumnInfo("hasDeleted") val hasDeleted: Boolean?,
+    @ColumnInfo("deletedDates") val deletedDates: String?,
+)
+
+data class TaskWithRelations(
+    @Embedded val taskComplete: TaskComplete,
     @Relation(parentColumn = "taskGroupId", entityColumn = "groupId") val groupDB: GroupDB?,
     @Relation(parentColumn = "taskId", entityColumn = "checkListTaskId") val checkList: List<CheckListWithDone>?,
     @Relation(parentColumn = "taskId", entityColumn = "locationTaskId") val locationDB: LocationDB?,
-    @ColumnInfo("hasDone") val hasDone: Boolean?,
-    @ColumnInfo("doneDates") val doneDates: String?,
 )

@@ -3,6 +3,7 @@ package com.apphico.core_repository.calendar.room.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Transaction
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDoneDB
 import java.time.LocalDate
 
@@ -11,6 +12,11 @@ interface CheckListItemDoneDao {
     @Insert
     suspend fun insert(checkListItemDoneDB: CheckListItemDoneDB): Long
 
+    @Transaction
     @Query("DELETE FROM checkListItemDoneDB WHERE checkListItemDoneId = :checkListItemId AND (taskDate = :taskDate OR taskDate is null)")
     suspend fun delete(checkListItemId: Long, taskDate: LocalDate?)
+
+    @Transaction
+    @Query("DELETE FROM checkListItemDoneDB WHERE checkListItemDoneId IN (:checkListItemIds)")
+    suspend fun deleteAll(checkListItemIds: List<Long>)
 }

@@ -1,9 +1,9 @@
 package com.apphico.core_repository.calendar.di
 
-import com.apphico.core_repository.calendar.CheckListRepository
-import com.apphico.core_repository.calendar.CheckListRepositoryImpl
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.calendar.CalendarRepositoryImpl
+import com.apphico.core_repository.calendar.checklist.CheckListRepository
+import com.apphico.core_repository.calendar.checklist.CheckListRepositoryImpl
 import com.apphico.core_repository.calendar.focus.FocusRepository
 import com.apphico.core_repository.calendar.focus.FocusRepositoryImpl
 import com.apphico.core_repository.calendar.group.GroupRepository
@@ -15,6 +15,7 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
+import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.core_repository.calendar.task.TaskRepositoryImpl
@@ -43,9 +44,11 @@ class RepositoryModule() {
     @Singleton
     fun providesTaskRepository(
         taskDao: TaskDao,
+        taskDeletedDao: TaskDeletedDao,
         locationDao: LocationDao,
-        checkListItemDao: CheckListItemDao
-    ): TaskRepository = TaskRepositoryImpl(taskDao, locationDao, checkListItemDao)
+        checkListItemDao: CheckListItemDao,
+        checkListItemDoneDao: CheckListItemDoneDao
+    ): TaskRepository = TaskRepositoryImpl(taskDao, taskDeletedDao, locationDao, checkListItemDao, checkListItemDoneDao)
 
     @Provides
     @Singleton

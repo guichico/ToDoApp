@@ -67,18 +67,20 @@ fun Task.toTaskDB(): TaskDB =
 
 fun TaskWithRelations.toTask(): Task =
     Task(
-        id = this.taskDB.taskId,
-        name = this.taskDB.name,
-        description = this.taskDB.description,
+        id = this.taskComplete.taskDB.taskId,
+        name = this.taskComplete.taskDB.name,
+        description = this.taskComplete.taskDB.description,
         group = this.groupDB?.toGroup(),
         checkList = this.checkList?.map { it.toCheckListItem() } ?: emptyList(),
-        startDate = this.taskDB.startDate,
-        startTime = this.taskDB.startTime,
-        endDate = this.taskDB.endDate,
-        endTime = this.taskDB.endTime,
-        daysOfWeek = this.taskDB.daysOfWeek ?: emptyList(),
-        reminder = this.taskDB.reminder,
+        startDate = this.taskComplete.taskDB.startDate,
+        startTime = this.taskComplete.taskDB.startTime,
+        endDate = this.taskComplete.taskDB.endDate,
+        endTime = this.taskComplete.taskDB.endTime,
+        daysOfWeek = this.taskComplete.taskDB.daysOfWeek ?: emptyList(),
+        reminder = this.taskComplete.taskDB.reminder,
         location = this.locationDB?.toLocation(),
-        hasDone = this.hasDone,
-        doneDates = this.doneDates
+        hasDone = this.taskComplete.hasDone,
+        doneDates = this.taskComplete.doneDates,
+        hasDeleted = this.taskComplete.hasDeleted,
+        deletedDates = this.taskComplete.deletedDates
     )

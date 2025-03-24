@@ -6,7 +6,7 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Task
 import com.apphico.core_model.TaskStatus
-import com.apphico.core_repository.calendar.CheckListRepository
+import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.group.GroupRepository
 import com.apphico.extensions.addOrRemove
@@ -106,10 +106,10 @@ class CalendarViewModel @Inject constructor(
     }
 
     fun setTaskDone(task: Task, isDone: Boolean) = viewModelScope.launch {
-        if (calendarRepository.changeTaskDone(task, isDone)) onSearchClicked()
+        calendarRepository.changeTaskDone(task, isDone)
     }
 
     fun setCheckListItemDone(checkListItem: CheckListItem, task: Task, isDone: Boolean) = viewModelScope.launch {
-        if (checkListRepository.changeCheckListItemDone(checkListItem, task.startDate, isDone)) onSearchClicked()
+        checkListRepository.changeCheckListItemDone(checkListItem, task.startDate, isDone)
     }
 }

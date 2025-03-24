@@ -1,4 +1,4 @@
-package com.apphico.core_repository.calendar
+package com.apphico.core_repository.calendar.checklist
 
 import android.util.Log
 import com.apphico.core_model.CheckListItem

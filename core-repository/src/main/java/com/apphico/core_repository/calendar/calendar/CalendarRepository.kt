@@ -116,6 +116,7 @@ class CalendarRepositoryImpl(
                 }
                 .map { newDate -> this.copy(startDate = newDate, isSaved = false) }
                 .filterStatus(status)
+                .filter { !it.isDeleted() }
         } else emptyList()
     }
 }

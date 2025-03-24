@@ -9,7 +9,7 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.RecurringTask
 import com.apphico.core_model.Task
-import com.apphico.core_repository.calendar.CheckListRepository
+import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.designsystem.R
 import com.apphico.extensions.add
@@ -222,7 +222,7 @@ class AddEditTaskViewModel @Inject constructor(
         var task = editingTask.value
 
         viewModelScope.launch {
-            onResult(taskRepository.deleteTask(task))
+            onResult(taskRepository.deleteTask(task, deleteMethod))
         }
     }
 }
