@@ -19,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -28,6 +29,7 @@ import javax.inject.Inject
 
 enum class CalendarViewMode { AGENDA, DAY }
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -36,36 +38,49 @@ class CalendarViewModel @Inject constructor(
     private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
+    val groups = groupRepository.getGroups()
+        .flowOn(Dispatchers.IO)
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     val calendarViewMode = MutableStateFlow(CalendarViewMode.DAY)
     val selectedDate = MutableStateFlow(LocalDate.now())
     val selectedStatus = MutableStateFlow(TaskStatus.ALL)
     val selectedGroups = MutableStateFlow(emptyList<Group>())
 
+    val calendar = MutableStateFlow(emptyList<Task>())
+
     val searchClicked = MutableSharedFlow<Boolean>()
+    val isSearchFinished = MutableSharedFlow<Boolean>()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val calendar = combine(
-        calendarViewMode,
-        selectedDate,
-        searchClicked.startWith(true)
-    )
-        .flatMapLatest { (viewMode, selectedDate) ->
-            val status = selectedStatus.value
-            val groups = selectedGroups.value
+    init {
+        viewModelScope.launch {
+            combine(
+                calendarViewMode,
+                selectedDate,
+                searchClicked.startWith(true)
+            )
+                .flatMapLatest { (viewMode, selectedDate) ->
+                    val status = selectedStatus.value
+                    val groups = selectedGroups.value
 
-            with(calendarRepository) {
-                when (viewMode) {
-                    CalendarViewMode.DAY -> getFromDay(date = selectedDate, status = status, groups = groups)
-                    CalendarViewMode.AGENDA -> getAll(fromStartDate = selectedDate, status = status, groups = groups)
+                    with(calendarRepository) {
+                        when (viewMode) {
+                            CalendarViewMode.DAY -> getFromDay(date = selectedDate, status = status, groups = groups)
+                            CalendarViewMode.AGENDA -> getAll(fromStartDate = selectedDate, status = status, groups = groups)
+                        }
+                    }
                 }
-            }
+                .flowOn(Dispatchers.IO)
+                .collectLatest { tasks ->
+                    calendar.emit(tasks)
+                    isSearchFinished.emit(true)
+                }
         }
-        .flowOn(Dispatchers.IO)
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    }
 
-    val groups = groupRepository.getGroups()
-        .flowOn(Dispatchers.IO)
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    fun onScrollFinished() = viewModelScope.launch {
+        isSearchFinished.emit(false)
+    }
 
     fun onViewModeChanged() {
         calendarViewMode.value = when (calendarViewMode.value) {
