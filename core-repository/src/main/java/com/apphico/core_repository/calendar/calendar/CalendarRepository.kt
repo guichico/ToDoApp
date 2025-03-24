@@ -1,7 +1,6 @@
 package com.apphico.core_repository.calendar.calendar
 
 import android.util.Log
-import androidx.room.RoomRawQuery
 import com.apphico.core_model.Group
 import com.apphico.core_model.Task
 import com.apphico.core_model.TaskStatus
@@ -30,24 +29,61 @@ class CalendarRepositoryImpl(
     private val taskDoneDao: TaskDoneDao
 ) : CalendarRepository {
 
-    private val selectTasks = "SELECT taskDB.*, taskDoneDates.hasDone, taskDoneDates.doneDates " +
-            "FROM taskDB " +
-            "LEFT OUTER JOIN " +
-            "( " +
-            "SELECT taskDoneId, 1 AS hasDone, group_concat(taskDate) AS doneDates " +
-            "FROM TaskDoneDb " +
-            "GROUP BY taskDoneId " +
-            ") AS taskDoneDates " +
-            "ON taskDB.taskId = taskDoneDates.taskDoneId "
+    override fun getFromDay(date: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>> =
+        taskDao.getFromDay(
+            date = date,
+            statusAllFlag = status == TaskStatus.ALL,
+            statusDoneFlag = status == TaskStatus.DONE,
+            statusUndoneFlag = status == TaskStatus.UNDONE,
+            nullableGroupIdsFlag = groups.isEmpty(),
+            groupIds = groups.map { it.id }
+        )
+            .map {
+                it.map {
+                    val task = it.toTask()
+                    task.startDate?.let {
+                        task.copy(startDate = date)
+                    } ?: task
+                }
+            }
 
-    private fun TaskStatus.clause() = when (this) {
-        TaskStatus.ALL -> ""
-        TaskStatus.DONE -> "AND (hasDone = 1 AND startDate LIKE ('%' || doneDates || '%')) "
-        TaskStatus.UNDONE -> "AND (hasDone IS NULL OR startDate NOT LIKE ('%' || doneDates || '%'))"
+    override fun getAll(fromStartDate: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>> =
+        taskDao.getAllTasks(
+            fromStartDate = fromStartDate,
+            nullableGroupIdsFlag = groups.isEmpty(),
+            groupIds = groups.map { it.id }
+        )
+            .map { it.map { it.toTask() } }
+            .map { tasks ->
+                mutableListOf<Task>()
+                    .apply {
+                        addAll(tasks.filter { it.startDate == null }.filterStatus(status))
+
+                        tasks.filter { it.startDate != null }
+                            .forEach { task -> addAll(task.addFutureTasks(fromStartDate, status)) }
+
+                        sortBy { task ->
+                            task.startDate?.let {
+                                LocalDateTime.of(it, task.startTime ?: it.atStartOfDay().toLocalTime())
+                            }
+                        }
+                    }
+            }
+
+    override suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean {
+        return try {
+            if (isDone) {
+                taskDoneDao.insert(TaskDoneDB(taskDoneId = task.id, doneDate = getNowDate(), taskDate = task.startDate))
+            } else {
+                taskDoneDao.delete(task.id, task.startDate)
+            }
+
+            return true
+        } catch (ex: Exception) {
+            Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
+            return false
+        }
     }
-
-    private fun List<Group>.clause() =
-        if (this.isNotEmpty()) "AND taskDB.taskGroupId IN (${this.map { it.id }.joinToString(", ")}) " else ""
 
     private fun List<Task>.filterStatus(status: TaskStatus): List<Task> =
         this.filter { task ->
@@ -58,8 +94,7 @@ class CalendarRepositoryImpl(
             }
         }
 
-    private fun Stream<Task>.filterStatus(status: TaskStatus): List<Task> =
-        this.toList().filterStatus(status)
+    private fun Stream<Task>.filterStatus(status: TaskStatus): List<Task> = this.toList().filterStatus(status)
 
     private fun Task.addFutureTasks(
         selectedDate: LocalDate,
@@ -82,75 +117,5 @@ class CalendarRepositoryImpl(
                 .map { newDate -> this.copy(startDate = newDate, isSaved = false) }
                 .filterStatus(status)
         } else emptyList()
-    }
-
-    override fun getFromDay(date: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>> {
-        val query = RoomRawQuery(
-            selectTasks +
-                    "WHERE " +
-                    "((((\"$date\" BETWEEN startDate AND endDate) AND (daysOfWeek LIKE '[%${date.dayOfWeek.getInt()}%]')) OR " +
-                    " ((\"$date\" BETWEEN startDate AND endDate) AND (daysOfWeek LIKE '[]'))" +
-                    ") " +
-                    "OR " +
-                    " ((\"$date\" >= startDate AND endDate IS NULL) AND (daysOfWeek LIKE '[%${date.dayOfWeek.getInt()}%]') OR" +
-                    " ((\"$date\" == startDate AND endDate IS NULL) AND (daysOfWeek LIKE '[]'))) " +
-                    "OR (startDate IS NULL AND \"$date\" <= endDate) " +
-                    "OR (startDate IS NULL AND endDate IS NULL AND daysOfWeek LIKE '[]')) " +
-                    status.clause() +
-                    groups.clause() +
-                    "ORDER BY startTime"
-        )
-        return taskDao.getTasks(query)
-            .map {
-                it.map {
-                    val task = it.toTask()
-                    task.startDate?.let {
-                        task.copy(startDate = date)
-                    } ?: task
-                }
-            }
-    }
-
-    override fun getAll(fromStartDate: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>> {
-        val query = RoomRawQuery(
-            selectTasks +
-                    "WHERE " +
-                    "(\"$fromStartDate\" <= startDate OR startDate IS NULL OR endDate IS NULL) " +
-                    groups.clause() +
-                    "ORDER BY startDate, startTime"
-        )
-
-        return taskDao.getTasks(query)
-            .map { it.map { it.toTask() } }
-            .map { tasks ->
-                mutableListOf<Task>()
-                    .apply {
-                        addAll(tasks.filter { it.startDate == null }.filterStatus(status))
-
-                        tasks.filter { it.startDate != null }
-                            .forEach { task -> addAll(task.addFutureTasks(fromStartDate, status)) }
-
-                        sortBy { task ->
-                            task.startDate?.let {
-                                LocalDateTime.of(it, task.startTime ?: it.atStartOfDay().toLocalTime())
-                            }
-                        }
-                    }
-            }
-    }
-
-    override suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean {
-        return try {
-            if (isDone) {
-                taskDoneDao.insert(TaskDoneDB(taskDoneId = task.id, doneDate = getNowDate(), taskDate = task.startDate))
-            } else {
-                taskDoneDao.delete(task.id, task.startDate)
-            }
-
-            return true
-        } catch (ex: Exception) {
-            Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
-            return false
-        }
     }
 }
