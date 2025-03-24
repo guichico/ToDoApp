@@ -70,7 +70,9 @@ class CalendarRepositoryImpl(
         val endDate = (this.endDate ?: selectedDate.plusYears(1)).plusDays(1)
 
         return if (startDate != null && selectedDate < endDate) {
-            selectedDate.datesUntil(endDate)
+            val beginShowDate = if (selectedDate > startDate) selectedDate else startDate
+
+            beginShowDate.datesUntil(endDate)
                 .filter {
                     val allDays = DayOfWeek.entries.map { it.getInt() }
                     val taskDaysOfWeek = if (this.daysOfWeek.isEmpty()) allDays else this.daysOfWeek
@@ -86,12 +88,12 @@ class CalendarRepositoryImpl(
         val query = RoomRawQuery(
             selectTasks +
                     "WHERE " +
-                    "((((\"$date\" BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE '[%${date.dayOfWeek.getInt()}%]')) OR " +
-                    " ((\"$date\" BETWEEN date(startDate) AND date(endDate)) AND (daysOfWeek LIKE '[]'))" +
+                    "((((\"$date\" BETWEEN startDate AND endDate) AND (daysOfWeek LIKE '[%${date.dayOfWeek.getInt()}%]')) OR " +
+                    " ((\"$date\" BETWEEN startDate AND endDate) AND (daysOfWeek LIKE '[]'))" +
                     ") " +
                     "OR " +
-                    " ((\"$date\" >= date(startDate) AND endDate IS NULL) AND (daysOfWeek LIKE '[%${date.dayOfWeek.getInt()}%]') OR" +
-                    " ((\"$date\" == date(startDate) AND endDate IS NULL) AND (daysOfWeek LIKE '[]'))) " +
+                    " ((\"$date\" >= startDate AND endDate IS NULL) AND (daysOfWeek LIKE '[%${date.dayOfWeek.getInt()}%]') OR" +
+                    " ((\"$date\" == startDate AND endDate IS NULL) AND (daysOfWeek LIKE '[]'))) " +
                     "OR (startDate IS NULL AND \"$date\" <= endDate) " +
                     "OR (startDate IS NULL AND endDate IS NULL AND daysOfWeek LIKE '[]')) " +
                     status.clause() +
@@ -113,7 +115,7 @@ class CalendarRepositoryImpl(
         val query = RoomRawQuery(
             selectTasks +
                     "WHERE " +
-                    "((\"$fromStartDate\" BETWEEN date(startDate) AND date(endDate)) OR startDate IS NULL OR endDate IS NULL) " +
+                    "(\"$fromStartDate\" <= startDate OR startDate IS NULL OR endDate IS NULL) " +
                     groups.clause() +
                     "ORDER BY startDate, startTime"
         )
