@@ -13,7 +13,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.getNumber
-import com.apphico.extensions.toFormattedNumber
 import com.apphico.extensions.toIntFormattedNumber
 import com.apphico.extensions.toTextFieldFormat
 

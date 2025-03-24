@@ -6,8 +6,8 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Task
 import com.apphico.core_model.TaskStatus
-import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
+import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.group.GroupRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.combine

@@ -1,7 +1,6 @@
 package com.apphico.core_repository.calendar.focus
 
 import com.apphico.core_model.FocusMode
-import com.apphico.core_model.fakeData.mockedGroup
 import com.apphico.core_model.fakeData.mockedGroups
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
