@@ -8,7 +8,6 @@ import java.time.LocalDate
 
 @Dao
 interface TaskDoneDao {
-
     @Insert
     suspend fun insert(taskDoneDB: TaskDoneDB): Long
 

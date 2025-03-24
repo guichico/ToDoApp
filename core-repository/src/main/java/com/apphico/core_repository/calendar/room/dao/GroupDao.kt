@@ -14,9 +14,6 @@ interface GroupDao {
     @Query("SELECT * FROM groupdb")
     fun getAll(): Flow<List<GroupDB>>
 
-    @Query("SELECT * FROM groupdb WHERE groupId IN (:groupId)")
-    fun getGroup(groupId: Long): Flow<GroupDB>
-
     @Insert
     suspend fun insert(groupDB: GroupDB): Long
 

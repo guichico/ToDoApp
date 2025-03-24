@@ -8,7 +8,6 @@ import java.time.LocalDate
 
 @Dao
 interface CheckListItemDoneDao {
-
     @Insert
     suspend fun insert(checkListItemDoneDB: CheckListItemDoneDB): Long
 

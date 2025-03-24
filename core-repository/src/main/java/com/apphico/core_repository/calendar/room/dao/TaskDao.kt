@@ -20,10 +20,6 @@ interface TaskDao {
     @Insert
     suspend fun insert(taskDB: TaskDB): Long
 
-    @Transaction
-    @Insert
-    suspend fun insert(tasks: List<TaskDB>): List<Long>
-
     @Update
     suspend fun update(taskDB: TaskDB)
 
