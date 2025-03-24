@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.apphico.core_model.CheckBoxItem
-import com.apphico.core_model.RecurringTaskSaveMethod
+import com.apphico.core_model.RecurringTask
 import com.apphico.designsystem.components.buttons.AlertButton
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.emptyLambda
@@ -112,8 +112,8 @@ fun SaveRecurringTaskDialogPreview() {
     ToDoAppTheme {
         CheckBoxDialog(
             title = "Save task",
-            values = listOf(RecurringTaskSaveMethod.ThisTask, RecurringTaskSaveMethod.Future, RecurringTaskSaveMethod.All),
-            selectedItem = RecurringTaskSaveMethod.ThisTask,
+            values = listOf(RecurringTask.ThisTask, RecurringTask.Future, RecurringTask.All),
+            selectedItem = RecurringTask.ThisTask,
             onItemSelected = {},
             dismissButtonText = "Cancel",
             onDismissRequest = {},

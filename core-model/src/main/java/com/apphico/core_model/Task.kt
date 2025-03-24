@@ -12,10 +12,10 @@ import java.time.LocalTime
 
 @Parcelize
 @Serializable
-sealed class RecurringTaskSaveMethod(override val title: Int) : CheckBoxItem() {
-    data object ThisTask : RecurringTaskSaveMethod(R.string.recurring_task_this)
-    data object Future : RecurringTaskSaveMethod(R.string.recurring_task_future)
-    data object All : RecurringTaskSaveMethod(R.string.recurring_task_all)
+sealed class RecurringTask(override val title: Int) : CheckBoxItem() {
+    data object ThisTask : RecurringTask(R.string.recurring_task_this)
+    data object Future : RecurringTask(R.string.recurring_task_future)
+    data object All : RecurringTask(R.string.recurring_task_all)
 }
 
 @Stable

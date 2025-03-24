@@ -39,7 +39,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Location
-import com.apphico.core_model.RecurringTaskSaveMethod
+import com.apphico.core_model.RecurringTask
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
 import com.apphico.designsystem.R
@@ -94,7 +94,7 @@ fun AddEditTaskScreen(
         navigateBack = navigateBack
     )
 
-    var saveMethod by remember { mutableStateOf<RecurringTaskSaveMethod>(RecurringTaskSaveMethod.ThisTask) }
+    var saveMethod by remember { mutableStateOf<RecurringTask>(RecurringTask.ThisTask) }
     var isSaveDialogOpen by remember { mutableStateOf(false) }
 
     val saveAction = {
@@ -106,17 +106,29 @@ fun AddEditTaskScreen(
         }
     }
 
+    var deleteMethod by remember { mutableStateOf<RecurringTask>(RecurringTask.ThisTask) }
+    var isDeleteDialogOpen by remember { mutableStateOf(false) }
+
+    val deleteAction = {
+        addEditTaskViewModel.delete(
+            deleteMethod = deleteMethod
+        ) { isSuccess ->
+            snackBar(if (isSuccess) taskDeleteSuccess else taskDeleteError)
+            if (isSuccess) navigateBack()
+        }
+    }
+
     if (isSaveDialogOpen) {
         CheckBoxDialog(
             title = stringResource(R.string.save_recurring_task),
             values = listOf(
-                RecurringTaskSaveMethod.ThisTask,
-                RecurringTaskSaveMethod.Future,
-                RecurringTaskSaveMethod.All
+                RecurringTask.ThisTask,
+                RecurringTask.Future,
+                RecurringTask.All
             ),
             selectedItem = saveMethod,
             onItemSelected = {
-                saveMethod = it as RecurringTaskSaveMethod
+                saveMethod = it as RecurringTask
             },
             dismissButtonText = stringResource(R.string.cancel),
             onDismissRequest = { isSaveDialogOpen = false },
@@ -124,6 +136,28 @@ fun AddEditTaskScreen(
             onConfirmClicked = {
                 isSaveDialogOpen = false
                 saveAction()
+            }
+        )
+    }
+
+    if (isDeleteDialogOpen) {
+        CheckBoxDialog(
+            title = stringResource(R.string.delete_recurring_task),
+            values = listOf(
+                RecurringTask.ThisTask,
+                RecurringTask.Future,
+                RecurringTask.All
+            ),
+            selectedItem = deleteMethod,
+            onItemSelected = {
+                deleteMethod = it as RecurringTask
+            },
+            dismissButtonText = stringResource(R.string.cancel),
+            onDismissRequest = { isDeleteDialogOpen = false },
+            confirmButtonText = stringResource(R.string.delete),
+            onConfirmClicked = {
+                isDeleteDialogOpen = false
+                deleteAction()
             }
         )
     }
@@ -153,9 +187,12 @@ fun AddEditTaskScreen(
             }
         },
         onDeleteClicked = {
-            addEditTaskViewModel.delete { isSuccess ->
-                snackBar(if (isSuccess) taskDeleteSuccess else taskDeleteError)
-                if (isSuccess) navigateBack()
+            val task = editingTask.value
+
+            if (task.isRepeatable()) {
+                isDeleteDialogOpen = true
+            } else {
+                deleteAction()
             }
         },
         navigateBack = {
