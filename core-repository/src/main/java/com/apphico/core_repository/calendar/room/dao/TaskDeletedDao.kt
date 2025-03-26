@@ -1,17 +1,13 @@
 package com.apphico.core_repository.calendar.room.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import java.time.LocalDate
 
 @Dao
-interface TaskDeletedDao {
-    @Insert
-    suspend fun insert(taskDeletedDB: TaskDeletedDB): Long
-
+interface TaskDeletedDao : BaseDao<TaskDeletedDB> {
     @Transaction
     @Query("DELETE FROM taskDeletedDB WHERE taskDeleteId = :taskId")
     suspend fun deleteAll(taskId: Long)

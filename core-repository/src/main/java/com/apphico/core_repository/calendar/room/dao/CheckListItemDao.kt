@@ -8,16 +8,12 @@ import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface CheckListItemDao {
+interface CheckListItemDao : BaseDao<CheckListItemDB> {
     @Query("SELECT * FROM checklistitemdb")
     fun getAll(): Flow<List<CheckListItemDB>>
 
     @Query("SELECT * FROM checklistitemdb WHERE checkListItemId IN (:checkListItemId)")
     fun getCheckListItem(checkListItemId: Long): Flow<CheckListItemDB>
-
-    @Transaction
-    @Insert
-    suspend fun insertAll(checkListItems: List<CheckListItemDB>): List<Long>
 
     @Transaction
     @Query("DELETE FROM checklistitemdb WHERE checkListTaskId = :taskId")

@@ -1,11 +1,8 @@
 package com.apphico.core_repository.calendar.room.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskWithRelations
 import com.apphico.extensions.getInt
@@ -13,7 +10,17 @@ import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 @Dao
-interface TaskDao {
+interface TaskDao : BaseDao<TaskDB> {
+
+    @Transaction
+    @Query(
+        "SELECT * FROM TaskComplete " +
+                "WHERE (:fromStartDate <= startDate OR startDate IS NULL OR endDate IS NULL) " +
+                "AND (:nullableGroupIdsFlag OR taskGroupId IN (:groupIds)) " +
+                "ORDER BY startDate, startTime"
+    )
+    fun getAllTasks(fromStartDate: LocalDate, nullableGroupIdsFlag: Boolean, groupIds: List<Long>): Flow<List<TaskWithRelations>>
+
     @Transaction
     @Query(
         "SELECT * FROM TaskComplete " +
@@ -42,24 +49,7 @@ interface TaskDao {
     ): Flow<List<TaskWithRelations>>
 
     @Transaction
-    @Query(
-        "SELECT * FROM TaskComplete " +
-                "WHERE (:fromStartDate <= startDate OR startDate IS NULL OR endDate IS NULL) " +
-                "AND (:nullableGroupIdsFlag OR taskGroupId IN (:groupIds)) " +
-                "ORDER BY startDate, startTime"
-    )
-    fun getAllTasks(fromStartDate: LocalDate, nullableGroupIdsFlag: Boolean, groupIds: List<Long>): Flow<List<TaskWithRelations>>
-
-    @Insert
-    suspend fun insert(taskDB: TaskDB): Long
-
-    @Update
-    suspend fun update(taskDB: TaskDB)
-
-    @Transaction
     @Query("UPDATE taskdb SET endDate = :endDate WHERE taskId = :taskId")
     suspend fun updateEndDate(taskId: Long, endDate: LocalDate?)
 
-    @Delete
-    suspend fun delete(taskDB: TaskDB)
 }

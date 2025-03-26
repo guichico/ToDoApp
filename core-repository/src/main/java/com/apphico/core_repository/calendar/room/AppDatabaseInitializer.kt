@@ -52,7 +52,7 @@ class AppDatabaseInitializer(
             Group(name = appContext.getString(R.string.group_name_7), color = -10938214), // Productivity
         )
 
-        return groupDaoProvider.get().insert(groups.map { it.toGroupDB() })
+        return groupDaoProvider.get().insertAll(groups.map { it.toGroupDB() })
     }
 
     private suspend fun insertTasks(groupIds: List<Long>) {
