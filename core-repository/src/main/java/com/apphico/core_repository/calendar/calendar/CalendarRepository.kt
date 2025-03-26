@@ -57,8 +57,10 @@ class CalendarRepositoryImpl(
             .map { tasks ->
                 mutableListOf<Task>()
                     .apply {
-                        addAll(tasks.filter { it.startDate == null }.filterStatus(status))
+                        // Permanent tasks
+                        addAll(tasks.filter { it.startDate == null }.filterTasks(status))
 
+                        // Recurring tasks
                         tasks.filter { it.startDate != null }
                             .forEach { task -> addAll(task.addFutureTasks(fromStartDate, status)) }
 
@@ -85,16 +87,16 @@ class CalendarRepositoryImpl(
         }
     }
 
-    private fun List<Task>.filterStatus(status: TaskStatus): List<Task> =
+    private fun List<Task>.filterTasks(status: TaskStatus): List<Task> =
         this.filter { task ->
-            when (status) {
+            !task.isDeleted() && when (status) {
                 TaskStatus.ALL -> true
                 TaskStatus.DONE -> task.isDone()
                 TaskStatus.UNDONE -> !task.isDone()
             }
         }
 
-    private fun Stream<Task>.filterStatus(status: TaskStatus): List<Task> = this.toList().filterStatus(status)
+    private fun Stream<Task>.filterTasks(status: TaskStatus): List<Task> = this.toList().filterTasks(status)
 
     private fun Task.addFutureTasks(
         selectedDate: LocalDate,
@@ -115,8 +117,7 @@ class CalendarRepositoryImpl(
                     it.dayOfWeek.getInt() in taskDaysOfWeek
                 }
                 .map { newDate -> this.copy(startDate = newDate, isSaved = false) }
-                .filterStatus(status)
-                .filter { !it.isDeleted() }
+                .filterTasks(status)
         } else emptyList()
     }
 }
