@@ -1,9 +1,18 @@
 package com.apphico.core_repository.calendar.room.entities
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = TaskDB::class,
+            parentColumns = arrayOf("taskId"),
+            childColumns = arrayOf("locationTaskId")
+        )
+    ]
+)
 data class LocationDB(
     @PrimaryKey(autoGenerate = true) val locationId: Long = 0,
     val locationTaskId: Long,

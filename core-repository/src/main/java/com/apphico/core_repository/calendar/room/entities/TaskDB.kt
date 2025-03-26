@@ -4,12 +4,21 @@ import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.time.LocalDate
 import java.time.LocalTime
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = GroupDB::class,
+            parentColumns = arrayOf("groupId"),
+            childColumns = arrayOf("taskGroupId")
+        )
+    ]
+)
 data class TaskDB(
     @PrimaryKey(autoGenerate = true) val taskId: Long = 0,
     @ColumnInfo("task_name") val name: String,
@@ -23,7 +32,15 @@ data class TaskDB(
     val reminder: LocalTime?
 )
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = TaskDB::class,
+            parentColumns = arrayOf("taskId"),
+            childColumns = arrayOf("taskDoneId")
+        )
+    ]
+)
 data class TaskDoneDB(
     @PrimaryKey(autoGenerate = true) val doneId: Long = 0,
     val taskDoneId: Long,
@@ -31,7 +48,15 @@ data class TaskDoneDB(
     val taskDate: LocalDate?
 )
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = TaskDB::class,
+            parentColumns = arrayOf("taskId"),
+            childColumns = arrayOf("taskDeleteId")
+        )
+    ]
+)
 data class TaskDeletedDB(
     @PrimaryKey(autoGenerate = true) val deletedId: Long = 0,
     val taskDeleteId: Long,

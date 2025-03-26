@@ -4,17 +4,34 @@ import androidx.room.ColumnInfo
 import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = TaskDB::class,
+            parentColumns = arrayOf("taskId"),
+            childColumns = arrayOf("checkListTaskId")
+        )
+    ]
+)
 data class CheckListItemDB(
     @PrimaryKey(autoGenerate = true) val checkListItemId: Long = 0,
     val checkListTaskId: Long,
     val name: String
 )
 
-@Entity
+@Entity(
+    foreignKeys = [
+        ForeignKey(
+            entity = CheckListItemDB::class,
+            parentColumns = arrayOf("checkListItemId"),
+            childColumns = arrayOf("checkListItemDoneId")
+        )
+    ]
+)
 data class CheckListItemDoneDB(
     @PrimaryKey(autoGenerate = true) val doneId: Long = 0,
     val checkListItemDoneId: Long,
