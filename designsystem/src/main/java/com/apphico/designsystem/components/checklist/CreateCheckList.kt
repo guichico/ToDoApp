@@ -69,7 +69,9 @@ fun CreateCheckList(
                 CheckListItemField(
                     checkListItem = checkListItem,
                     parentDate = parentDate.value,
-                    onNameChanged = { name -> onCheckListItemChanged(checkListItem, checkListItem.copy(name = name)) },
+                    onNameChanged = { name ->
+                        onCheckListItemChanged(checkListItem, checkListItem.copy(name = name))
+                    },
                     onItemRemoved = { onCheckListItemItemRemoved(it) },
                     onCheckListItemDoneChanged = { checkListItem, isDone -> onCheckListItemDoneChanged(checkListItem, parentDate.value, isDone) }
                 )
@@ -89,7 +91,7 @@ fun CreateCheckList(
 private fun CheckListItemField(
     checkListItem: CheckListItem,
     parentDate: LocalDate?,
-    onNameChanged: (String) -> Unit,
+    onNameChanged: (String) -> Unit = {},
     onItemRemoved: (CheckListItem) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, Boolean) -> Unit
 ) {
@@ -102,16 +104,11 @@ private fun CheckListItemField(
     val textColor = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black
     val animatedColor by animateColorAsState(if (!isCheckListItemDone) textColor else textColor.copy(alpha = 0.5f))
 
-    var text by remember { mutableStateOf(checkListItem.name) }
-
     SmallTextField(
         modifier = Modifier
             .fillMaxWidth(),
-        value = text,
-        onValueChange = {
-            text = it
-            onNameChanged(it)
-        },
+        value = checkListItem.name,
+        onValueChange = onNameChanged,
         textStyle = nameStyle,
         textColor = animatedColor,
         leadingIcon = {

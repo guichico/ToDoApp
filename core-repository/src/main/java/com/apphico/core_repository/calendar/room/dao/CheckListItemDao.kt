@@ -16,6 +16,6 @@ interface CheckListItemDao : BaseDao<CheckListItemDB> {
     fun getCheckListItem(checkListItemId: Long): Flow<CheckListItemDB>
 
     @Transaction
-    @Query("DELETE FROM checklistitemdb WHERE checkListTaskId = :taskId")
-    suspend fun deleteAll(taskId: Long)
+    @Query("DELETE FROM checklistitemdb WHERE checkListItemId NOT IN (:checkListItemIds)")
+    suspend fun deleteRemoved(checkListItemIds: List<Long>)
 }

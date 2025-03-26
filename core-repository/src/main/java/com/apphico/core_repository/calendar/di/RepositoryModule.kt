@@ -10,6 +10,7 @@ import com.apphico.core_repository.calendar.group.GroupRepository
 import com.apphico.core_repository.calendar.group.GroupRepositoryImpl
 import com.apphico.core_repository.calendar.location.LocationRepository
 import com.apphico.core_repository.calendar.location.LocationRepositoryImpl
+import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
@@ -43,12 +44,12 @@ class RepositoryModule() {
     @Provides
     @Singleton
     fun providesTaskRepository(
+        appDatabase: AppDatabase,
         taskDao: TaskDao,
         taskDeletedDao: TaskDeletedDao,
         locationDao: LocationDao,
-        checkListItemDao: CheckListItemDao,
-        checkListItemDoneDao: CheckListItemDoneDao
-    ): TaskRepository = TaskRepositoryImpl(taskDao, taskDeletedDao, locationDao, checkListItemDao, checkListItemDoneDao)
+        checkListItemDao: CheckListItemDao
+    ): TaskRepository = TaskRepositoryImpl(appDatabase, taskDao, taskDeletedDao, locationDao, checkListItemDao)
 
     @Provides
     @Singleton

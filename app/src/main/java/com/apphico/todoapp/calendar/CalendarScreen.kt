@@ -101,11 +101,6 @@ private fun CalendarScreenContent(
                 bottom = 80.dp
             )
         ) {
-            // TODO Fix recomposition
-            Log.d("TEST", "list recomposition")
-            Log.d("TEST", "calendarViewMode: ${calendarViewMode.value}")
-            Log.d("TEST", "tasks size: ${tasks.value.size}")
-
             if (calendarViewMode.value == CalendarViewMode.DAY) {
                 taskRowsDayViewMode(
                     selectedDate = selectedDate,

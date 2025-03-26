@@ -3,13 +3,20 @@ package com.apphico.core_repository.calendar.room.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Transaction
 import androidx.room.Update
 
 @Dao
 interface BaseDao<T> {
-    @Insert
+    @Insert()
     suspend fun insert(obj: T): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(obj: T): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrUpdate(list: List<T>): List<Long>
 
     @Transaction
     @Insert
@@ -17,6 +24,10 @@ interface BaseDao<T> {
 
     @Update
     suspend fun update(obj: T)
+
+    @Transaction
+    @Update
+    suspend fun updateAll(list: List<T>)
 
     @Delete
     suspend fun delete(obj: T)

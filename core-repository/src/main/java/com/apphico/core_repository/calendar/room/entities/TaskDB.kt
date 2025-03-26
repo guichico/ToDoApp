@@ -5,6 +5,7 @@ import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.time.LocalDate
@@ -37,7 +38,8 @@ data class TaskDB(
         ForeignKey(
             entity = TaskDB::class,
             parentColumns = arrayOf("taskId"),
-            childColumns = arrayOf("taskDoneId")
+            childColumns = arrayOf("taskDoneId"),
+            onDelete = CASCADE
         )
     ]
 )
@@ -53,7 +55,8 @@ data class TaskDoneDB(
         ForeignKey(
             entity = TaskDB::class,
             parentColumns = arrayOf("taskId"),
-            childColumns = arrayOf("taskDeleteId")
+            childColumns = arrayOf("taskDeleteId"),
+            onDelete = CASCADE
         )
     ]
 )

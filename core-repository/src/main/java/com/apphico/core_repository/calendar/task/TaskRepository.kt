@@ -1,10 +1,11 @@
 package com.apphico.core_repository.calendar.task
 
 import android.util.Log
+import androidx.room.withTransaction
 import com.apphico.core_model.RecurringTask
 import com.apphico.core_model.Task
+import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
-import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
@@ -21,24 +22,25 @@ interface TaskRepository {
 }
 
 class TaskRepositoryImpl(
+    private val appDatabase: AppDatabase,
     private val taskDao: TaskDao,
     private val taskDeletedDao: TaskDeletedDao,
     private val locationDao: LocationDao,
-    private val checkListItemDao: CheckListItemDao,
-    private val checkListItemDoneDao: CheckListItemDoneDao
+    private val checkListItemDao: CheckListItemDao
 ) : TaskRepository {
 
     override suspend fun insertTask(task: Task): Boolean {
         return try {
-            val taskId = taskDao.insert(task.toTaskDB())
+            appDatabase.withTransaction {
+                val taskId = taskDao.insert(task.toTaskDB())
 
-            task.location?.let {
-                locationDao
-                    .insert(it.toLocationDB(taskId))
+                task.location?.let {
+                    locationDao.insert(it.toLocationDB(taskId))
+                }
+
+                checkListItemDao
+                    .insertAll(task.checkList.map { it.toCheckListItemDB(taskId) })
             }
-
-            checkListItemDao
-                .insertAll(task.checkList.map { it.toCheckListItemDB(taskId) })
 
             return true
         } catch (ex: Exception) {
@@ -49,15 +51,16 @@ class TaskRepositoryImpl(
 
     override suspend fun updateTask(task: Task): Boolean {
         return try {
-            taskDao.update(task.toTaskDB())
+            appDatabase.withTransaction {
+                taskDao.update(task.toTaskDB())
 
-            locationDao.delete(task.id)
-            task.location?.let {
-                locationDao.insert(it.toLocationDB(task.id))
+                task.location?.let {
+                    locationDao.insertOrUpdate(it.toLocationDB(task.id))
+                } ?: locationDao.delete(task.id)
+
+                checkListItemDao.deleteRemoved(task.checkList.map { it.id })
+                checkListItemDao.insertOrUpdate(task.checkList.map { it.toCheckListItemDB(task.id) })
             }
-
-            checkListItemDao.deleteAll(task.id)
-            checkListItemDao.insertAll(task.checkList.map { it.toCheckListItemDB(task.id) })
 
             return true
         } catch (ex: Exception) {
@@ -70,7 +73,7 @@ class TaskRepositoryImpl(
         return try {
             if (task.isRepeatable()) {
                 when (recurringTask) {
-                    RecurringTask.All -> task.deleteAllTask()
+                    RecurringTask.All -> taskDao.delete(task.toTaskDB())
 
                     RecurringTask.Future -> {
                         taskDao.updateEndDate(task.id, task.startDate?.minusDays(1))
@@ -80,7 +83,7 @@ class TaskRepositoryImpl(
                     RecurringTask.ThisTask -> task.insertTaskDeleted()
                 }
             } else {
-                task.deleteAllTask()
+                taskDao.delete(task.toTaskDB())
             }
 
             return true
@@ -98,13 +101,5 @@ class TaskRepositoryImpl(
                 taskDate = this.startDate
             )
         )
-    }
-
-    private suspend fun Task.deleteAllTask() {
-        taskDao.delete(this.toTaskDB())
-        taskDeletedDao.deleteAll(this.id)
-        locationDao.delete(this.id)
-        checkListItemDao.deleteAll(this.id)
-        checkListItemDoneDao.deleteAll(this.checkList.map { it.id })
     }
 }

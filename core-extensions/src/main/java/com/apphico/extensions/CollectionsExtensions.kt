@@ -6,7 +6,12 @@ fun <T> List<T>.add(newItem: T) = this.toMutableList().apply { add(newItem) }
 
 fun <T> List<T>.remove(item: T) = this.toMutableList().apply { remove(item) }
 
-fun <T> List<T>.update(oldItem: T, newItem: T) = this.toMutableList().apply { this[this.indexOf(oldItem)] = newItem }
+fun <T> List<T>.update(oldItem: T, newItem: T) = this.toMutableList().apply {
+    try {
+        this[this.indexOf(oldItem)] = newItem
+    } catch (_: Exception) {
+    }
+}
 
 fun <T> List<T>.addOrRemove(item: T): List<T> {
     return this.toMutableList().apply {

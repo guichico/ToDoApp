@@ -2,6 +2,7 @@ package com.apphico.core_repository.calendar.room.entities
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -9,7 +10,8 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = TaskDB::class,
             parentColumns = arrayOf("taskId"),
-            childColumns = arrayOf("locationTaskId")
+            childColumns = arrayOf("locationTaskId"),
+            onDelete = CASCADE
         )
     ]
 )

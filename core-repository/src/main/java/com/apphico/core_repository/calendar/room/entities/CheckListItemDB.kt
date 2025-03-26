@@ -5,6 +5,7 @@ import androidx.room.DatabaseView
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
@@ -13,7 +14,8 @@ import java.time.LocalDate
         ForeignKey(
             entity = TaskDB::class,
             parentColumns = arrayOf("taskId"),
-            childColumns = arrayOf("checkListTaskId")
+            childColumns = arrayOf("checkListTaskId"),
+            onDelete = CASCADE
         )
     ]
 )
@@ -28,7 +30,8 @@ data class CheckListItemDB(
         ForeignKey(
             entity = CheckListItemDB::class,
             parentColumns = arrayOf("checkListItemId"),
-            childColumns = arrayOf("checkListItemDoneId")
+            childColumns = arrayOf("checkListItemDoneId"),
+            onDelete = CASCADE
         )
     ]
 )
