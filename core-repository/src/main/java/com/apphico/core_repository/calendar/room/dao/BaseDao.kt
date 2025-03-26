@@ -15,9 +15,6 @@ interface BaseDao<T> {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdate(obj: T): Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrUpdate(list: List<T>): List<Long>
-
     @Transaction
     @Insert
     suspend fun insertAll(list: List<T>): List<Long>

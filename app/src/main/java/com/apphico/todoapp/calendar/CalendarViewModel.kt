@@ -19,7 +19,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
@@ -47,40 +46,26 @@ class CalendarViewModel @Inject constructor(
     val selectedStatus = MutableStateFlow(TaskStatus.ALL)
     val selectedGroups = MutableStateFlow(emptyList<Group>())
 
-    val calendar = MutableStateFlow(emptyList<Task>())
-
     val searchClicked = MutableSharedFlow<Boolean>()
-    val isSearchFinished = MutableSharedFlow<Boolean>()
 
-    init {
-        viewModelScope.launch {
-            combine(
-                calendarViewMode,
-                selectedDate,
-                searchClicked.startWith(true)
-            )
-                .flatMapLatest { (viewMode, selectedDate) ->
-                    val status = selectedStatus.value
-                    val groups = selectedGroups.value
+    val calendar = combine(
+        calendarViewMode,
+        selectedDate,
+        searchClicked.startWith(true)
+    )
+        .flatMapLatest { (viewMode, selectedDate) ->
+            val status = selectedStatus.value
+            val groups = selectedGroups.value
 
-                    with(calendarRepository) {
-                        when (viewMode) {
-                            CalendarViewMode.DAY -> getFromDay(date = selectedDate, status = status, groups = groups)
-                            CalendarViewMode.AGENDA -> getAll(fromStartDate = selectedDate, status = status, groups = groups)
-                        }
-                    }
+            with(calendarRepository) {
+                when (viewMode) {
+                    CalendarViewMode.DAY -> getFromDay(date = selectedDate, status = status, groups = groups)
+                    CalendarViewMode.AGENDA -> getAll(fromStartDate = selectedDate, status = status, groups = groups)
                 }
-                .flowOn(Dispatchers.IO)
-                .collectLatest { tasks ->
-                    calendar.emit(tasks)
-                    isSearchFinished.emit(true)
-                }
+            }
         }
-    }
-
-    fun onScrollFinished() = viewModelScope.launch {
-        isSearchFinished.emit(false)
-    }
+        .flowOn(Dispatchers.IO)
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun onViewModeChanged() {
         calendarViewMode.value = when (calendarViewMode.value) {

@@ -1,7 +1,6 @@
 package com.apphico.todoapp.calendar
 
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,7 +15,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -51,11 +49,7 @@ fun CalendarScreen(
     val selectedDate = calendarViewModel.selectedDate.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
-    val isSearchFinished = calendarViewModel.isSearchFinished.collectAsState(false)
-
     CalendarScreenContent(
-        isSearchFinished = isSearchFinished,
-        onScrollFinished = calendarViewModel::onScrollFinished,
         selectedDate = selectedDate,
         calendarViewMode = calendarViewMode,
         tasks = calendar,
@@ -67,8 +61,6 @@ fun CalendarScreen(
 
 @Composable
 private fun CalendarScreenContent(
-    isSearchFinished: State<Boolean>,
-    onScrollFinished: () -> Unit,
     selectedDate: State<LocalDate>,
     calendarViewMode: State<CalendarViewMode>,
     tasks: State<List<Task>>,
@@ -77,13 +69,6 @@ private fun CalendarScreenContent(
     onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit
 ) {
     val calendarListState = rememberLazyListState()
-
-    LaunchedEffect(isSearchFinished.value) {
-        if (isSearchFinished.value) {
-            calendarListState.animateScrollToItem(0)
-            onScrollFinished()
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -221,8 +206,6 @@ private fun CalendarScreenPreview(
 ) {
     ToDoAppTheme {
         CalendarScreenContent(
-            isSearchFinished = remember { mutableStateOf(false) },
-            onScrollFinished = {},
             selectedDate = remember { mutableStateOf(getNowDate()) },
             calendarViewMode = remember { mutableStateOf(CalendarViewMode.DAY) },
             tasks = remember { mutableStateOf(tasks) },
