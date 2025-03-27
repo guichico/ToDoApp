@@ -37,10 +37,7 @@ import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.views.FilterView
-import com.apphico.extensions.formatDayAndMonth
-import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowDate
-import com.apphico.extensions.isCurrentYear
 import com.apphico.todoapp.calendar.CalendarRoute
 import com.apphico.todoapp.calendar.CalendarViewMode
 import com.apphico.todoapp.calendar.CalendarViewModel
@@ -51,6 +48,9 @@ import com.apphico.todoapp.navigation.mainGraph
 import com.apphico.todoapp.navigation.topLevelRoutes
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.Month
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun AppScaffold() {
@@ -70,6 +70,7 @@ fun AppScaffold() {
 
     val calendarViewModel: CalendarViewModel = hiltViewModel()
 
+    val currentMonth = calendarViewModel.currentMonth.collectAsState()
     val selectedDate = calendarViewModel.selectedDate.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
@@ -89,6 +90,7 @@ fun AppScaffold() {
                     bottomBarSelectedItem = bottomBarSelectedItem,
                     calendarViewMode = calendarViewMode,
                     onViewModeChanged = calendarViewModel::onViewModeChanged,
+                    currentMonthAndYear = currentMonth,
                     selectedDate = selectedDate,
                     onSelectedDateChanged = calendarViewModel::onSelectedDateChanged
                 )
@@ -127,6 +129,7 @@ private fun TopBar(
     bottomBarSelectedItem: TopLevelRoute<*>?,
     calendarViewMode: State<CalendarViewMode>,
     onViewModeChanged: () -> Unit,
+    currentMonthAndYear: State<Pair<Month, Int>>,
     selectedDate: State<LocalDate>,
     onSelectedDateChanged: (LocalDate) -> Unit
 ) {
@@ -136,8 +139,12 @@ private fun TopBar(
     val topBarTitle = bottomBarSelectedItem?.name?.let { stringResource(id = it) } ?: ""
     val topBarSubTitle = when {
         isCalendarSelected -> {
-            val date = selectedDate.value
-            if (date.isCurrentYear()) selectedDate.value.formatDayAndMonth() else selectedDate.value.formatMediumDate()
+            val (month, year) = currentMonthAndYear.value
+            if (getNowDate().year == year) {
+                month.getDisplayName(TextStyle.FULL, Locale.getDefault()).lowercase()
+            } else {
+                "${month.name.lowercase()} $year"
+            }
         }
 
         else -> null

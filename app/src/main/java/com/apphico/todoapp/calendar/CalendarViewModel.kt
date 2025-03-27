@@ -11,6 +11,7 @@ import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.group.GroupRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.combine
+import com.apphico.extensions.getNowDate
 import com.apphico.extensions.startWith
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.Month
 import javax.inject.Inject
 
 enum class CalendarViewMode { AGENDA, DAY }
@@ -36,6 +38,8 @@ class CalendarViewModel @Inject constructor(
     groupRepository: GroupRepository,
     private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
+
+    val currentMonth = MutableStateFlow<Pair<Month, Int>>(with(getNowDate()) { month to year })
 
     val groups = groupRepository.getGroups()
         .flowOn(Dispatchers.IO)
@@ -66,6 +70,10 @@ class CalendarViewModel @Inject constructor(
         }
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun onCurrentMonthChanged(month: Month?, year: Int?) {
+        if (month != null && year != null) currentMonth.value = Pair(month, year)
+    }
 
     fun onViewModeChanged() {
         calendarViewMode.value = when (calendarViewMode.value) {

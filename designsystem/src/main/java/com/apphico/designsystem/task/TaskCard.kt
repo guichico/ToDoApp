@@ -58,6 +58,7 @@ fun TaskCard(
             Modifier
                 .height(IntrinsicSize.Min)
                 .fillMaxWidth()
+                .padding(vertical = ToDoAppTheme.spacing.extraSmall)
         ) {
             GroupIndicator(
                 group = task.group
@@ -67,6 +68,7 @@ fun TaskCard(
                     .fillMaxWidth()
                     .align(Alignment.CenterVertically)
                     .padding(
+                        start = ToDoAppTheme.spacing.extraSmall,
                         top = ToDoAppTheme.spacing.small,
                         end = ToDoAppTheme.spacing.medium,
                         bottom = ToDoAppTheme.spacing.small

@@ -18,7 +18,7 @@ val LightBlue = Color(0XFFF5F7FD)
 val MediumBlue = Color(0XFFCEE5FF)
 val RippleBlue = Color(0XFFCDD3E5)
 
-val MainContainer = Color(0XFFE0E0E9)
+val MainContainer = Color(0XFFF0F0F4)
 val MainText = Color(0xFF495D92)
 val SecondaryText = Color(0XFF556CAA)
 

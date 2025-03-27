@@ -36,10 +36,6 @@ fun Long.formatHours(): String = this.milliseconds.toComponents { hours, minutes
     if (hours > 0) "%02dh %02dm %02ds".format(hours, minutes, seconds) else "%02dm %02ds".format(minutes, seconds)
 }
 
-fun LocalDate.formatShortDayOfWeekDate() = DateTimeFormatter.ofPattern("E, d MMM").format(this).replaceFirstChar(Char::titlecase)
-
-fun LocalDate.formatLongDayOfWeekDate() = DateTimeFormatter.ofPattern("E, d MMM yyyy").format(this).replaceFirstChar(Char::titlecase)
-
 fun LocalDate.formatDayAndMonth() = DateTimeFormatter.ofPattern("d MMMM").format(this).replaceFirstChar(Char::titlecase)
 
 fun LocalDate.formatMediumDate() = DateTimeFormatter.ofPattern("d MMM yyyy").format(this).replaceFirstChar(Char::titlecase)

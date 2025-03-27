@@ -3,6 +3,7 @@ package com.apphico.todoapp.calendar
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,16 +16,20 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
@@ -32,12 +37,14 @@ import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.task.TaskCard
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.extensions.formatLongDayOfWeekDate
-import com.apphico.extensions.formatShortDayOfWeekDate
 import com.apphico.extensions.getNowDate
-import com.apphico.extensions.isCurrentYear
 import com.apphico.extensions.toMillis
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
+import java.time.Month
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun CalendarScreen(
@@ -50,6 +57,7 @@ fun CalendarScreen(
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
     CalendarScreenContent(
+        onCurrentMonthChanged = calendarViewModel::onCurrentMonthChanged,
         selectedDate = selectedDate,
         calendarViewMode = calendarViewMode,
         tasks = calendar,
@@ -61,6 +69,7 @@ fun CalendarScreen(
 
 @Composable
 private fun CalendarScreenContent(
+    onCurrentMonthChanged: (Month?, Int?) -> Unit,
     selectedDate: State<LocalDate>,
     calendarViewMode: State<CalendarViewMode>,
     tasks: State<List<Task>>,
@@ -70,10 +79,23 @@ private fun CalendarScreenContent(
 ) {
     val calendarListState = rememberLazyListState()
 
+    LaunchedEffect(calendarListState) {
+        snapshotFlow { calendarListState.firstVisibleItemIndex }
+            .filter { tasks.value.isNotEmpty() }
+            .map { index ->
+                val date = tasks.value[index].startDate
+                date?.month to date?.year
+            }
+            .distinctUntilChanged()
+            .collect { (month, year) ->
+                onCurrentMonthChanged(month, year)
+            }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.secondaryContainer)
+            .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
         LazyColumn(
             modifier = Modifier
@@ -121,16 +143,27 @@ private fun CalendarScreenContent(
 private fun DateHeader(
     date: LocalDate
 ) {
-    Text(
+    val day = DateTimeFormatter.ofPattern("d").format(date)
+    val dayOfWeek = DateTimeFormatter.ofPattern("E").format(date)
+
+    Column(
         modifier = Modifier
             .padding(
-                vertical = ToDoAppTheme.spacing.medium,
+                vertical = ToDoAppTheme.spacing.large,
                 horizontal = ToDoAppTheme.spacing.small
-            ),
-        text = if (date.isCurrentYear()) date.formatShortDayOfWeekDate() else date.formatLongDayOfWeekDate(),
-        style = MaterialTheme.typography.titleSmall,
-        color = MaterialTheme.colorScheme.primary
-    )
+            )
+    ) {
+        Text(
+            text = day,
+            style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            text = dayOfWeek,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
 }
 
 private fun LazyListScope.taskRowsDayViewMode(
@@ -206,6 +239,7 @@ private fun CalendarScreenPreview(
 ) {
     ToDoAppTheme {
         CalendarScreenContent(
+            onCurrentMonthChanged = { _, _ -> },
             selectedDate = remember { mutableStateOf(getNowDate()) },
             calendarViewMode = remember { mutableStateOf(CalendarViewMode.DAY) },
             tasks = remember { mutableStateOf(tasks) },

@@ -26,7 +26,9 @@ fun DefaultCard(
     onClick: () -> Unit,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val animatedBackgroundColor by animateColorAsState(if (enabled) MainContainer else MainContainer.copy(alpha = 0.5f))
+    val animatedBackgroundColor by animateColorAsState(
+        if (enabled) MainContainer else MainContainer.copy(alpha = 0.5f)
+    )
     val animatedElevation by animateDpAsState(if (enabled) 8.dp else 0.dp)
 
     val shape = RoundedCornerShape(8.dp)
@@ -35,7 +37,7 @@ fun DefaultCard(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(vertical = ToDoAppTheme.spacing.small)
+            .padding(vertical = ToDoAppTheme.spacing.extraSmall)
             .background(
                 color = animatedBackgroundColor,
                 shape = shape
