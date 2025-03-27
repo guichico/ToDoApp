@@ -1,17 +1,11 @@
 package com.apphico.todoapp.calendar
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,21 +15,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apphico.core_model.CalendarViewMode
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
-import com.apphico.designsystem.components.icons.ToDoAppIcon
+import com.apphico.designsystem.components.list.MainLazyList
 import com.apphico.designsystem.task.TaskCard
-import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.toMillis
@@ -92,48 +83,24 @@ private fun CalendarScreenContent(
             }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primaryContainer)
+    MainLazyList(
+        listState = calendarListState,
+        onAddClicked = { navigateToAddEditTask(null) }
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-            state = calendarListState,
-            contentPadding = PaddingValues(
-                start = ToDoAppTheme.spacing.medium,
-                top = ToDoAppTheme.spacing.medium,
-                end = ToDoAppTheme.spacing.medium,
-                bottom = 80.dp
+        if (calendarViewMode.value == CalendarViewMode.DAY) {
+            taskRowsDayViewMode(
+                selectedDate = selectedDate,
+                tasks = tasks.value,
+                onTaskClicked = navigateToAddEditTask,
+                onDoneCheckedChanged = onDoneCheckedChanged,
+                onCheckListItemDoneChanged = onCheckListItemDoneChanged
             )
-        ) {
-            if (calendarViewMode.value == CalendarViewMode.DAY) {
-                taskRowsDayViewMode(
-                    selectedDate = selectedDate,
-                    tasks = tasks.value,
-                    onTaskClicked = navigateToAddEditTask,
-                    onDoneCheckedChanged = onDoneCheckedChanged,
-                    onCheckListItemDoneChanged = onCheckListItemDoneChanged
-                )
-            } else {
-                taskRowsAgendaViewMode(
-                    tasks = tasks.value,
-                    onTaskClicked = navigateToAddEditTask,
-                    onDoneCheckedChanged = onDoneCheckedChanged,
-                    onCheckListItemDoneChanged = onCheckListItemDoneChanged
-                )
-            }
-        }
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(ToDoAppTheme.spacing.medium),
-            onClick = { navigateToAddEditTask(null) }
-        ) {
-            ToDoAppIcon(
-                icon = ToDoAppIcons.icAdd,
-                contentDescription = "add"
+        } else {
+            taskRowsAgendaViewMode(
+                tasks = tasks.value,
+                onTaskClicked = navigateToAddEditTask,
+                onDoneCheckedChanged = onDoneCheckedChanged,
+                onCheckListItemDoneChanged = onCheckListItemDoneChanged
             )
         }
     }

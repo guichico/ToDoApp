@@ -1,31 +1,19 @@
 package com.apphico.todoapp.achievements
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.fakeData.mockedAchievements
 import com.apphico.designsystem.achievements.AchievementCard
-import com.apphico.designsystem.components.icons.ToDoAppIcon
-import com.apphico.designsystem.theme.ToDoAppIcons
+import com.apphico.designsystem.components.list.MainLazyList
 import com.apphico.designsystem.theme.ToDoAppTheme
 
 @Composable
@@ -46,37 +34,14 @@ private fun AchievementsScreenContent(
     achievements: State<List<Achievement>>,
     navigateToAddEditAchievement: (Achievement?) -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primaryContainer)
+    MainLazyList(
+        listState = rememberLazyListState(),
+        onAddClicked = { navigateToAddEditAchievement(null) }
     ) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            state = rememberLazyListState(),
-            contentPadding = PaddingValues(
-                start = ToDoAppTheme.spacing.medium,
-                top = ToDoAppTheme.spacing.medium,
-                end = ToDoAppTheme.spacing.medium,
-                bottom = 80.dp
-            )
-        ) {
-            items(achievements.value) {
-                AchievementCard(
-                    achievement = it,
-                    onClick = { navigateToAddEditAchievement(it) }
-                )
-            }
-        }
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(ToDoAppTheme.spacing.medium),
-            onClick = { navigateToAddEditAchievement(null) }
-        ) {
-            ToDoAppIcon(
-                icon = ToDoAppIcons.icAdd,
-                contentDescription = "add"
+        items(achievements.value) {
+            AchievementCard(
+                achievement = it,
+                onClick = { navigateToAddEditAchievement(it) }
             )
         }
     }
