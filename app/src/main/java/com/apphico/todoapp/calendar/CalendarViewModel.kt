@@ -6,7 +6,7 @@ import com.apphico.core_model.CalendarViewMode
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Task
-import com.apphico.core_model.TaskStatus
+import com.apphico.core_model.Status
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.group.GroupRepository
@@ -51,7 +51,7 @@ class CalendarViewModel @Inject constructor(
 
     val selectedStatus = userSettingsRepository.getTaskStatus()
         .flowOn(Dispatchers.IO)
-        .stateIn(viewModelScope, SharingStarted.Lazily, TaskStatus.ALL)
+        .stateIn(viewModelScope, SharingStarted.Lazily, Status.ALL)
 
     val groups = groupRepository.getGroups()
         .flowOn(Dispatchers.IO)
@@ -91,7 +91,7 @@ class CalendarViewModel @Inject constructor(
         )
     }
 
-    fun onSelectedStatusChanged(status: TaskStatus) = viewModelScope.launch {
+    fun onSelectedStatusChanged(status: Status) = viewModelScope.launch {
         userSettingsRepository.setTaskStatus(status)
     }
 

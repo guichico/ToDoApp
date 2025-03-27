@@ -42,7 +42,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Group
-import com.apphico.core_model.TaskStatus
+import com.apphico.core_model.Status
 import com.apphico.core_model.fakeData.mockedGroups
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.SmallButton
@@ -58,8 +58,8 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 fun FilterView(
     isFilterExpanded: State<Boolean>,
     showStatusFilter: Boolean = true,
-    selectedStatus: State<TaskStatus>,
-    onStatusChanged: (TaskStatus) -> Unit,
+    selectedStatus: State<Status>,
+    onStatusChanged: (Status) -> Unit,
     groups: State<List<Group>>,
     selectedGroups: State<List<Group>>,
     onGroupSelected: (Group) -> Unit,
@@ -94,7 +94,7 @@ fun FilterView(
                         horizontalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
                         maxItemsInEachRow = 3
                     ) {
-                        TaskStatus.entries.forEach { status ->
+                        Status.entries.forEach { status ->
                             StatusRow(
                                 selectedStatus = selectedStatus,
                                 status = status,
@@ -136,8 +136,8 @@ fun FilterView(
 
 @Composable
 private fun StatusRow(
-    status: TaskStatus,
-    selectedStatus: State<TaskStatus>,
+    status: Status,
+    selectedStatus: State<Status>,
     onStatusChanged: () -> Unit
 ) {
     val isSelected = selectedStatus.value == status
@@ -244,7 +244,7 @@ private fun FilterViewPreview(
     ToDoAppTheme {
         FilterView(
             isFilterExpanded = remember { mutableStateOf(true) },
-            selectedStatus = remember { mutableStateOf(TaskStatus.ALL) },
+            selectedStatus = remember { mutableStateOf(Status.ALL) },
             onStatusChanged = {},
             groups = remember { mutableStateOf(groups) },
             selectedGroups = remember { mutableStateOf(groups.dropLast(3)) },

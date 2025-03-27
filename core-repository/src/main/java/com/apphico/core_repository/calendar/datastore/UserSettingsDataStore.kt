@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.apphico.core_model.CalendarViewMode
-import com.apphico.core_model.TaskStatus
+import com.apphico.core_model.Status
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -26,12 +26,12 @@ class UserSettingsDataStore(
     }
 
     private val taskStatusPreference = intPreferencesKey("task_status")
-    val taskStatus: Flow<TaskStatus> = context.dataStore.data
+    val taskStatus: Flow<Status> = context.dataStore.data
         .map { preferences ->
-            TaskStatus.entries.firstOrNull { it.intValue == preferences[taskStatusPreference] } ?: TaskStatus.ALL
+            Status.entries.firstOrNull { it.intValue == preferences[taskStatusPreference] } ?: Status.ALL
         }
 
-    suspend fun setTaskStatus(taskStatus: TaskStatus) {
+    suspend fun setTaskStatus(taskStatus: Status) {
         context.dataStore.edit { settings ->
             settings[taskStatusPreference] = taskStatus.intValue
         }

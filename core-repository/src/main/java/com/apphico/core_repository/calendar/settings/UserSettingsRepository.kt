@@ -1,7 +1,7 @@
 package com.apphico.core_repository.calendar.settings
 
 import com.apphico.core_model.CalendarViewMode
-import com.apphico.core_model.TaskStatus
+import com.apphico.core_model.Status
 import com.apphico.core_repository.calendar.datastore.UserSettingsDataStore
 import kotlinx.coroutines.flow.Flow
 
@@ -9,8 +9,8 @@ interface UserSettingsRepository {
     fun getViewMode(): Flow<CalendarViewMode>
     suspend fun setViewMode(calendarViewMode: CalendarViewMode)
 
-    fun getTaskStatus(): Flow<TaskStatus>
-    suspend fun setTaskStatus(taskStatus: TaskStatus)
+    fun getTaskStatus(): Flow<Status>
+    suspend fun setTaskStatus(taskStatus: Status)
 }
 
 class UserSettingsRepositoryImpl(
@@ -23,9 +23,9 @@ class UserSettingsRepositoryImpl(
         userSettingsDataStore.setCalendarViewMode(calendarViewMode)
     }
 
-    override fun getTaskStatus(): Flow<TaskStatus> = userSettingsDataStore.taskStatus
+    override fun getTaskStatus(): Flow<Status> = userSettingsDataStore.taskStatus
 
-    override suspend fun setTaskStatus(taskStatus: TaskStatus) {
+    override suspend fun setTaskStatus(taskStatus: Status) {
         userSettingsDataStore.setTaskStatus(taskStatus)
     }
 }

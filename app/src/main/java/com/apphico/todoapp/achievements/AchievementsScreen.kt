@@ -4,6 +4,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -21,7 +22,7 @@ fun AchievementsScreen(
     achievementsViewModel: AchievementsViewModel = hiltViewModel(),
     navigateToAddEditAchievement: (Achievement?) -> Unit
 ) {
-    val achievements = remember { mutableStateOf(mockedAchievements) }
+    val achievements = achievementsViewModel.achievements.collectAsState()
 
     AchievementsScreenContent(
         achievements = achievements,

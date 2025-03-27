@@ -3,7 +3,7 @@ package com.apphico.core_repository.calendar.calendar
 import android.util.Log
 import com.apphico.core_model.Group
 import com.apphico.core_model.Task
-import com.apphico.core_model.TaskStatus
+import com.apphico.core_model.Status
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
 import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
@@ -19,8 +19,8 @@ import java.time.LocalDateTime
 import java.util.stream.Stream
 
 interface CalendarRepository {
-    fun getFromDay(date: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>>
-    fun getAll(fromStartDate: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>>
+    fun getFromDay(date: LocalDate, status: Status, groups: List<Group>): Flow<List<Task>>
+    fun getAll(fromStartDate: LocalDate, status: Status, groups: List<Group>): Flow<List<Task>>
     suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean
 }
 
@@ -29,12 +29,12 @@ class CalendarRepositoryImpl(
     private val taskDoneDao: TaskDoneDao
 ) : CalendarRepository {
 
-    override fun getFromDay(date: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>> =
+    override fun getFromDay(date: LocalDate, status: Status, groups: List<Group>): Flow<List<Task>> =
         taskDao.getFromDay(
             date = date,
-            statusAllFlag = status == TaskStatus.ALL,
-            statusDoneFlag = status == TaskStatus.DONE,
-            statusUndoneFlag = status == TaskStatus.UNDONE,
+            statusAllFlag = status == Status.ALL,
+            statusDoneFlag = status == Status.DONE,
+            statusUndoneFlag = status == Status.UNDONE,
             nullableGroupIdsFlag = groups.isEmpty(),
             groupIds = groups.map { it.id }
         )
@@ -47,7 +47,7 @@ class CalendarRepositoryImpl(
                 }
             }
 
-    override fun getAll(fromStartDate: LocalDate, status: TaskStatus, groups: List<Group>): Flow<List<Task>> =
+    override fun getAll(fromStartDate: LocalDate, status: Status, groups: List<Group>): Flow<List<Task>> =
         taskDao.getAllTasks(
             fromStartDate = fromStartDate,
             nullableGroupIdsFlag = groups.isEmpty(),
@@ -87,20 +87,20 @@ class CalendarRepositoryImpl(
         }
     }
 
-    private fun List<Task>.filterTasks(status: TaskStatus): List<Task> =
+    private fun List<Task>.filterTasks(status: Status): List<Task> =
         this.filter { task ->
             !task.isDeleted() && when (status) {
-                TaskStatus.ALL -> true
-                TaskStatus.DONE -> task.isDone()
-                TaskStatus.UNDONE -> !task.isDone()
+                Status.ALL -> true
+                Status.DONE -> task.isDone()
+                Status.UNDONE -> !task.isDone()
             }
         }
 
-    private fun Stream<Task>.filterTasks(status: TaskStatus): List<Task> = this.toList().filterTasks(status)
+    private fun Stream<Task>.filterTasks(status: Status): List<Task> = this.toList().filterTasks(status)
 
     private fun Task.addFutureTasks(
         selectedDate: LocalDate,
-        status: TaskStatus
+        status: Status
     ): List<Task> {
         val startDate = this.startDate
         // TODO Check how long to view
