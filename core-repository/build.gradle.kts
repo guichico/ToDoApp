@@ -56,6 +56,10 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
 
+    // DataStore
+    implementation(libs.datastore)
+    implementation(libs.datastore.preferences)
+
     implementation(libs.gson)
 
     testImplementation(libs.junit)

@@ -30,6 +30,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.apphico.core_model.CalendarViewMode
 import com.apphico.designsystem.components.date.CalendarView
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.snackbar.SnackBar
@@ -39,7 +40,6 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.views.FilterView
 import com.apphico.extensions.getNowDate
 import com.apphico.todoapp.calendar.CalendarRoute
-import com.apphico.todoapp.calendar.CalendarViewMode
 import com.apphico.todoapp.calendar.CalendarViewModel
 import com.apphico.todoapp.focus.FocusRoute
 import com.apphico.todoapp.navigation.ToDoAppBottomBar

@@ -34,8 +34,8 @@ interface TaskDao : BaseDao<TaskDB> {
                 "   OR (startDate IS NULL AND endDate IS NULL AND daysOfWeek LIKE '[]')) " +
                 "  AND (:nullableGroupIdsFlag OR taskGroupId IN (:groupIds)) " +
                 "  AND (:statusAllFlag " +
-                "   OR (:statusDoneFlag AND (hasDone = 1 AND (doneDates LIKE ('%' || startDate || '%') OR startDate IS NULL))) " +
-                "   OR (:statusUndoneFlag AND (hasDone IS NULL OR doneDates NOT LIKE ('%' || startDate || '%')))) " +
+                "   OR (:statusDoneFlag AND (hasDone = 1 AND (doneDates LIKE ('%' || :date || '%') OR startDate IS NULL))) " +
+                "   OR (:statusUndoneFlag AND (hasDone IS NULL OR (startDate IS NOT NULL AND doneDates NOT LIKE ('%' || :date || '%'))))) " +
                 "ORDER BY startTime"
     )
     fun getFromDay(

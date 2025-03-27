@@ -4,6 +4,7 @@ import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.calendar.CalendarRepositoryImpl
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.checklist.CheckListRepositoryImpl
+import com.apphico.core_repository.calendar.datastore.UserSettingsDataStore
 import com.apphico.core_repository.calendar.focus.FocusRepository
 import com.apphico.core_repository.calendar.focus.FocusRepositoryImpl
 import com.apphico.core_repository.calendar.group.GroupRepository
@@ -18,6 +19,8 @@ import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
+import com.apphico.core_repository.calendar.settings.UserSettingsRepository
+import com.apphico.core_repository.calendar.settings.UserSettingsRepositoryImpl
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.core_repository.calendar.task.TaskRepositoryImpl
 import dagger.Module
@@ -29,6 +32,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class RepositoryModule() {
+
+    @Provides
+    @Singleton
+    fun providesUserSettingsRepository(userSettingsDataStore: UserSettingsDataStore): UserSettingsRepository =
+        UserSettingsRepositoryImpl(userSettingsDataStore)
 
     @Provides
     @Singleton
@@ -57,9 +65,8 @@ class RepositoryModule() {
 
     @Provides
     @Singleton
-    fun providesCheckListRepository(
-        checkListItemDoneDao: CheckListItemDoneDao
-    ): CheckListRepository = CheckListRepositoryImpl(checkListItemDoneDao)
+    fun providesCheckListRepository(checkListItemDoneDao: CheckListItemDoneDao): CheckListRepository =
+        CheckListRepositoryImpl(checkListItemDoneDao)
 
     @Provides
     @Singleton

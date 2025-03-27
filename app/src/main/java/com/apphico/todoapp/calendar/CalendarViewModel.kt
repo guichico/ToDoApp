@@ -2,6 +2,7 @@ package com.apphico.todoapp.calendar
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import com.apphico.core_model.CalendarViewMode
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Task
@@ -9,6 +10,7 @@ import com.apphico.core_model.TaskStatus
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.group.GroupRepository
+import com.apphico.core_repository.calendar.settings.UserSettingsRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.combine
 import com.apphico.extensions.getNowDate
@@ -28,12 +30,11 @@ import java.time.LocalDate
 import java.time.Month
 import javax.inject.Inject
 
-enum class CalendarViewMode { AGENDA, DAY }
-
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val userSettingsRepository: UserSettingsRepository,
     private val calendarRepository: CalendarRepository,
     groupRepository: GroupRepository,
     private val checkListRepository: CheckListRepository
@@ -41,14 +42,20 @@ class CalendarViewModel @Inject constructor(
 
     val currentMonth = MutableStateFlow<Pair<Month, Int>>(with(getNowDate()) { month to year })
 
+    val selectedDate = MutableStateFlow(LocalDate.now())
+    val selectedGroups = MutableStateFlow(emptyList<Group>())
+
+    val calendarViewMode = userSettingsRepository.getViewMode()
+        .flowOn(Dispatchers.IO)
+        .stateIn(viewModelScope, SharingStarted.Lazily, CalendarViewMode.DAY)
+
+    val selectedStatus = userSettingsRepository.getTaskStatus()
+        .flowOn(Dispatchers.IO)
+        .stateIn(viewModelScope, SharingStarted.Lazily, TaskStatus.ALL)
+
     val groups = groupRepository.getGroups()
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    val calendarViewMode = MutableStateFlow(CalendarViewMode.DAY)
-    val selectedDate = MutableStateFlow(LocalDate.now())
-    val selectedStatus = MutableStateFlow(TaskStatus.ALL)
-    val selectedGroups = MutableStateFlow(emptyList<Group>())
 
     val searchClicked = MutableSharedFlow<Boolean>()
 
@@ -75,19 +82,21 @@ class CalendarViewModel @Inject constructor(
         if (month != null && year != null) currentMonth.value = Pair(month, year)
     }
 
-    fun onViewModeChanged() {
-        calendarViewMode.value = when (calendarViewMode.value) {
-            CalendarViewMode.DAY -> CalendarViewMode.AGENDA
-            CalendarViewMode.AGENDA -> CalendarViewMode.DAY
-        }
+    fun onViewModeChanged() = viewModelScope.launch {
+        userSettingsRepository.setViewMode(
+            when (calendarViewMode.value) {
+                CalendarViewMode.DAY -> CalendarViewMode.AGENDA
+                CalendarViewMode.AGENDA -> CalendarViewMode.DAY
+            }
+        )
+    }
+
+    fun onSelectedStatusChanged(status: TaskStatus) = viewModelScope.launch {
+        userSettingsRepository.setTaskStatus(status)
     }
 
     fun onSelectedDateChanged(date: LocalDate) {
         selectedDate.value = date
-    }
-
-    fun onSelectedStatusChanged(status: TaskStatus) {
-        selectedStatus.value = status
     }
 
     fun onSelectedGroupChanged(group: Group) {

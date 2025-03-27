@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.apphico.core_model.CalendarViewMode
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
@@ -81,7 +82,7 @@ private fun CalendarScreenContent(
 
     LaunchedEffect(calendarListState) {
         snapshotFlow { calendarListState.firstVisibleItemIndex }
-            .filter { tasks.value.isNotEmpty() }
+            .filter { index -> index < tasks.value.size && tasks.value.isNotEmpty() }
             .map { index ->
                 val date = tasks.value[index].startDate
                 date?.month to date?.year
