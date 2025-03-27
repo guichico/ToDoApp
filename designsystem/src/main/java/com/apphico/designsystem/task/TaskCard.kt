@@ -1,21 +1,11 @@
 package com.apphico.designsystem.task
 
-import android.content.res.Configuration
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,19 +13,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.CheckListItem
-import com.apphico.core_model.Group
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
-import com.apphico.designsystem.components.card.DefaultCard
+import com.apphico.designsystem.components.card.MainCard
 import com.apphico.designsystem.components.checkbox.CircleCheckbox
 import com.apphico.designsystem.components.checklist.CheckList
 import com.apphico.designsystem.components.icons.ToDoAppIcon
+import com.apphico.designsystem.components.text.LineThroughText
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatDayAndMonth
@@ -49,98 +38,54 @@ fun TaskCard(
     onDoneCheckedChanged: (Boolean) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, Boolean) -> Unit
 ) {
-    DefaultCard(
+    MainCard(
         modifier = modifier,
-        enabled = !task.isDone(),
+        isDone = task.isDone(),
+        group = task.group,
         onClick = onClick
     ) {
-        Row(
-            Modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()
-                .padding(vertical = ToDoAppTheme.spacing.extraSmall)
-        ) {
-            GroupIndicator(
-                group = task.group
-            )
-            Column(
+        Header(
+            task = task,
+            onDoneCheckedChanged = onDoneCheckedChanged
+        )
+        DateRow(
+            task = task,
+            textColor = MaterialTheme.colorScheme.primary
+        )
+        if (task.checkList.isNotEmpty()) {
+            CheckList(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.CenterVertically)
-                    .padding(
-                        start = ToDoAppTheme.spacing.extraSmall,
-                        top = ToDoAppTheme.spacing.small,
-                        end = ToDoAppTheme.spacing.medium,
-                        bottom = ToDoAppTheme.spacing.small
-                    )
-            ) {
-                Header(
-                    task = task,
-                    textColor = MaterialTheme.colorScheme.primary,
-                    onDoneCheckedChanged = onDoneCheckedChanged
-                )
-                DateRow(
-                    task = task,
-                    textColor = MaterialTheme.colorScheme.primary
-                )
-                if (task.checkList.isNotEmpty()) {
-                    CheckList(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .offset(x = (-2).dp)
-                            .padding(top = ToDoAppTheme.spacing.extraSmall),
-                        checkList = task.checkList,
-                        parentDate = task.startDate,
-                        textColor = MaterialTheme.colorScheme.primary,
-                        onCheckListItemDoneChanged = onCheckListItemDoneChanged
-                    )
-                }
-            }
+                    .offset(x = (-2).dp)
+                    .padding(top = ToDoAppTheme.spacing.extraSmall),
+                checkList = task.checkList,
+                parentDate = task.startDate,
+                textColor = MaterialTheme.colorScheme.primary,
+                onCheckListItemDoneChanged = onCheckListItemDoneChanged
+            )
         }
     }
 }
 
 @Composable
-private fun GroupIndicator(
-    group: Group?
-) {
-    group?.color?.let {
-        Box(
-            modifier = Modifier
-                .padding(ToDoAppTheme.spacing.small),
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(8.dp)
-                    .background(color = Color(it), shape = CircleShape)
-            )
-        }
-    } ?: Spacer(modifier = Modifier.width(ToDoAppTheme.spacing.medium))
-}
-
-@Composable
 private fun Header(
     task: Task,
-    textColor: Color,
     onDoneCheckedChanged: (Boolean) -> Unit
 ) {
     val isTaskDone = task.isDone()
-    val animatedColor by animateColorAsState(if (!isTaskDone) textColor else textColor.copy(alpha = 0.5f))
+    val animatedColor by animateColorAsState(
+        if (!isTaskDone) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+    )
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        val nameStyle = if (isTaskDone) MaterialTheme.typography.titleMedium.copy(textDecoration = TextDecoration.LineThrough)
-        else MaterialTheme.typography.titleMedium
-
-        Text(
+        LineThroughText(
             modifier = Modifier
                 .weight(1f),
             text = task.name,
-            style = nameStyle,
-            color = animatedColor
+            isLineThrough = isTaskDone
         )
         CircleCheckbox(
             modifier = Modifier,
@@ -236,8 +181,7 @@ class TaskCardPreviewProvider : PreviewParameterProvider<Task> {
     override val values = sequenceOf(mockedTask)
 }
 
-@Preview(name = "Light Mode", showBackground = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@PreviewLightDark
 @Composable
 private fun TaskCardPreview(
     @PreviewParameter(TaskCardPreviewProvider::class) task: Task

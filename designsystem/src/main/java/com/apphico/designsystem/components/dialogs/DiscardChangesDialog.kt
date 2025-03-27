@@ -1,6 +1,5 @@
 package com.apphico.designsystem.components.dialogs
 
-import android.content.res.Configuration
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.apphico.designsystem.R
 import com.apphico.designsystem.theme.ToDoAppTheme
 
@@ -57,8 +56,7 @@ private fun DiscardChangesDialog(
     )
 }
 
-@Preview(name = "Light Mode", showBackground = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@PreviewLightDark
 @Composable
 private fun DiscardChangesDialogPreview(
 ) {

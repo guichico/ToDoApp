@@ -4,7 +4,6 @@ import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.darkColorScheme
@@ -98,7 +97,7 @@ fun ToDoAppTheme(
     ) {
         CompositionLocalProvider(
             LocalSpacing provides ToDoAppTheme.spacing,
-            LocalRippleConfiguration provides toDoAppRippleTheme(RippleBlue)
+            // LocalRippleConfiguration provides toDoAppRippleTheme(RippleBlue) // TODO Check it
         ) {
             content()
         }

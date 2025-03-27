@@ -1,6 +1,5 @@
 package com.apphico.designsystem.components.textfield
 
-import android.content.res.Configuration
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
@@ -10,7 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.getNumber
 import com.apphico.extensions.toFormattedNumber
@@ -44,8 +43,7 @@ fun DecimalTextField(
     )
 }
 
-@Preview(name = "Light Mode", showBackground = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@PreviewLightDark
 @Composable
 private fun DecimalTextFieldPreview(
 ) {

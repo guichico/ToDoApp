@@ -1,10 +1,8 @@
 package com.apphico.designsystem.components.topbar
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -12,10 +10,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.apphico.designsystem.R
-import com.apphico.designsystem.components.buttons.SmallButton
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.apphico.designsystem.components.icons.ToDoAppIconButton
+import com.apphico.designsystem.emptyLambda
+import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,6 +25,7 @@ fun DeleteSaveTopBar(
     isEditing: Boolean,
     onSaveClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
+    onCopyClicked: () -> Unit = emptyLambda,
     navigateBack: () -> Unit,
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -42,17 +42,19 @@ fun DeleteSaveTopBar(
                 scrollBehavior = scrollBehavior,
                 actions = {
                     if (isEditing) {
-                        SmallButton(
-                            modifier = Modifier
-                                .padding(end = ToDoAppTheme.spacing.medium),
-                            text = stringResource(R.string.delete),
+                        if (onCopyClicked != emptyLambda) {
+                            ToDoAppIconButton(
+                                icon = ToDoAppIcons.icCopy,
+                                onClick = onCopyClicked
+                            )
+                        }
+                        ToDoAppIconButton(
+                            icon = ToDoAppIcons.icDelete,
                             onClick = onDeleteClicked
                         )
                     }
-                    SmallButton(
-                        modifier = Modifier
-                            .padding(end = ToDoAppTheme.spacing.medium),
-                        text = stringResource(R.string.save),
+                    ToDoAppIconButton(
+                        icon = if (isEditing) ToDoAppIcons.icUpdate else ToDoAppIcons.icSave,
                         onClick = onSaveClicked
                     )
                 }
@@ -64,8 +66,7 @@ fun DeleteSaveTopBar(
 }
 
 @Preview
-@Preview(name = "Light Mode", showBackground = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@PreviewLightDark
 @Composable
 private fun DeleteSaveTopBarPreview(
 ) {
@@ -75,6 +76,7 @@ private fun DeleteSaveTopBarPreview(
             isEditing = false,
             onSaveClicked = {},
             onDeleteClicked = {},
+            onCopyClicked = {},
             navigateBack = {},
             content = {}
         )

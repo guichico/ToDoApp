@@ -1,6 +1,5 @@
 package com.apphico.todoapp.task
 
-import android.content.res.Configuration
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
@@ -195,6 +194,7 @@ fun AddEditTaskScreen(
                 deleteAction()
             }
         },
+        onCopyClicked = {},
         navigateBack = {
             showDiscardChangesDialogOnBackIfNeed()
         }
@@ -602,9 +602,7 @@ class AddTaskScreenPreviewProvider : PreviewParameterProvider<Task> {
     )
 }
 
-@Preview(name = "Light Mode", showBackground = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Preview(name = "Full Preview", showSystemUi = true)
+@PreviewLightDark
 @Composable
 private fun AddTaskScreenPreview(
     @PreviewParameter(AddTaskScreenPreviewProvider::class) task: Task

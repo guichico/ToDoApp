@@ -1,6 +1,5 @@
 package com.apphico.todoapp.achievements
 
-import android.content.res.Configuration
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ScrollState
@@ -39,7 +38,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
@@ -732,9 +731,7 @@ class AddEditAchievementScreenPreviewProvider : PreviewParameterProvider<Achieve
         )
 }
 
-@Preview(name = "Light Mode", showBackground = true)
-@Preview(name = "Dark Mode", uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
-@Preview(name = "Full Preview", showSystemUi = true)
+@PreviewLightDark
 @Composable
 private fun AddEditAchievementScreenPreview(
     @PreviewParameter(AddEditAchievementScreenPreviewProvider::class) achievement: Achievement

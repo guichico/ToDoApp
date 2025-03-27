@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.Alarm
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.CalendarMonth
@@ -18,6 +19,8 @@ import androidx.compose.material.icons.outlined.CalendarViewDay
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.CheckCircleOutline
 import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.EditLocationAlt
 import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FilterList
@@ -30,6 +33,7 @@ import androidx.compose.material.icons.outlined.RadioButtonUnchecked
 import androidx.compose.material.icons.outlined.Remove
 import androidx.compose.material.icons.outlined.Reorder
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material.icons.outlined.Today
 import androidx.compose.material.icons.outlined.ViewAgenda
 import androidx.compose.material.icons.outlined.WifiOff
@@ -48,7 +52,6 @@ object ToDoAppIcons {
     val icMenuFocusUnselected = ImageVectorIcon(Icons.Outlined.Psychology)
     val icMenuCalendarUnselected = ImageVectorIcon(Icons.Outlined.CalendarMonth)
     val icMenuAchievementUnselected = ImageVectorIcon(Icons.Outlined.WorkspacePremium)
-
     val icMenuFocusSelected = ImageVectorIcon(Icons.Filled.Psychology)
     val icMenuCalendarSelected = ImageVectorIcon(Icons.Filled.CalendarMonth)
     val icMenuAchievementSelected = ImageVectorIcon(Icons.Filled.WorkspacePremium)
@@ -58,6 +61,10 @@ object ToDoAppIcons {
     val icCheckCircle = ImageVectorIcon(Icons.Outlined.CheckCircleOutline)
     val icRadioButtonUnchecked = ImageVectorIcon(Icons.Outlined.RadioButtonUnchecked)
     val icRadioButtonChecked = ImageVectorIcon(Icons.Outlined.RadioButtonChecked)
+    val icSave = ImageVectorIcon(Icons.Outlined.AddTask)
+    val icUpdate = ImageVectorIcon(Icons.Outlined.TaskAlt)
+    val icDelete = ImageVectorIcon(Icons.Outlined.Delete)
+    val icCopy = ImageVectorIcon(Icons.Outlined.ContentCopy)
     val icAdd = ImageVectorIcon(Icons.Outlined.Add)
     val icRemove = ImageVectorIcon(Icons.Outlined.Remove)
     val icEdit = ImageVectorIcon(Icons.Outlined.ModeEdit)
