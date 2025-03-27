@@ -57,11 +57,11 @@ class CalendarRepositoryImpl(
             .map { tasks ->
                 mutableListOf<Task>()
                     .apply {
-                        // Permanent tasks
-                        addAll(tasks.filter { it.startDate == null }.filterTasks(status))
+                        // One time tasks
+                        addAll(tasks.filter { !it.isRepeatable() }.filterTasks(status))
 
                         // Recurring tasks
-                        tasks.filter { it.startDate != null }
+                        tasks.filter { it.isRepeatable() }
                             .forEach { task -> addAll(task.addFutureTasks(fromStartDate, status)) }
 
                         sortBy { task ->
