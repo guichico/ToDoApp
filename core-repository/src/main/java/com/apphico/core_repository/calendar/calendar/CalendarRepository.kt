@@ -2,8 +2,8 @@ package com.apphico.core_repository.calendar.calendar
 
 import android.util.Log
 import com.apphico.core_model.Group
-import com.apphico.core_model.Task
 import com.apphico.core_model.Status
+import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
 import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
@@ -45,6 +45,8 @@ class CalendarRepositoryImpl(
                         task.copy(startDate = date)
                     } ?: task
                 }
+                    // Use it to keep same sort of getAll
+                    .sortByStartDate()
             }
 
     override fun getAll(fromStartDate: LocalDate, status: Status, groups: List<Group>): Flow<List<Task>> =
@@ -63,13 +65,8 @@ class CalendarRepositoryImpl(
                         // Recurring tasks
                         tasks.filter { it.isRepeatable() }
                             .forEach { task -> addAll(task.addFutureTasks(fromStartDate, status)) }
-
-                        sortBy { task ->
-                            task.startDate?.let {
-                                LocalDateTime.of(it, task.startTime ?: it.atStartOfDay().toLocalTime())
-                            }
-                        }
                     }
+                    .sortByStartDate()
             }
 
     override suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean {
@@ -97,6 +94,17 @@ class CalendarRepositoryImpl(
         }
 
     private fun Stream<Task>.filterTasks(status: Status): List<Task> = this.toList().filterTasks(status)
+
+    private fun List<Task>.sortByStartDate() =
+        this.sortedWith(
+            compareBy<Task> { task ->
+                task.startDate?.let {
+                    LocalDateTime.of(it, task.startTime ?: it.atStartOfDay().toLocalTime())
+                }
+            }
+                .thenBy { it.endTime }
+                .thenBy { it.id }
+        )
 
     private fun Task.addFutureTasks(
         selectedDate: LocalDate,
