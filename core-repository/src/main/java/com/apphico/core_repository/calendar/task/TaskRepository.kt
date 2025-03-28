@@ -14,10 +14,11 @@ import com.apphico.core_repository.calendar.room.entities.toCheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.toLocationDB
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.extensions.getNowDate
+import java.time.LocalDate
 
 interface TaskRepository {
     suspend fun insertTask(task: Task): Boolean
-    suspend fun updateTask(task: Task): Boolean
+    suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean
     suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean
 }
 
@@ -49,24 +50,49 @@ class TaskRepositoryImpl(
         }
     }
 
-    override suspend fun updateTask(task: Task): Boolean {
+    override suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean {
         return try {
             appDatabase.withTransaction {
-                taskDao.update(task.toTaskDB())
+                if (task.isRepeatable()) {
+                    when (recurringTask) {
+                        RecurringTask.All -> task.updateTask()
 
-                task.location?.let {
-                    locationDao.insertOrUpdate(it.toLocationDB(task.id))
-                } ?: locationDao.delete(task.id)
+                        RecurringTask.Future -> {
+                            taskDao.updateEndDate(task.id, task.startDate?.minusDays(1))
+                            insertTask(task.copy(id = 0))
+                        }
 
-                checkListItemDao.deleteAll(task.id, task.checkList.map { it.id })
-                checkListItemDao.insertAll(task.checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(task.id) })
-                checkListItemDao.updateAll(task.checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(task.id) })
+                        RecurringTask.ThisTask -> {
+                            Task(id = task.id, startDate = initialTaskStartDate)
+                                .insertTaskDeleted()
+
+                            val endDate = task.endDate ?: task.startDate
+                            insertTask(task.copy(id = 0, endDate = endDate))
+                        }
+                    }
+                } else {
+                    task.updateTask()
+                }
             }
 
             return true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
             return false
+        }
+    }
+
+    private suspend fun Task.updateTask() {
+        appDatabase.withTransaction {
+            taskDao.update(this.toTaskDB())
+
+            this.location?.let {
+                locationDao.insertOrUpdate(it.toLocationDB(this.id))
+            } ?: locationDao.delete(this.id)
+
+            checkListItemDao.deleteAll(this.id, this.checkList.map { it.id })
+            checkListItemDao.insertAll(this.checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(this.id) })
+            checkListItemDao.updateAll(this.checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(this.id) })
         }
     }
 

@@ -44,6 +44,7 @@ class AddEditTaskViewModel @Inject constructor(
         typeMap = mapOf(typeOf<AddEditTaskParameters>() to CustomNavType(AddEditTaskParameters::class.java, AddEditTaskParameters.serializer()))
     ).addEditTaskParameters.task
 
+    val initialTaskStartDate = task?.startDate
     val editingTask = MutableStateFlow(task ?: Task())
     val isEditing = task != null
 
@@ -206,7 +207,7 @@ class AddEditTaskViewModel @Inject constructor(
             viewModelScope.launch {
                 onResult(
                     if (isEditing) {
-                        taskRepository.updateTask(task)
+                        taskRepository.updateTask(task, saveMethod, initialTaskStartDate)
                     } else {
                         taskRepository.insertTask(task)
                     }
