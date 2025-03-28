@@ -111,10 +111,10 @@ class AddEditTaskViewModel @Inject constructor(
 
     fun onStartTimeChanged(time: LocalTime) {
         if (editingTask.value.startDate != null && editingTask.value.endDate != null && editingTask.value.endTime != null) {
-            val hourBetweenStartAndEnd = editingTask.value.startTime?.until(time, ChronoUnit.HOURS) ?: 0
+            val minutesBetweenStartAndEnd = editingTask.value.startTime?.until(time, ChronoUnit.MINUTES) ?: 0
 
             val endDateTime = LocalDateTime.of(editingTask.value.endDate, editingTask.value.endTime)
-                .plusHours(hourBetweenStartAndEnd)
+                .plusMinutes(minutesBetweenStartAndEnd)
 
             editingTask.value = editingTask.value.copy(endDate = endDateTime.toLocalDate())
             editingTask.value = editingTask.value.copy(endTime = endDateTime.toLocalTime())
