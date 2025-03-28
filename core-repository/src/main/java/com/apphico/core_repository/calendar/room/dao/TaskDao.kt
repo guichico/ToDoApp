@@ -15,7 +15,7 @@ interface TaskDao : BaseDao<TaskDB> {
     @Transaction
     @Query(
         "SELECT * FROM TaskComplete " +
-                "WHERE (:fromStartDate <= startDate OR startDate IS NULL OR endDate IS NULL) " +
+                "WHERE (:fromStartDate <= endDate OR startDate IS NULL OR endDate IS NULL) " +
                 "AND (:nullableGroupIdsFlag OR taskGroupId IN (:groupIds)) " +
                 "ORDER BY startDate, startTime"
     )

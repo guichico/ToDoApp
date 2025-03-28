@@ -9,6 +9,7 @@ import java.time.YearMonth
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit
 import kotlin.time.Duration.Companion.milliseconds
 
 private fun getNow() = Instant.now().atZone(ZoneId.systemDefault())
@@ -64,4 +65,26 @@ fun DayOfWeek.getInt() = when (this) {
     DayOfWeek.THURSDAY -> 5
     DayOfWeek.FRIDAY -> 6
     DayOfWeek.SATURDAY -> 7
+}
+
+fun Pair<LocalDate?, LocalTime?>.addMinutesBetween(
+    startDate: LocalDate?,
+    startTime: LocalTime?,
+    endTime: LocalTime
+): Pair<LocalDate?, LocalTime?> {
+    val (date, time) = this
+
+    val minutesBetween = startTime?.until(endTime, ChronoUnit.MINUTES) ?: 0
+
+    if (startDate != null && date != null) {
+        val endDateTime = LocalDateTime.of(date, time).plusMinutes(minutesBetween)
+        return Pair(endDateTime.toLocalDate(), endDateTime.toLocalTime())
+    } else {
+        return Pair(null, time?.plusMinutes(minutesBetween))
+    }
+}
+
+fun LocalDate.addDaysBetween(startDate: LocalDate?, endDate: LocalDate?): LocalDate? {
+    val daysBetween = startDate?.until(endDate)?.days?.toLong() ?: 0
+    return this.plusDays(daysBetween)
 }

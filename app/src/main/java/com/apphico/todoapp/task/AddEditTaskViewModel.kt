@@ -13,6 +13,8 @@ import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.designsystem.R
 import com.apphico.extensions.add
+import com.apphico.extensions.addDaysBetween
+import com.apphico.extensions.addMinutesBetween
 import com.apphico.extensions.ifTrue
 import com.apphico.extensions.isEqualToBy
 import com.apphico.extensions.remove
@@ -30,7 +32,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlin.reflect.typeOf
 
@@ -100,27 +101,29 @@ class AddEditTaskViewModel @Inject constructor(
     }
 
     fun onStartDateChanged(date: LocalDate?) {
-        val startDate = editingTask.value.startDate
-        val daysBetween = startDate?.until(date)?.days?.toLong() ?: 0
+        val newEndDate = editingTask.value.endDate?.addDaysBetween(editingTask.value.startDate, date)
 
         editingTask.value = editingTask.value.copy(startDate = date)
-        editingTask.value = editingTask.value.copy(endDate = editingTask.value.endDate?.plusDays(daysBetween))
+        editingTask.value = editingTask.value.copy(endDate = newEndDate)
 
         startDateError.value = null
     }
 
     fun onStartTimeChanged(time: LocalTime) {
-        if (editingTask.value.startDate != null && editingTask.value.endDate != null && editingTask.value.endTime != null) {
-            val minutesBetweenStartAndEnd = editingTask.value.startTime?.until(time, ChronoUnit.MINUTES) ?: 0
-
-            val endDateTime = LocalDateTime.of(editingTask.value.endDate, editingTask.value.endTime)
-                .plusMinutes(minutesBetweenStartAndEnd)
-
-            editingTask.value = editingTask.value.copy(endDate = endDateTime.toLocalDate())
-            editingTask.value = editingTask.value.copy(endTime = endDateTime.toLocalTime())
-        }
+        val (newEndDate, newEndTime) =
+            Pair(
+                editingTask.value.endDate,
+                editingTask.value.endTime
+            )
+                .addMinutesBetween(
+                    startDate = editingTask.value.startDate,
+                    startTime = editingTask.value.startTime,
+                    endTime = time
+                )
 
         editingTask.value = editingTask.value.copy(startTime = time)
+        newEndDate?.let { editingTask.value = editingTask.value.copy(endDate = it) }
+        newEndTime?.let { editingTask.value = editingTask.value.copy(endTime = it) }
 
         startDateError.value = null
     }
