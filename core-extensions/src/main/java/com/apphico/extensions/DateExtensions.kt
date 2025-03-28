@@ -17,11 +17,15 @@ fun getNowDateTime(): LocalDateTime = getNow().toLocalDateTime()
 
 fun getNowDate(): LocalDate = getNow().toLocalDate()
 
+fun getNowTime(): LocalTime = getNow().toLocalTime()
+
 fun getGMTNowMillis() = LocalDateTime.now().atZone(ZoneId.of("GMT")).toInstant().toEpochMilli()
 
 fun YearMonth.formatLong(): String = this.format(DateTimeFormatter.ofPattern("MMMM"))
 
 fun YearMonth.formatLongYear(): String = this.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
+
+fun Long.fromMillis(): LocalDate = Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDate()
 
 fun LocalDate.toMillis() = this.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
 

@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import kotlin.reflect.typeOf
 
@@ -99,12 +100,28 @@ class AddEditTaskViewModel @Inject constructor(
     }
 
     fun onStartDateChanged(date: LocalDate?) {
+        val startDate = editingTask.value.startDate
+        val daysBetween = startDate?.until(date)?.days?.toLong() ?: 0
+
         editingTask.value = editingTask.value.copy(startDate = date)
+        editingTask.value = editingTask.value.copy(endDate = editingTask.value.endDate?.plusDays(daysBetween))
+
         startDateError.value = null
     }
 
     fun onStartTimeChanged(time: LocalTime) {
+        if (editingTask.value.startDate != null && editingTask.value.endDate != null && editingTask.value.endTime != null) {
+            val hourBetweenStartAndEnd = editingTask.value.startTime?.until(time, ChronoUnit.HOURS) ?: 0
+
+            val endDateTime = LocalDateTime.of(editingTask.value.endDate, editingTask.value.endTime)
+                .plusHours(hourBetweenStartAndEnd)
+
+            editingTask.value = editingTask.value.copy(endDate = endDateTime.toLocalDate())
+            editingTask.value = editingTask.value.copy(endTime = endDateTime.toLocalTime())
+        }
+
         editingTask.value = editingTask.value.copy(startTime = time)
+
         startDateError.value = null
     }
 
@@ -224,6 +241,14 @@ class AddEditTaskViewModel @Inject constructor(
 
         viewModelScope.launch {
             onResult(taskRepository.deleteTask(task, deleteMethod))
+        }
+    }
+
+    fun copy(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            onResult(
+                taskRepository.insertTask(editingTask.value.copy(id = 0))
+            )
         }
     }
 }

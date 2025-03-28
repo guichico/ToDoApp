@@ -62,6 +62,7 @@ import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatShortTime
 import com.apphico.extensions.getGMTNowMillis
 import com.apphico.extensions.getNowDate
+import com.apphico.extensions.getNowTime
 import com.apphico.extensions.toMillis
 import java.time.LocalDate
 import java.time.LocalTime
@@ -194,7 +195,12 @@ fun AddEditTaskScreen(
                 deleteAction()
             }
         },
-        onCopyClicked = {},
+        onCopyClicked = {
+            addEditTaskViewModel.copy { isSuccess ->
+                snackBar(if (isSuccess) taskSaveSuccess else taskSaveError)
+                if (isSuccess) navigateBack()
+            }
+        },
         navigateBack = {
             showDiscardChangesDialogOnBackIfNeed()
         }
@@ -369,7 +375,9 @@ private fun Dates(
         )
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
         EndDateRow(
+            startDate = startDate,
             endDate = endDate,
+            startTime = startTime,
             endTime = endTime,
             onEndDateChanged = onEndDateChanged,
             onEndTimeChanged = onEndTimeChanged
@@ -390,7 +398,7 @@ private fun StarDateRow(
         initialSelectedDateMillis = startDate.value?.toMillis() ?: getGMTNowMillis()
     )
     val startTimePickerState = rememberTimePickerState(
-        initialHour = startTime.value?.hour ?: LocalTime.now().hour,
+        initialHour = startTime.value?.hour ?: getNowTime().hour,
         initialMinute = startTime.value?.minute ?: 0
     )
 
@@ -409,12 +417,14 @@ private fun StarDateRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EndDateRow(
+    startDate: State<LocalDate?>,
     endDate: State<LocalDate?>,
     onEndDateChanged: (LocalDate?) -> Unit,
+    startTime: State<LocalTime?>,
     endTime: State<LocalTime?>,
     onEndTimeChanged: (LocalTime) -> Unit
-) {
-    var initialEndHour = endTime.value?.hour ?: LocalTime.now().hour.plus(1)
+) { // TODO
+    var initialEndHour = endTime.value?.hour ?: getNowTime().hour.plus(1)
     var initialEndDate = endDate.value ?: getNowDate()
 
     if (initialEndHour >= 24) {
