@@ -33,9 +33,7 @@ fun EmptyView(
 
 @PreviewLightDark
 @Composable
-private fun EmptyViewPreview(
-
-) {
+private fun EmptyViewPreview() {
     ToDoAppTheme {
         EmptyView(
             emptyMessage = "Não há nenhuma tarefa cadastrada.\nClique no botão \"+\" para adicionar sua primeira tarefa."

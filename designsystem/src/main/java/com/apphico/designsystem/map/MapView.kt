@@ -147,8 +147,7 @@ private fun AddressField(
 
 @PreviewLightDark
 @Composable
-private fun MapViewPreview(
-) {
+private fun MapViewPreview() {
     ToDoAppTheme {
         MapView(
             modifier = Modifier.fillMaxSize(),

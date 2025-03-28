@@ -5,7 +5,13 @@
     <string name="date">Data</string>
     <string name="start_date">Data de ínicio</string>
     <string name="end_date">Data fim</string>
+    <string name="day">Dia</string>
+    <string name="days">Dias</string>
     <string name="hour">Hora</string>
+    <string name="hours">Horas</string>
+    <string name="date_separator">e</string>
+    <string name="minute">Minuto</string>
+    <string name="minutes">Minutos</string>
     <string name="name_error_message">O nome é obrigatório</string>
     <string name="start_date_after_end_date_error_message">A data de ínicio não pode ser depois da data fim</string>
     <string name="empty_start_date_error_message">Se a tarefa tem um data fim ela deve ter uma data de ínicio</string>
@@ -16,6 +22,7 @@
     <string name="add_checklist_item">Adicionar item</string>
     <string name="reminder">Lembrete</string>
     <string name="add_reminder">Adicionar um lembrete</string>
+    <string name="before_task">antes da tarefa</string>
     <string name="location">Localização</string>
     <string name="add_new_task">Adicionar tarefa</string>
     <string name="add_new_achievement">Adicionar meta</string>

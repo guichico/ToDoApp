@@ -63,7 +63,7 @@ fun MainLazyList(
 
 @PreviewLightDark
 @Composable
-fun MainLazyListPreview() {
+private fun MainLazyListPreview() {
     MainLazyList(
         listState = rememberLazyListState(),
         onAddClicked = {}

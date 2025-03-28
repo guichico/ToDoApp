@@ -33,7 +33,7 @@ fun LineThroughText(
 
 @PreviewLightDark
 @Composable
-fun LineThroughTextPreview() {
+private fun LineThroughTextPreview() {
     ToDoAppTheme {
         LineThroughText(
             text = "Some text",

@@ -50,8 +50,7 @@ fun IntTextField(
 
 @PreviewLightDark
 @Composable
-private fun IntTextFieldPreview(
-) {
+private fun IntTextFieldPreview() {
     ToDoAppTheme {
         IntTextField(
             initialValue = 10f,

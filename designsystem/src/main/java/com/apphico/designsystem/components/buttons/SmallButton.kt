@@ -28,8 +28,7 @@ fun SmallButton(
 
 @PreviewLightDark
 @Composable
-private fun SmallButtonPreview(
-) {
+private fun SmallButtonPreview() {
     ToDoAppTheme {
         SmallButton(
             text = "Button",

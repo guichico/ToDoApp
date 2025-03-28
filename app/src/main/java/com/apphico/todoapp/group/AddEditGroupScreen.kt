@@ -27,7 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroup
 import com.apphico.designsystem.R
-import com.apphico.designsystem.components.ColorPicker
+import com.apphico.designsystem.components.picker.ColorPicker
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
@@ -125,8 +125,7 @@ private fun AddEditGroupScreenContent(
 
 @PreviewLightDark
 @Composable
-private fun AddEditGroupScreenPreview(
-) {
+private fun AddEditGroupScreenPreview() {
     ToDoAppTheme {
         AddEditGroupScreenContent(
             innerPadding = PaddingValues(),

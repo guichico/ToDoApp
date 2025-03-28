@@ -45,8 +45,7 @@ fun DecimalTextField(
 
 @PreviewLightDark
 @Composable
-private fun DecimalTextFieldPreview(
-) {
+private fun DecimalTextFieldPreview() {
     ToDoAppTheme {
         DecimalTextField(
             initialValue = 10f,

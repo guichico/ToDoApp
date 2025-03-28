@@ -58,8 +58,7 @@ private fun DiscardChangesDialog(
 
 @PreviewLightDark
 @Composable
-private fun DiscardChangesDialogPreview(
-) {
+private fun DiscardChangesDialogPreview() {
     ToDoAppTheme {
         DiscardChangesDialog(
             onContinueClicked = {},

@@ -47,9 +47,7 @@ fun FocusScreenContent(
 
 @PreviewLightDark
 @Composable
-private fun FocusScreenPreview(
-
-) {
+private fun FocusScreenPreview() {
     ToDoAppTheme {
         FocusScreenContent(
             routines = remember { mutableStateOf(emptyList<FocusMode>()) },

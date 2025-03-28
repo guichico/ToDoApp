@@ -97,8 +97,7 @@ fun NormalTextField(
 
 @PreviewLightDark
 @Composable
-private fun NormalTextFieldPreview(
-) {
+private fun NormalTextFieldPreview() {
     ToDoAppTheme {
         NormalTextField(
             value = "Normal text field",

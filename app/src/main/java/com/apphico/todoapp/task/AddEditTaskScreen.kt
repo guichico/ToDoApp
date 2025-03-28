@@ -48,6 +48,7 @@ import com.apphico.designsystem.components.checklist.CreateCheckList
 import com.apphico.designsystem.components.date.DaysOfWeekGrid
 import com.apphico.designsystem.components.dialogs.CheckBoxDialog
 import com.apphico.designsystem.components.dialogs.DateDialog
+import com.apphico.designsystem.components.dialogs.ReminderDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
 import com.apphico.designsystem.components.icons.ToDoAppIcon
@@ -554,6 +555,16 @@ private fun Reminder(
     reminder: State<LocalTime?>,
     onReminderTimeChanged: (LocalTime?) -> Unit
 ) {
+    val isReminderDialogOpen = remember { mutableStateOf(false) }
+
+    if (isReminderDialogOpen.value) {
+        ReminderDialog(
+            date = remember { mutableStateOf(getNowDate()) },
+            time = remember { mutableStateOf(getNowTime()) },
+            onDismissRequest = { isReminderDialogOpen.value = false }
+        )
+    }
+
     Text(
         modifier = Modifier
             .padding(vertical = ToDoAppTheme.spacing.extraSmall),
@@ -563,26 +574,12 @@ private fun Reminder(
 
     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
 
-    val reminderTimePickerState = rememberTimePickerState(
-        initialHour = reminder.value?.hour ?: 0,
-        initialMinute = reminder.value?.minute ?: 0
-    )
-    val isReminderTimePickerDialogOpen = remember { mutableStateOf(false) }
-
-    if (isReminderTimePickerDialogOpen.value) {
-        TimeDialog(
-            isTimePickerDialogOpen = isReminderTimePickerDialogOpen,
-            timePickerState = reminderTimePickerState,
-            onTimeChanged = onReminderTimeChanged
-        )
-    }
-
     SmallTextField(
         modifier = Modifier
             .fillMaxWidth(),
         value = reminder.value?.formatShortTime() ?: "",
         placeholder = stringResource(R.string.add_reminder),
-        onClick = { isReminderTimePickerDialogOpen.value = true },
+        onClick = { isReminderDialogOpen.value = true },
         leadingIcon = {
             ToDoAppIcon(
                 icon = ToDoAppIcons.icReminder,

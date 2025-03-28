@@ -38,8 +38,7 @@ fun DefaultDialog(
 
 @PreviewLightDark
 @Composable
-private fun DefaultDialogPreview(
-) {
+private fun DefaultDialogPreview() {
     ToDoAppTheme {
         DefaultDialog(
             onDismissRequest = {}

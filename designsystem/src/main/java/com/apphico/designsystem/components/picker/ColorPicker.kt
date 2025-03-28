@@ -1,4 +1,4 @@
-package com.apphico.designsystem.components
+package com.apphico.designsystem.components.picker
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -106,8 +106,7 @@ fun ColorPicker(
 
 @PreviewLightDark
 @Composable
-private fun ColorPickerPreview(
-) {
+private fun ColorPickerPreview() {
     ToDoAppTheme {
         ColorPicker(
             selectedColor = remember { mutableStateOf(GroupLightGreen) },

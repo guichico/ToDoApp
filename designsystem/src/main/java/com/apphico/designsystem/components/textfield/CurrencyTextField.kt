@@ -45,8 +45,7 @@ fun CurrencyTextField(
 
 @PreviewLightDark
 @Composable
-private fun CurrencyTextFieldPreview(
-) {
+private fun CurrencyTextFieldPreview() {
     ToDoAppTheme {
         CurrencyTextField(
             initialValue = 10f,

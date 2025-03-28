@@ -145,9 +145,7 @@ fun AddEditProgressScreenContent(
 
 @PreviewLightDark
 @Composable
-private fun AddEditProgressPreview(
-
-) {
+private fun AddEditProgressPreview() {
     ToDoAppTheme {
         AddEditProgressScreenContent(
             innerPadding = PaddingValues()

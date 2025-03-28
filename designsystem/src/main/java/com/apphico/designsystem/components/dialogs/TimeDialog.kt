@@ -98,8 +98,7 @@ fun TimeDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @PreviewLightDark
 @Composable
-private fun TimeDialogPreview(
-) {
+private fun TimeDialogPreview() {
     ToDoAppTheme {
         TimeDialog(
             isTimePickerDialogOpen = remember { mutableStateOf(true) },

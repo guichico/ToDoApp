@@ -68,8 +68,7 @@ fun DeleteSaveTopBar(
 @Preview
 @PreviewLightDark
 @Composable
-private fun DeleteSaveTopBarPreview(
-) {
+private fun DeleteSaveTopBarPreview() {
     ToDoAppTheme {
         DeleteSaveTopBar(
             title = "Some screen",

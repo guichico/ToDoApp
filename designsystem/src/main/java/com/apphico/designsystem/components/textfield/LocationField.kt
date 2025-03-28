@@ -69,8 +69,7 @@ fun LocationField(
 
 @PreviewLightDark
 @Composable
-fun LocationFieldPreview(
-) {
+private fun LocationFieldPreview() {
     ToDoAppTheme {
         LocationField(
             task = remember { mutableStateOf(Task()) },

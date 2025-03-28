@@ -71,9 +71,7 @@ fun FullScreenMapView(
 
 @PreviewLightDark
 @Composable
-private fun FullScreenMapViewPreview(
-
-) {
+private fun FullScreenMapViewPreview() {
     ToDoAppTheme {
         FullScreenMapView(
             coordinates = remember { mutableStateOf(null) },

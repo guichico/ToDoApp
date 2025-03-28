@@ -58,9 +58,7 @@ fun NoInternetConnectionView() {
 
 @PreviewLightDark
 @Composable
-private fun EmptyViewPreview(
-
-) {
+private fun EmptyViewPreview() {
     ToDoAppTheme {
         NoInternetConnectionView()
     }

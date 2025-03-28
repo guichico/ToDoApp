@@ -59,9 +59,7 @@ fun ErrorView(
 
 @PreviewLightDark
 @Composable
-fun ErrorViewPreview(
-
-) {
+private fun ErrorViewPreview() {
     ToDoAppTheme {
         ErrorView()
     }

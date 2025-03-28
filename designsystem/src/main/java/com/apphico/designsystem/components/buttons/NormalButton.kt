@@ -32,8 +32,7 @@ fun NormalButton(
 
 @PreviewLightDark
 @Composable
-private fun NormalButtonPreview(
-) {
+private fun NormalButtonPreview() {
     ToDoAppTheme {
         NormalButton(
             text = "Button",

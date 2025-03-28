@@ -64,8 +64,7 @@ fun DateDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @PreviewLightDark
 @Composable
-private fun DateDialogPreview(
-) {
+private fun DateDialogPreview() {
     ToDoAppTheme {
         DateDialog(
             isDatePickerDialogOpen = remember { mutableStateOf(true) },
