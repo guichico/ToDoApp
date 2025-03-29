@@ -47,7 +47,11 @@ fun LocalDate.formatMediumDate() = DateTimeFormatter.ofPattern("d MMM yyyy").for
 
 fun LocalDateTime.formatDateAndTime(): String = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(this)
 
-fun LocalDateTime.formatMediumDateAndTime() = DateTimeFormatter.ofPattern("d MMM hh:mm a").format(this).replaceFirstChar(Char::titlecase)
+fun LocalDateTime.formatMediumDateAndTime(): String {
+    val dateFormatted = DateTimeFormatter.ofPattern("d MMM").format(this).replaceFirstChar(Char::titlecase)
+    val timeFormatted = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(this)
+    return "$dateFormatted $timeFormatted"
+}
 
 fun LocalDateTime.formatMediumDate(): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).format(this)
 

@@ -82,7 +82,8 @@ fun ReminderDialog(
             val valuesFormatted = when (values.size) {
                 3 -> "${values[0]}, ${values[1]} $dateSeparator ${values[2]} "
                 2 -> "${values[0]} $dateSeparator ${values[1]} "
-                else -> "${values[0]} "
+                1 -> "${values[0]} "
+                else -> ""
             }
 
             val timeBeforeTask = valuesFormatted + stringResource(R.string.before_task)
