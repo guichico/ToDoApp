@@ -4,6 +4,7 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Coordinates
 import com.apphico.core_model.Group
 import com.apphico.core_model.Location
+import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 
 fun Group.toGroupDB(): GroupDB =
@@ -51,6 +52,20 @@ fun LocationDB.toLocation(): Location =
         address = this.address
     )
 
+fun Reminder.toReminderDB(): ReminderDB =
+    ReminderDB(
+        days = this.days,
+        hours = this.hours,
+        minutes = this.minutes
+    )
+
+fun ReminderDB.toReminder(): Reminder =
+    Reminder(
+        days = this.days,
+        hours = this.hours,
+        minutes = this.minutes
+    )
+
 fun Task.toTaskDB(): TaskDB =
     TaskDB(
         taskId = this.id,
@@ -62,7 +77,7 @@ fun Task.toTaskDB(): TaskDB =
         endDate = this.endDate,
         endTime = this.endTime,
         daysOfWeek = this.daysOfWeek,
-        reminder = this.reminder
+        reminder = this.reminder?.toReminderDB()
     )
 
 fun TaskWithRelations.toTask(): Task =
@@ -77,7 +92,7 @@ fun TaskWithRelations.toTask(): Task =
         endDate = this.taskComplete.taskDB.endDate,
         endTime = this.taskComplete.taskDB.endTime,
         daysOfWeek = this.taskComplete.taskDB.daysOfWeek ?: emptyList(),
-        reminder = this.taskComplete.taskDB.reminder,
+        reminder = this.taskComplete.taskDB.reminder?.toReminder(),
         location = this.locationDB?.toLocation(),
         hasDone = this.taskComplete.hasDone,
         doneDates = this.taskComplete.doneDates,

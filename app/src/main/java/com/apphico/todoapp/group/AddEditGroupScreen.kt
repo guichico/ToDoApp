@@ -27,8 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroup
 import com.apphico.designsystem.R
-import com.apphico.designsystem.components.picker.ColorPicker
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
+import com.apphico.designsystem.components.picker.ColorPicker
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppTheme

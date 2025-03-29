@@ -104,11 +104,11 @@ private fun DateRow(
     val animatedColor by animateColorAsState(if (!task.isDone()) textColor else textColor.copy(alpha = 0.5f))
 
     Row {
-        if (task.daysOfWeek.isEmpty() && task.startDate == null && task.endDate != null) {
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
+        Row(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            if (task.daysOfWeek.isEmpty() && task.startDate == null && task.endDate != null) {
                 Text(
                     text = task.endDate!!.formatDayAndMonth(),
                     style = MaterialTheme.typography.bodyMedium,
@@ -121,12 +121,7 @@ private fun DateRow(
                         color = animatedColor
                     )
                 }
-            }
-        } else if (task.startTime != null || task.endTime != null) {
-            Row(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
+            } else if (task.startTime != null || task.endTime != null) {
                 task.startTime?.let { startTime ->
                     Text(
                         text = startTime.formatShortTime(),
@@ -152,10 +147,10 @@ private fun DateRow(
                 }
             }
         }
-        task.reminder?.let { reminderDate ->
+        task.reminder?.let { reminder ->
             Row(
                 modifier = Modifier
-                    .padding(top = 2.dp)
+                    .align(Alignment.Bottom)
             ) {
                 ToDoAppIcon(
                     modifier = Modifier
@@ -168,7 +163,7 @@ private fun DateRow(
                 Text(
                     modifier = Modifier
                         .padding(start = ToDoAppTheme.spacing.extraSmall),
-                    text = reminderDate.formatShortTime(),
+                    text = task.reminderDateTime()?.formatShortTime()!!,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
                 )

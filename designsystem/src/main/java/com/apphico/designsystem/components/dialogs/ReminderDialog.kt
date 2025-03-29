@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -21,20 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import com.apphico.core_model.Reminder
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.NormalButton
 import com.apphico.designsystem.components.picker.NumberPicker
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.extensions.getNowDate
-import com.apphico.extensions.getNowTime
-import java.time.LocalDate
-import java.time.LocalTime
 
 @Composable
 fun ReminderDialog(
-    date: State<LocalDate?>,
-    time: State<LocalTime?>,
+    initialValue: Reminder,
     onDismissRequest: () -> Unit,
+    onConfirmClicked: (Reminder) -> Unit
 ) {
     DefaultDialog(
         onDismissRequest = onDismissRequest
@@ -51,39 +46,46 @@ fun ReminderDialog(
                 color = MaterialTheme.colorScheme.primary
             )
 
-            var minutes by remember { mutableIntStateOf(0) }
-            var hours by remember { mutableIntStateOf(0) }
-            var days by remember { mutableIntStateOf(0) }
+            var minutes by remember { mutableIntStateOf(initialValue.minutes) }
+            var hours by remember { mutableIntStateOf(initialValue.hours) }
+            var days by remember { mutableIntStateOf(initialValue.days) }
 
             NumberSpinnerField(
                 label = stringResource(R.string.minute),
                 items = remember { (0..59).map { it.toString() } },
+                startValue = initialValue.minutes.toString(),
                 onSelectedItemChanged = { minutes = it.toIntOrNull() ?: 0 }
             )
             NumberSpinnerField(
                 label = stringResource(R.string.hour),
                 items = remember { (0..23).map { it.toString() } },
+                startValue = initialValue.hours.toString(),
                 onSelectedItemChanged = { hours = it.toIntOrNull() ?: 0 }
             )
             NumberSpinnerField(
                 label = stringResource(R.string.day),
                 items = remember { (0..99).map { it.toString() } },
+                startValue = initialValue.days.toString(),
                 onSelectedItemChanged = { days = it.toIntOrNull() ?: 0 }
             )
 
-            val timeBeforeTask = StringBuilder()
-                .apply {
-                    val dateSeparator = stringResource(R.string.date_separator)
+            val dateSeparator = stringResource(R.string.date_separator)
 
-                    if (days > 0) append("$days ${stringResource(if (days > 1) R.string.days else R.string.day).lowercase()}")
-                    if (days > 0 && hours > 0 && minutes > 0) append(", ") else if (days > 0 && hours > 0) append("$dateSeparator ") else append(" ")
-                    if (hours > 0) append("$hours ${stringResource(if (hours > 1) R.string.hours else R.string.hour).lowercase()} ")
-                    if ((days > 0 || hours > 0) && minutes > 0) append("$dateSeparator ")
-                    if (minutes > 0) append("$minutes ${stringResource(if (minutes > 1) R.string.minutes else R.string.minute).lowercase()} ")
+            val values = listOf(
+                Pair(days, stringResource(if (days > 1) R.string.days else R.string.day).lowercase()),
+                Pair(hours, stringResource(if (hours > 1) R.string.hours else R.string.hour).lowercase()),
+                Pair(minutes, stringResource(if (minutes > 1) R.string.minutes else R.string.minute).lowercase())
+            )
+                .filter { (value, _) -> value > 0 }
+                .map { (value, text) -> "$value $text" }
 
-                    append(stringResource(R.string.before_task)).toString()
-                }
-                .toString()
+            val valuesFormatted = when (values.size) {
+                3 -> "${values[0]}, ${values[1]} $dateSeparator ${values[2]} "
+                2 -> "${values[0]} $dateSeparator ${values[1]} "
+                else -> "${values[0]} "
+            }
+
+            val timeBeforeTask = valuesFormatted + stringResource(R.string.before_task)
 
             Text(
                 modifier = Modifier
@@ -100,14 +102,12 @@ fun ReminderDialog(
                 NormalButton(
                     modifier = Modifier
                         .padding(end = ToDoAppTheme.spacing.small),
-                    onClick = {
-
-                    },
+                    onClick = onDismissRequest,
                     text = stringResource(R.string.cancel)
                 )
                 NormalButton(
                     onClick = {
-
+                        onConfirmClicked(Reminder(days = days, hours = hours, minutes = minutes))
                     },
                     text = stringResource(R.string.ok)
                 )
@@ -120,6 +120,7 @@ fun ReminderDialog(
 fun NumberSpinnerField(
     label: String,
     items: List<String>,
+    startValue: String,
     onSelectedItemChanged: (String) -> Unit
 ) {
     Row(
@@ -132,6 +133,7 @@ fun NumberSpinnerField(
             modifier = Modifier
                 .weight(0.65f),
             items = items,
+            startIndex = items.indexOf(startValue),
             visibleItemsCount = 1,
             onSelectedItemChanged = onSelectedItemChanged
         )
@@ -157,9 +159,9 @@ fun NumberSpinnerField(
 private fun ReminderDialogPreview() {
     ToDoAppTheme {
         ReminderDialog(
-            date = remember { mutableStateOf(getNowDate()) },
-            time = remember { mutableStateOf(getNowTime()) },
-            onDismissRequest = {}
+            initialValue = Reminder(days = 0, hours = 2, minutes = 30),
+            onDismissRequest = {},
+            onConfirmClicked = {},
         )
     }
 }

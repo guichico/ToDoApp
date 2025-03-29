@@ -1,6 +1,7 @@
 package com.apphico.core_model.fakeData
 
 import com.apphico.core_model.CheckListItem
+import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 import java.time.LocalDate
 import java.time.LocalTime
@@ -16,7 +17,7 @@ val mockedTask = Task(
         CheckListItem(0L, "pet the dog", false)
     ),
     daysOfWeek = listOf(2, 3, 4),
-    reminder = LocalTime.of(13, 15),
+    reminder = Reminder(0, 0, 15),
     group = mockedGroup
 )
 

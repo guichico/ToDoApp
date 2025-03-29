@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Location
 import com.apphico.core_model.RecurringTask
+import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
 import com.apphico.designsystem.R
@@ -60,6 +61,7 @@ import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatMediumDate
+import com.apphico.extensions.formatMediumDateAndTime
 import com.apphico.extensions.formatShortTime
 import com.apphico.extensions.getGMTNowMillis
 import com.apphico.extensions.getNowDate
@@ -226,7 +228,7 @@ fun AddEditTaskScreen(
             onCheckListItemItemAdded = addEditTaskViewModel::onCheckListItemItemAdded,
             onCheckListItemItemRemoved = addEditTaskViewModel::onCheckListItemItemRemoved,
             onCheckListItemDoneChanged = addEditTaskViewModel::setCheckListItemDone,
-            onReminderTimeChanged = addEditTaskViewModel::onReminderTimeChanged,
+            onReminderChanged = addEditTaskViewModel::onReminderChanged,
             navigateToSelectLocation = navigateToSelectLocation
         )
     }
@@ -253,7 +255,7 @@ private fun AddTaskScreenContent(
     onCheckListItemItemAdded: (CheckListItem) -> Unit,
     onCheckListItemItemRemoved: (CheckListItem) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit,
-    onReminderTimeChanged: (LocalTime?) -> Unit,
+    onReminderChanged: (Reminder?) -> Unit,
     navigateToSelectLocation: (Location?) -> Unit
 ) {
     Box(
@@ -329,9 +331,9 @@ private fun AddTaskScreenContent(
 
             Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
 
-            Reminder(
-                reminder = remember { derivedStateOf { task.value.reminder } },
-                onReminderTimeChanged = onReminderTimeChanged
+            ReminderField(
+                task = task,
+                onReminderChanged = onReminderChanged
             )
 
             Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
@@ -551,17 +553,22 @@ private fun CheckList(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun Reminder(
-    reminder: State<LocalTime?>,
-    onReminderTimeChanged: (LocalTime?) -> Unit
+private fun ReminderField(
+    task: State<Task>,
+    onReminderChanged: (Reminder?) -> Unit
 ) {
+    val reminder by remember { derivedStateOf { task.value.reminder } }
+
     val isReminderDialogOpen = remember { mutableStateOf(false) }
 
     if (isReminderDialogOpen.value) {
         ReminderDialog(
-            date = remember { mutableStateOf(getNowDate()) },
-            time = remember { mutableStateOf(getNowTime()) },
-            onDismissRequest = { isReminderDialogOpen.value = false }
+            initialValue = reminder ?: Reminder(0, 0, 0),
+            onDismissRequest = { isReminderDialogOpen.value = false },
+            onConfirmClicked = {
+                onReminderChanged(it)
+                isReminderDialogOpen.value = false
+            }
         )
     }
 
@@ -574,10 +581,17 @@ private fun Reminder(
 
     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
 
+    val reminderDate = task.value.reminderDateTime()
+    val reminderFormatted = if (task.value.startDate?.dayOfMonth != reminderDate?.dayOfMonth) {
+        reminderDate?.formatMediumDateAndTime()
+    } else {
+        reminderDate?.formatShortTime()
+    }
+
     SmallTextField(
         modifier = Modifier
             .fillMaxWidth(),
-        value = reminder.value?.formatShortTime() ?: "",
+        value = reminderFormatted ?: "",
         placeholder = stringResource(R.string.add_reminder),
         onClick = { isReminderDialogOpen.value = true },
         leadingIcon = {
@@ -587,10 +601,10 @@ private fun Reminder(
             )
         },
         trailingIcon = {
-            reminder.value?.let {
+            reminder?.let {
                 ToDoAppIconButton(
                     icon = ToDoAppIcons.icRemove,
-                    onClick = { onReminderTimeChanged(null) }
+                    onClick = { onReminderChanged(null) }
                 )
             }
         }
@@ -635,7 +649,7 @@ private fun AddTaskScreenPreview(
             onCheckListItemItemAdded = {},
             onCheckListItemItemRemoved = {},
             onCheckListItemDoneChanged = { _, _, _ -> },
-            onReminderTimeChanged = {},
+            onReminderChanged = {},
             navigateToSelectLocation = {}
         )
     }

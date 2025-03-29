@@ -9,6 +9,7 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
+import com.apphico.core_repository.calendar.room.entities.ReminderDB
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.toGroupDB
 import kotlinx.coroutines.CoroutineScope
@@ -66,7 +67,7 @@ class AppDatabaseInitializer(
                     startTime = LocalTime.now().withHour(8).withMinute(0),
                     endTime = LocalTime.now().withHour(8).withMinute(30),
                     endDate = null,
-                    reminder = LocalTime.of(7, 40),
+                    reminder = ReminderDB(0, 0, 20),
                     daysOfWeek = listOf(1, 2, 3, 4, 5, 6, 7),
                 )
             )

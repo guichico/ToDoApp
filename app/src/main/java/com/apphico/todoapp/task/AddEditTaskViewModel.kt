@@ -8,6 +8,7 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.RecurringTask
+import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.task.TaskRepository
@@ -86,7 +87,6 @@ class AddEditTaskViewModel @Inject constructor(
         }
     }
 
-    // region Fields Changed
     fun onNameChanged(text: String) {
         editingTask.value = editingTask.value.copy(name = text)
         nameError.value = null
@@ -167,11 +167,9 @@ class AddEditTaskViewModel @Inject constructor(
         }
     }
 
-    fun onReminderTimeChanged(time: LocalTime?) {
-        editingTask.value = editingTask.value.copy(reminder = time)
+    fun onReminderChanged(reminder: Reminder?) {
+        editingTask.value = editingTask.value.copy(reminder = reminder)
     }
-
-    // endregion
 
     fun hasChanges(): Boolean {
         val task = task ?: Task()

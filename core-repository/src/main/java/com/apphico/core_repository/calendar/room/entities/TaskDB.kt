@@ -30,7 +30,13 @@ data class TaskDB(
     val endDate: LocalDate?,
     val endTime: LocalTime?,
     val daysOfWeek: List<Int>?,
-    val reminder: LocalTime?
+    @Embedded val reminder: ReminderDB?
+)
+
+data class ReminderDB(
+    @ColumnInfo("reminder_days") val days: Int,
+    @ColumnInfo("reminder_hours") val hours: Int,
+    @ColumnInfo("reminder_minutes") val minutes: Int
 )
 
 @Entity(
