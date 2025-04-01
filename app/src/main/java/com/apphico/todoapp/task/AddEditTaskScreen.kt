@@ -1,7 +1,5 @@
 package com.apphico.todoapp.task
 
-import android.content.Intent
-import android.provider.Settings
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,23 +31,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Location
 import com.apphico.core_model.RecurringTask
 import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
-import com.apphico.designsystem.ComposableLifecycle
 import com.apphico.designsystem.R
-import com.apphico.designsystem.RequestNotificationPermission
 import com.apphico.designsystem.animatedElevation
 import com.apphico.designsystem.components.card.AddEditHeader
 import com.apphico.designsystem.components.checklist.CreateCheckList
@@ -58,7 +52,6 @@ import com.apphico.designsystem.components.dialogs.CheckBoxDialog
 import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.ReminderDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
-import com.apphico.designsystem.components.dialogs.ToDoAppAlertDialog
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
@@ -66,6 +59,7 @@ import com.apphico.designsystem.components.textfield.LocationField
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.textfield.SmallTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
+import com.apphico.designsystem.reminder.CheckNotificationPermission
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatMediumDate
@@ -74,7 +68,6 @@ import com.apphico.extensions.formatShortTime
 import com.apphico.extensions.getGMTNowMillis
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime
-import com.apphico.extensions.hasNotificationPermission
 import com.apphico.extensions.toMillis
 import java.time.LocalDate
 import java.time.LocalTime
@@ -566,8 +559,6 @@ private fun ReminderField(
     task: State<Task>,
     onReminderChanged: (Reminder?) -> Unit
 ) {
-    val context = LocalContext.current
-
     val reminder by remember { derivedStateOf { task.value.reminder } }
     val reminderDate = task.value.reminderDateTime()
     val reminderFormatted = if (task.value.startDate?.dayOfMonth != reminderDate?.dayOfMonth) {
@@ -576,59 +567,25 @@ private fun ReminderField(
         reminderDate?.formatShortTime()
     }
 
+    var isReminderClicked by rememberSaveable { mutableStateOf(false) }
     var isReminderDialogOpen by rememberSaveable { mutableStateOf(false) }
-    var isNotificationPermissionsGranted by rememberSaveable { mutableStateOf(context.hasNotificationPermission()) }
-    var isNotificationPermissionsDeniedDialogOpen by rememberSaveable { mutableStateOf(false) }
 
-    ComposableLifecycle { _, event ->
-        when (event) {
-            Lifecycle.Event.ON_RESUME -> {
-                if (!isNotificationPermissionsGranted && context.hasNotificationPermission()) {
-                    isNotificationPermissionsGranted = true
-                    isNotificationPermissionsDeniedDialogOpen = false
-                }
-            }
-
-            else -> {}
+    CheckNotificationPermission(
+        onShowDialog = { isReminderClicked },
+        onDismiss = { isReminderClicked = false },
+        onNotificationPermissionGranted = {
+            isReminderClicked = false
+            isReminderDialogOpen = true
         }
-    }
+    )
 
     if (isReminderDialogOpen) {
-        if (isNotificationPermissionsGranted) {
-            ReminderDialog(
-                initialValue = reminder ?: Reminder(0, 0, 0),
-                onDismissRequest = { isReminderDialogOpen = false },
-                onConfirmClicked = {
-                    onReminderChanged(it)
-                    isReminderDialogOpen = false
-                }
-            )
-        } else {
-            RequestNotificationPermission { isGranted ->
-                isNotificationPermissionsGranted = isGranted
-
-                if (!isGranted) {
-                    isReminderDialogOpen = false
-                    isNotificationPermissionsDeniedDialogOpen = true
-                }
-            }
-        }
-    }
-
-    if (isNotificationPermissionsDeniedDialogOpen) {
-        ToDoAppAlertDialog(
-            title = stringResource(R.string.notification_permission_title),
-            message = stringResource(R.string.notification_permission_text),
-            dismissButtonText = stringResource(R.string.permission_deny),
-            onDismissRequest = { isNotificationPermissionsDeniedDialogOpen = false },
-            confirmButtonText = stringResource(R.string.permission_configurations),
+        ReminderDialog(
+            initialValue = reminder ?: Reminder(0, 0, 0),
+            onDismissRequest = { isReminderDialogOpen = false },
             onConfirmClicked = {
-                context.startActivity(
-                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                        .apply {
-                            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                        }
-                )
+                onReminderChanged(it)
+                isReminderDialogOpen = false
             }
         )
     }
@@ -647,7 +604,7 @@ private fun ReminderField(
             .fillMaxWidth(),
         value = reminderFormatted ?: "",
         placeholder = stringResource(R.string.add_reminder),
-        onClick = { isReminderDialogOpen = true },
+        onClick = { isReminderClicked = true },
         leadingIcon = {
             ToDoAppIcon(
                 icon = ToDoAppIcons.icReminder,
