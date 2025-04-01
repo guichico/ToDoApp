@@ -1,5 +1,7 @@
 package com.apphico.designsystem
 
+import android.Manifest
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.LinearEasing
@@ -63,6 +65,19 @@ fun Modifier.animatedElevation(
     graphicsLayer {
         this.shadowElevation = elevationAnimation.value
     }
+}
+
+@Composable
+fun RequestNotificationPermission(
+    onResult: (Boolean) -> Unit
+) {
+    val notificationPermission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.POST_NOTIFICATIONS else null
+
+    RequestAnyPermissions(
+        permissions = listOfNotNull(notificationPermission).toTypedArray(),
+        onResult = onResult
+    )
 }
 
 @Composable

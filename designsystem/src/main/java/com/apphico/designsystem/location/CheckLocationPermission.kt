@@ -75,9 +75,9 @@ private fun ShowAllLocationPermissionsDeniedDialog(
         ToDoAppAlertDialog(
             title = stringResource(R.string.location_permission_title),
             message = stringResource(R.string.location_permission_text),
-            dismissButtonText = stringResource(R.string.location_permission_deny),
+            dismissButtonText = stringResource(R.string.permission_deny),
             onDismissRequest = onDismissRequest,
-            confirmButtonText = stringResource(R.string.location_permission_configurations),
+            confirmButtonText = stringResource(R.string.permission_configurations),
             onConfirmClicked = onConfirmClicked
         )
     }

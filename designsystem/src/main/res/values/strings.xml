@@ -61,6 +61,9 @@
     <string name="discard">Descartar</string>
     <string name="groups">Grupos</string>
     <string name="status">Status</string>
+    <string name="all">Todas</string>
+    <string name="finished">Concluídas</string>
+    <string name="unfinished">Não concluídas</string>
     <string name="search_btn">Aplicar</string>
     <string name="unit_int">Número inteiro</string>
     <string name="unit_decimal">Decimal</string>
@@ -77,6 +80,8 @@
     <string name="group_delete_error">Erro ao excluir grupo. Tente novamente.</string>
     <string name="location_permission_title">Permissão de localização</string>
     <string name="location_permission_text">Essa permissão é necessária para adicionar a localização a tarefa. Por favor conceda acesso nas configurações do telefone.</string>
-    <string name="location_permission_configurations">Configurações</string>
-    <string name="location_permission_deny">Não conceder</string>
+    <string name="notification_permission_title">Permissão de notificação</string>
+    <string name="notification_permission_text">Essa permissão é necessária para mostrar lembretes das tarefas. Por favor conceda acesso nas configurações do telefone.</string>
+    <string name="permission_configurations">Configurações</string>
+    <string name="permission_deny">Não conceder</string>
 </resources>

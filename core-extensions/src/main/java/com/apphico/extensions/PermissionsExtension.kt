@@ -3,6 +3,7 @@ package com.apphico.extensions
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import androidx.core.content.ContextCompat
 
 private fun Context.hasPermission(
@@ -12,6 +13,12 @@ private fun Context.hasPermission(
         this,
         permission
     ) == PackageManager.PERMISSION_GRANTED
+}
+
+fun Context.hasNotificationPermission(): Boolean = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    hasPermission(Manifest.permission.POST_NOTIFICATIONS)
+} else {
+    true
 }
 
 fun Context.hasCoarseLocationPermission(): Boolean = hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
