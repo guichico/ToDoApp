@@ -13,11 +13,15 @@ import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import com.apphico.core_repository.calendar.room.entities.toCheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.toLocationDB
+import com.apphico.core_repository.calendar.room.entities.toTask
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.extensions.getNowDate
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
 interface TaskRepository {
+    suspend fun getTask(taskId: Long): Flow<Task>
     suspend fun insertTask(task: Task): Boolean
     suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean
     suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean
@@ -31,6 +35,8 @@ class TaskRepositoryImpl(
     private val locationDao: LocationDao,
     private val checkListItemDao: CheckListItemDao
 ) : TaskRepository {
+
+    override suspend fun getTask(taskId: Long) = taskDao.getTask(taskId).map { it.toTask() }
 
     override suspend fun insertTask(task: Task): Boolean {
         return try {

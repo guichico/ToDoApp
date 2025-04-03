@@ -12,6 +12,9 @@ import java.time.LocalDate
 @Dao
 interface TaskDao : BaseDao<TaskDB> {
 
+    @Query("SELECT * FROM TaskComplete WHERE taskId = :taskId")
+    fun getTask(taskId: Long): Flow<TaskWithRelations>
+
     @Transaction
     @Query(
         "SELECT * FROM TaskComplete " +

@@ -26,8 +26,10 @@ import com.apphico.todoapp.location.REMOVE_LOCATION_ARG
 import com.apphico.todoapp.navigation.CustomNavType
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -57,9 +59,21 @@ class AddEditTaskViewModel @Inject constructor(
     val startDateError = MutableStateFlow<Int?>(null)
 
     init {
+        // TODO always get from db
+        if (task != null && task.name.isEmpty()) {
+            viewModelScope.launch {
+                taskRepository.getTask(task.id)
+                    .flowOn(Dispatchers.IO)
+                    .collectLatest { task ->
+                        editingTask.value = task
+                    }
+            }
+        }
+
         viewModelScope.launch {
             savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
                 .mapNotNull { it }
+                .flowOn(Dispatchers.IO)
                 .collectLatest { g ->
                     editingTask.value = editingTask.value.copy(group = g)
                 }
@@ -68,6 +82,7 @@ class AddEditTaskViewModel @Inject constructor(
         viewModelScope.launch {
             savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
                 .mapNotNull { it }
+                .flowOn(Dispatchers.IO)
                 .collectLatest { locationArg ->
                     val location = editingTask.value.location?.id?.let { locationId ->
                         locationArg.copy(id = locationId)
@@ -81,6 +96,7 @@ class AddEditTaskViewModel @Inject constructor(
             savedStateHandle.getLiveData<Boolean>(REMOVE_LOCATION_ARG, false).asFlow()
                 .mapNotNull { it }
                 .ifTrue()
+                .flowOn(Dispatchers.IO)
                 .collectLatest {
                     editingTask.value = editingTask.value.copy(location = null)
                 }

@@ -15,20 +15,24 @@ class AlarmHelperImpl(
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    private fun Task.createAlarmIntent(extras: Bundle? = null): PendingIntent =
+    private fun createAlarmIntent(taskId: Long, extras: Bundle? = null): PendingIntent =
         PendingIntent.getBroadcast(
             context,
-            this.id.toInt(),
-            Intent(context, AlarmReceiver::class.java).apply { extras?.let { putExtras(it) } },
+            taskId.toInt(),
+            Intent(context, AlarmReceiver::class.java).apply {
+                action = AlarmHelper.ALARM_ACTION
+                putExtra(AlarmHelper.TASK_ID, taskId)
+                extras?.let { putExtras(it) }
+            },
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-    private fun Task.createAlarmIntentWithExtras() = createAlarmIntent(
+    private fun createAlarmIntentWithExtras(task: Task) = createAlarmIntent(
+        taskId = task.id,
         extras = Bundle()
             .apply {
-                putLong(AlarmHelper.TASK_ID, this@createAlarmIntentWithExtras.id)
-                putString(AlarmHelper.TASK_NAME, this@createAlarmIntentWithExtras.name)
-                putSerializable(AlarmHelper.TASK_TIME, this@createAlarmIntentWithExtras.startTime)
+                putString(AlarmHelper.TASK_NAME, task.name)
+                putSerializable(AlarmHelper.TASK_TIME, task.startTime)
             }
     )
 
@@ -37,12 +41,12 @@ class AlarmHelperImpl(
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 alarmSchedule.toMillis(),
-                task.createAlarmIntentWithExtras()
+                createAlarmIntentWithExtras(task)
             )
         }
     }
 
-    override fun cancelAlarm(task: Task) {
-        alarmManager.cancel(task.createAlarmIntent())
+    override fun cancelAlarm(taskId: Long) {
+        alarmManager.cancel(createAlarmIntent(taskId))
     }
 }
