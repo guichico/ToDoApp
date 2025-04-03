@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.room.withTransaction
 import com.apphico.core_model.RecurringTask
 import com.apphico.core_model.Task
+import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
@@ -24,6 +25,7 @@ interface TaskRepository {
 
 class TaskRepositoryImpl(
     private val appDatabase: AppDatabase,
+    private val alarmHelper: AlarmHelper,
     private val taskDao: TaskDao,
     private val taskDeletedDao: TaskDeletedDao,
     private val locationDao: LocationDao,
@@ -41,6 +43,9 @@ class TaskRepositoryImpl(
 
                 checkListItemDao
                     .insertAll(task.checkList.map { it.toCheckListItemDB(taskId) })
+
+                val insertedTask = task.copy(id = taskId)
+                alarmHelper.setAlarm(insertedTask)
             }
 
             return true

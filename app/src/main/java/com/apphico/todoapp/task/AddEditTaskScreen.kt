@@ -572,10 +572,9 @@ private fun ReminderField(
 
     CheckNotificationPermission(
         onShowDialog = { isReminderClicked },
-        onDismiss = { isReminderClicked = false },
-        onNotificationPermissionGranted = {
+        onResult = { isGranted ->
             isReminderClicked = false
-            isReminderDialogOpen = true
+            isReminderDialogOpen = isGranted
         }
     )
 

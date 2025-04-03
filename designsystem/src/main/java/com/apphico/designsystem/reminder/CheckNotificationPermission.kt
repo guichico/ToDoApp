@@ -19,8 +19,7 @@ import com.apphico.extensions.hasNotificationPermission
 @Composable
 fun CheckNotificationPermission(
     onShowDialog: () -> Boolean,
-    onDismiss: () -> Unit,
-    onNotificationPermissionGranted: () -> Unit
+    onResult: (Boolean) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -42,14 +41,14 @@ fun CheckNotificationPermission(
 
     if (onShowDialog()) {
         if (isNotificationPermissionsGranted) {
-            onNotificationPermissionGranted()
+            onResult(true)
         } else {
             RequestNotificationPermission { isGranted ->
                 isNotificationPermissionsGranted = isGranted
 
                 if (!isGranted) {
                     isNotificationPermissionsDeniedDialogOpen = true
-                    onDismiss()
+                    onResult(false)
                 }
             }
         }

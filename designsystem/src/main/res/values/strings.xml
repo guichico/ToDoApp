@@ -84,4 +84,5 @@
     <string name="notification_permission_text">Essa permissão é necessária para mostrar lembretes das tarefas. Por favor conceda acesso nas configurações do telefone.</string>
     <string name="permission_configurations">Configurações</string>
     <string name="permission_deny">Não conceder</string>
+    <string name="stop_alarm">Desativar</string>
 </resources>

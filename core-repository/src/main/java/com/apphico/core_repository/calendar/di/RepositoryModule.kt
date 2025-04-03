@@ -1,7 +1,9 @@
 package com.apphico.core_repository.calendar.di
 
+import android.content.Context
 import com.apphico.core_repository.calendar.achievements.AchievementsRepository
 import com.apphico.core_repository.calendar.achievements.AchievementsRepositoryImpl
+import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.calendar.CalendarRepositoryImpl
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
@@ -28,6 +30,7 @@ import com.apphico.core_repository.calendar.task.TaskRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -59,11 +62,12 @@ class RepositoryModule() {
     @Singleton
     fun providesTaskRepository(
         appDatabase: AppDatabase,
+        alarmHelper: AlarmHelper,
         taskDao: TaskDao,
         taskDeletedDao: TaskDeletedDao,
         locationDao: LocationDao,
         checkListItemDao: CheckListItemDao
-    ): TaskRepository = TaskRepositoryImpl(appDatabase, taskDao, taskDeletedDao, locationDao, checkListItemDao)
+    ): TaskRepository = TaskRepositoryImpl(appDatabase, alarmHelper, taskDao, taskDeletedDao, locationDao, checkListItemDao)
 
     @Provides
     @Singleton
