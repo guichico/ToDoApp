@@ -10,18 +10,23 @@ interface MediaPlayerHelper {
 }
 
 class MediaPlayerHelperImpl(
-    context: Context
+    private val context: Context
 ) : MediaPlayerHelper {
 
-    val mediaPlayer: MediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_ALARM_ALERT_URI)
+    var mediaPlayer: MediaPlayer? = MediaPlayer.create(context, Settings.System.DEFAULT_ALARM_ALERT_URI)
 
     override fun start() {
-        mediaPlayer.isLooping = true
-        mediaPlayer.start()
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer.create(context, Settings.System.DEFAULT_ALARM_ALERT_URI)
+        }
+
+        mediaPlayer?.isLooping = true
+        mediaPlayer?.start()
     }
 
     override fun stop() {
-        mediaPlayer.stop()
-        mediaPlayer.release()
+        mediaPlayer?.stop()
+        mediaPlayer?.release()
+        mediaPlayer = null
     }
 }
