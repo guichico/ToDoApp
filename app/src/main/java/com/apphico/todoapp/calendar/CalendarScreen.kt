@@ -29,7 +29,6 @@ import com.apphico.designsystem.components.list.MainLazyList
 import com.apphico.designsystem.task.TaskCard
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.getNowDate
-import com.apphico.extensions.toMillis
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -174,7 +173,7 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 ) {
     itemsIndexed(
         items = tasks,
-        key = { _, task -> task.id + (task.startDate?.toMillis() ?: 0L) }
+        key = { _, task -> task.key() }
     ) { index, task ->
         task.startDate?.let { date ->
             val previousDate = if (index > 0) tasks[index - 1].startDate else null

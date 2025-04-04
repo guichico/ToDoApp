@@ -11,8 +11,10 @@ interface AlarmHelper {
         const val STOP_ALARM_ACTION = "stop_alarm"
         const val OPEN_TASK_ACTION = "open_task"
 
+        const val TASK_KEY = "task_key"
         const val TASK_ID = "task_id"
         const val TASK_NAME = "task_name"
+        const val TASK_DATE = "task_date"
         const val TASK_TIME = "task_time"
     }
 

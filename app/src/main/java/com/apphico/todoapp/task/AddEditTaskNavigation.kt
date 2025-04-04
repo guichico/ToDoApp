@@ -18,9 +18,9 @@ data class AddEditTaskRoute(val addEditTaskParameters: AddEditTaskParameters)
 
 @Parcelize
 @Serializable
-data class AddEditTaskParameters(val task: Task?) : Parcelable
+data class AddEditTaskParameters(val task: Task?, val isFromIntent: Boolean) : Parcelable
 
-fun NavController.navigateToAddEditTask(task: Task?) = navigate(AddEditTaskRoute(AddEditTaskParameters(task)))
+fun NavController.navigateToAddEditTask(task: Task?, isFromIntent: Boolean = false) = navigate(AddEditTaskRoute(AddEditTaskParameters(task, isFromIntent)))
 
 fun NavGraphBuilder.addEditTaskScreen(
     snackBar: (String) -> Unit,

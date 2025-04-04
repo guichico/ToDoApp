@@ -1,6 +1,5 @@
 package com.apphico.core_repository.calendar.di
 
-import android.content.Context
 import com.apphico.core_repository.calendar.achievements.AchievementsRepository
 import com.apphico.core_repository.calendar.achievements.AchievementsRepositoryImpl
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
@@ -30,7 +29,6 @@ import com.apphico.core_repository.calendar.task.TaskRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 

@@ -16,10 +16,10 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.util.Consumer
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.todoapp.task.navigateToAddEditTask
+import com.apphico.todoapp.utils.getTask
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -86,8 +86,7 @@ class MainActivity : ComponentActivity() {
     ) {
         when (intent.action) {
             AlarmHelper.OPEN_TASK_ACTION -> {
-                val taskId = intent.getLongExtra(AlarmHelper.TASK_ID, 0L)
-                navController.navigateToAddEditTask(Task(id = taskId))
+                navController.navigateToAddEditTask(task = intent.getTask(), isFromIntent = true)
             }
         }
     }

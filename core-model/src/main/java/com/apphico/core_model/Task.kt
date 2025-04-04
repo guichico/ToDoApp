@@ -10,6 +10,7 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZoneId
 
 @Parcelize
 @Serializable
@@ -42,6 +43,7 @@ data class Task(
     val hasDeleted: Boolean? = null,
     val deletedDates: String? = ""
 ) : Parcelable {
+    fun key() = this.id + (this.startDate?.atStartOfDay()?.atZone(ZoneId.systemDefault())?.toInstant()?.toEpochMilli() ?: 0L)
     fun isRepeatable() = (startDate != null && endDate != null && startDate > endDate) || daysOfWeek.isNotEmpty()
     fun isDone(): Boolean = doneDates?.contains(startDate.toString()) == true || (startDate == null && hasDone == true)
     fun isDeleted(): Boolean = deletedDates?.contains(startDate.toString()) == true || (startDate == null && hasDeleted == true)

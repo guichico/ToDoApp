@@ -29,8 +29,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -45,61 +46,62 @@ class AddEditTaskViewModel @Inject constructor(
     private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
-    private val task = savedStateHandle.toRoute<AddEditTaskRoute>(
+    private val addEditTaskParameters = savedStateHandle.toRoute<AddEditTaskRoute>(
         typeMap = mapOf(typeOf<AddEditTaskParameters>() to CustomNavType(AddEditTaskParameters::class.java, AddEditTaskParameters.serializer()))
-    ).addEditTaskParameters.task
+    ).addEditTaskParameters
+
+    private var task = addEditTaskParameters.task
+
+    val editingTask = MutableStateFlow(task ?: Task())
+    val editingCheckList = MutableStateFlow(task?.checkList ?: emptyList())
 
     val initialTaskStartDate = task?.startDate
-    val editingTask = MutableStateFlow(task ?: Task())
     val isEditing = task != null
-
-    val editingCheckList = MutableStateFlow(task?.checkList ?: emptyList())
 
     val nameError = MutableStateFlow<Int?>(null)
     val startDateError = MutableStateFlow<Int?>(null)
 
     init {
-        // TODO always get from db
-        if (task != null && task.name.isEmpty()) {
-            viewModelScope.launch {
-                taskRepository.getTask(task.id)
-                    .flowOn(Dispatchers.IO)
-                    .collectLatest { task ->
-                        editingTask.value = task
-                    }
+        if (addEditTaskParameters.isFromIntent) {
+            viewModelScope.launch(Dispatchers.IO) {
+                val dbTask = taskRepository.getTask(task!!.id)
+                    .copy(startDate = task?.startDate, startTime = task?.startTime)
+
+                task = dbTask
+                editingTask.value = dbTask
+                editingCheckList.value = dbTask.checkList
             }
         }
 
         viewModelScope.launch {
             savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
-                .mapNotNull { it }
+                .filterNotNull()
+                .map { editingTask.value.copy(group = it) }
                 .flowOn(Dispatchers.IO)
-                .collectLatest { g ->
-                    editingTask.value = editingTask.value.copy(group = g)
-                }
+                .collectLatest(editingTask::emit)
         }
 
         viewModelScope.launch {
             savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
-                .mapNotNull { it }
-                .flowOn(Dispatchers.IO)
-                .collectLatest { locationArg ->
+                .filterNotNull()
+                .map { locationArg ->
                     val location = editingTask.value.location?.id?.let { locationId ->
                         locationArg.copy(id = locationId)
                     } ?: locationArg
 
-                    editingTask.value = editingTask.value.copy(location = location)
+                    editingTask.value.copy(location = location)
                 }
+                .flowOn(Dispatchers.IO)
+                .collectLatest(editingTask::emit)
         }
 
         viewModelScope.launch {
             savedStateHandle.getLiveData<Boolean>(REMOVE_LOCATION_ARG, false).asFlow()
-                .mapNotNull { it }
+                .filterNotNull()
                 .ifTrue()
+                .map { editingTask.value.copy(location = null) }
                 .flowOn(Dispatchers.IO)
-                .collectLatest {
-                    editingTask.value = editingTask.value.copy(location = null)
-                }
+                .collectLatest(editingTask::emit)
         }
     }
 

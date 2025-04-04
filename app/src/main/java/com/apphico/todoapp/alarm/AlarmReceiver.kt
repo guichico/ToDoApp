@@ -4,21 +4,21 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.core.net.toUri
+import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.extensions.hasNotificationPermission
-import com.apphico.todoapp.MainActivity
 import com.apphico.todoapp.R
+import com.apphico.todoapp.utils.createActionStopAlarmIntent
+import com.apphico.todoapp.utils.createOpenTaskIntent
+import com.apphico.todoapp.utils.getTask
+import com.apphico.todoapp.utils.getTaskKey
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.LocalTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,83 +38,45 @@ class AlarmReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        val taskId = intent.getLongExtra(AlarmHelper.TASK_ID, 0L)
-
         when (intent.action) {
             AlarmHelper.ALARM_ACTION -> {
-                val taskName = intent.getStringExtra(AlarmHelper.TASK_NAME)
-                val taskTime = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    intent.getSerializableExtra(AlarmHelper.TASK_TIME, LocalTime::class.java)
-                } else {
-                    @Suppress("DEPRECATION")
-                    intent.getSerializableExtra(AlarmHelper.TASK_TIME) as LocalTime
-                }
-
-                if (context.hasNotificationPermission() && taskName != null && taskTime != null) {
+                if (context.hasNotificationPermission()) {
                     @SuppressLint("MissingPermission")
-                    context.createNotification(
-                        taskId = taskId,
-                        taskName = taskName,
-                        taskTime = taskTime.toString()
-                    )
-                }
+                    context.createNotification(intent.getTask())
 
-                mediaPlayerHelper.start()
+                    mediaPlayerHelper.start()
+                }
             }
 
             AlarmHelper.STOP_ALARM_ACTION -> {
-                alarmHelper.cancelAlarm(taskId)
+                val taskKey = intent.getTaskKey()
+
+                alarmHelper.cancelAlarm(taskKey)
 
                 mediaPlayerHelper.stop()
 
-                NotificationManagerCompat.from(context).cancel(taskId.toInt())
+                NotificationManagerCompat.from(context).cancel(taskKey.toInt())
             }
         }
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private fun Context.createNotification(taskId: Long, taskName: String, taskTime: String) {
+    private fun Context.createNotification(task: Task) {
         val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         notificationManager.createNotificationChannel(
             NotificationChannel(ALARM_CHANNEL_ID, ALARM_CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
         )
 
-        val openTaskIntent = PendingIntent.getActivity(
-            this,
-            OPEN_TASK_REQUEST_CODE,
-            Intent(
-                Intent.ACTION_VIEW,
-                AlarmHelper.ALARM_NOTIFICATION_DEEPLINK.toUri(),
-                this,
-                MainActivity::class.java
-            ).apply {
-                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-                action = AlarmHelper.OPEN_TASK_ACTION
-                putExtra(AlarmHelper.TASK_ID, taskId)
-            },
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-        val stopAlarmIntent = PendingIntent.getBroadcast(
-            this,
-            STOP_ALARM_REQUEST_CODE,
-            Intent(this, AlarmReceiver::class.java).apply {
-                action = AlarmHelper.STOP_ALARM_ACTION
-                putExtra(AlarmHelper.TASK_ID, taskId)
-            },
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
         val notificationBuilder = NotificationCompat.Builder(this, ALARM_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(taskName)
-            .setContentText(taskTime)
-            .setContentIntent(openTaskIntent)
-            .addAction(R.drawable.ic_notification, getString(com.apphico.designsystem.R.string.stop_alarm), stopAlarmIntent)
+            .setContentTitle(task.name)
+            .setContentText(task.startTime.toString())
+            .setContentIntent(createOpenTaskIntent(task))
+            .addAction(R.drawable.ic_notification, getString(com.apphico.designsystem.R.string.stop_alarm), createActionStopAlarmIntent(task.id))
 
         NotificationManagerCompat
             .from(this)
-            .notify(taskId.toInt(), notificationBuilder.build())
+            .notify(task.id.toInt(), notificationBuilder.build())
     }
 }
