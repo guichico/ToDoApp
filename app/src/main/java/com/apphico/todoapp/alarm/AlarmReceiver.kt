@@ -73,10 +73,10 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentTitle(task.name)
             .setContentText(task.startTime.toString())
             .setContentIntent(createOpenTaskIntent(task))
-            .addAction(R.drawable.ic_notification, getString(com.apphico.designsystem.R.string.stop_alarm), createActionStopAlarmIntent(task.id))
+            .addAction(R.drawable.ic_notification, getString(com.apphico.designsystem.R.string.stop_alarm), createActionStopAlarmIntent(task.reminderId))
 
         NotificationManagerCompat
             .from(this)
-            .notify(task.id.toInt(), notificationBuilder.build())
+            .notify(task.reminderId.toInt(), notificationBuilder.build())
     }
 }

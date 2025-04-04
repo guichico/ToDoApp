@@ -39,7 +39,9 @@ class TaskRepositoryImpl(
     override suspend fun insertTask(task: Task): Boolean {
         return try {
             appDatabase.withTransaction {
-                val taskId = taskDao.insert(task.toTaskDB())
+                val taskDB = (task.reminder?.let { task.copy(reminderId = task.key()) } ?: task).toTaskDB()
+
+                val taskId = taskDao.insert(taskDB)
 
                 task.location?.let {
                     locationDao.insert(it.toLocationDB(taskId))
@@ -64,6 +66,10 @@ class TaskRepositoryImpl(
         initialStartDate: LocalDate?
     ): Boolean {
         return try {
+            alarmHelper.cancelAlarm(task.reminderId)
+
+            val task = (task.reminder?.let { task.copy(reminderId = task.key()) } ?: task.copy(reminderId = 0))
+
             appDatabase.withTransaction {
                 if (task.isRepeatable()) {
                     when (recurringTask) {
@@ -87,7 +93,6 @@ class TaskRepositoryImpl(
                 }
             }
 
-            alarmHelper.cancelAlarm(task.key())
             alarmHelper.setAlarm(task)
 
             return true
@@ -113,6 +118,8 @@ class TaskRepositoryImpl(
 
     override suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean {
         return try {
+            alarmHelper.cancelAlarm(task.reminderId)
+
             if (task.isRepeatable()) {
                 when (recurringTask) {
                     RecurringTask.All -> taskDao.delete(task.toTaskDB())
@@ -127,8 +134,6 @@ class TaskRepositoryImpl(
             } else {
                 taskDao.delete(task.toTaskDB())
             }
-
-            alarmHelper.cancelAlarm(task.key())
 
             return true
         } catch (ex: Exception) {

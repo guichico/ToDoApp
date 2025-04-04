@@ -36,6 +36,7 @@ data class Task(
     @Serializable(with = LocalDateSerializer::class) val endDate: LocalDate? = null,
     @Serializable(with = LocalTimeSerializer::class) val endTime: LocalTime? = null,
     val daysOfWeek: List<Int> = emptyList(),
+    val reminderId: Long = 0,
     val reminder: Reminder? = null,
     val location: Location? = null,
     val hasDone: Boolean? = null,
@@ -43,7 +44,7 @@ data class Task(
     val hasDeleted: Boolean? = null,
     val deletedDates: String? = ""
 ) : Parcelable {
-    fun key() = this.id + (this.startDate?.toMillis() ?: 0L) + (this.startTime?.toNanoOfDay() ?: 0L)
+    fun key() = this.id + (this.reminderDateTime()?.toMillis() ?: ((this.startDate?.toMillis() ?: 0L) + (this.startTime?.toNanoOfDay() ?: 0L)))
     fun isRepeatable() = (startDate != null && endDate != null && startDate > endDate) || daysOfWeek.isNotEmpty()
     fun isDone(): Boolean = doneDates?.contains(startDate.toString()) == true || (startDate == null && hasDone == true)
     fun isDeleted(): Boolean = deletedDates?.contains(startDate.toString()) == true || (startDate == null && hasDeleted == true)

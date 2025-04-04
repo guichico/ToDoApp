@@ -61,13 +61,13 @@ fun Context.createAlarmIntentWithExtras(task: Task) =
         extras = task.getTaskBundle()
     )
 
-fun Context.createActionStopAlarmIntent(taskKey: Long): PendingIntent =
+fun Context.createActionStopAlarmIntent(reminderId: Long): PendingIntent =
     PendingIntent.getBroadcast(
         this,
         STOP_ALARM_REQUEST_CODE,
         Intent(this, AlarmReceiver::class.java).apply {
             action = AlarmHelper.STOP_ALARM_ACTION
-            putExtra(AlarmHelper.TASK_KEY, taskKey)
+            putExtra(AlarmHelper.TASK_KEY, reminderId)
         },
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     )

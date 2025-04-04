@@ -22,7 +22,7 @@ import java.time.LocalTime
 )
 data class TaskDB(
     @PrimaryKey(autoGenerate = true) val taskId: Long = 0,
-    @ColumnInfo("task_name") val name: String,
+    @ColumnInfo("taskName") val name: String,
     val description: String?,
     val taskGroupId: Long?,
     val startDate: LocalDate?,
@@ -30,13 +30,14 @@ data class TaskDB(
     val endDate: LocalDate?,
     val endTime: LocalTime?,
     val daysOfWeek: List<Int>?,
+    val reminderId: Long = 0,
     @Embedded val reminder: ReminderDB?
 )
 
 data class ReminderDB(
-    @ColumnInfo("reminder_days") val days: Int,
-    @ColumnInfo("reminder_hours") val hours: Int,
-    @ColumnInfo("reminder_minutes") val minutes: Int
+    @ColumnInfo("reminderDays") val days: Int,
+    @ColumnInfo("reminderHours") val hours: Int,
+    @ColumnInfo("reminderMinutes") val minutes: Int
 )
 
 @Entity(

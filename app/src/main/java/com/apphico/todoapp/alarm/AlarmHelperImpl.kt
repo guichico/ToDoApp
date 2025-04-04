@@ -18,7 +18,7 @@ class AlarmHelperImpl(
     override fun setAlarm(task: Task) {
         val reminderDateTime = task.reminderDateTime()
 
-        if (reminderDateTime != null && !context.hasAlarm(task.key())) {
+        if (reminderDateTime != null && !context.hasAlarm(task.reminderId)) {
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 reminderDateTime.toMillis(),
@@ -27,9 +27,9 @@ class AlarmHelperImpl(
         }
     }
 
-    override fun cancelAlarm(taskKey: Long) {
-        if (context.hasAlarm(taskKey)) {
-            val cancelIntent = context.createAlarmIntent(taskKey)
+    override fun cancelAlarm(reminderId: Long) {
+        if (context.hasAlarm(reminderId)) {
+            val cancelIntent = context.createAlarmIntent(reminderId)
 
             alarmManager.cancel(cancelIntent!!)
             cancelIntent.cancel()
