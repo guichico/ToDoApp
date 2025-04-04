@@ -128,6 +128,8 @@ class TaskRepositoryImpl(
                 taskDao.delete(task.toTaskDB())
             }
 
+            alarmHelper.cancelAlarm(task.key())
+
             return true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
