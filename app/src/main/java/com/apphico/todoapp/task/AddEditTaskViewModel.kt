@@ -55,7 +55,7 @@ class AddEditTaskViewModel @Inject constructor(
     val editingTask = MutableStateFlow(task ?: Task())
     val editingCheckList = MutableStateFlow(task?.checkList ?: emptyList())
 
-    val initialTaskStartDate = task?.startDate
+    val initialStartDate = task?.startDate
     val isEditing = task != null
 
     val nameError = MutableStateFlow<Int?>(null)
@@ -243,7 +243,7 @@ class AddEditTaskViewModel @Inject constructor(
             viewModelScope.launch {
                 onResult(
                     if (isEditing) {
-                        taskRepository.updateTask(task, saveMethod, initialTaskStartDate)
+                        taskRepository.updateTask(task, saveMethod, initialStartDate)
                     } else {
                         taskRepository.insertTask(task)
                     }

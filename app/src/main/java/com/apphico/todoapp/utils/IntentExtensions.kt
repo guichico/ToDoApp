@@ -35,7 +35,14 @@ fun Intent.getTask() =
         }
     )
 
-fun Context.createAlarmIntent(taskKey: Long, extras: Bundle? = null): PendingIntent =
+fun Context.hasAlarm(taskKey: Long) =
+    createAlarmIntent(taskKey, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE) != null
+
+fun Context.createAlarmIntent(
+    taskKey: Long,
+    flags: Int = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+    extras: Bundle? = null
+): PendingIntent? =
     PendingIntent.getBroadcast(
         this,
         taskKey.toInt(),
@@ -44,12 +51,13 @@ fun Context.createAlarmIntent(taskKey: Long, extras: Bundle? = null): PendingInt
             putExtra(AlarmHelper.TASK_KEY, taskKey)
             extras?.let { putExtras(it) }
         },
-        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        flags
     )
 
 fun Context.createAlarmIntentWithExtras(task: Task) =
     createAlarmIntent(
         taskKey = task.key(),
+        flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         extras = task.getTaskBundle()
     )
 

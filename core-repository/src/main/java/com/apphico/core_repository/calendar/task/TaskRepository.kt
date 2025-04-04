@@ -58,7 +58,11 @@ class TaskRepositoryImpl(
         }
     }
 
-    override suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean {
+    override suspend fun updateTask(
+        task: Task,
+        recurringTask: RecurringTask,
+        initialStartDate: LocalDate?
+    ): Boolean {
         return try {
             appDatabase.withTransaction {
                 if (task.isRepeatable()) {
@@ -71,7 +75,7 @@ class TaskRepositoryImpl(
                         }
 
                         RecurringTask.ThisTask -> {
-                            Task(id = task.id, startDate = initialTaskStartDate)
+                            Task(id = task.id, startDate = initialStartDate)
                                 .insertTaskDeleted()
 
                             val endDate = task.endDate ?: task.startDate
@@ -82,6 +86,9 @@ class TaskRepositoryImpl(
                     task.updateTask()
                 }
             }
+
+            alarmHelper.cancelAlarm(task.key())
+            alarmHelper.setAlarm(task)
 
             return true
         } catch (ex: Exception) {

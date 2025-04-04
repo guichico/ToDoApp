@@ -19,5 +19,5 @@ interface AlarmHelper {
     }
 
     fun setAlarm(task: Task)
-    fun cancelAlarm(taskId: Long)
+    fun cancelAlarm(taskKey: Long)
 }
