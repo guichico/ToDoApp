@@ -37,6 +37,7 @@ import com.apphico.designsystem.components.snackbar.SnackBar
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
 import com.apphico.designsystem.theme.ToDoAppIcons
+import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.views.FilterView
 import com.apphico.extensions.getNowDate
 import com.apphico.todoapp.calendar.CalendarRoute
@@ -79,7 +80,8 @@ fun AppScaffold(
         snackbarHost = {
             SnackbarHost(snackBarHostState) { data ->
                 SnackBar(
-                    text = data.visuals.message
+                    text = data.visuals.message,
+                    endPadding = if (isBottomBarVisible) 84.dp else ToDoAppTheme.spacing.large
                 )
             }
         },

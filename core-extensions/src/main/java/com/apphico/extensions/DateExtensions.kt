@@ -14,7 +14,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 private fun getNow() = Instant.now().atZone(ZoneId.systemDefault())
 
-fun getNowDateTime(): LocalDateTime = getNow().toLocalDateTime()
+fun getNowDateTime(): LocalDateTime = getNow().toLocalDateTime().truncatedTo(ChronoUnit.MINUTES)
 
 fun getNowDate(): LocalDate = getNow().toLocalDate()
 

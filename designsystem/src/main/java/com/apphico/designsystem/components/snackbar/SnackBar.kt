@@ -8,15 +8,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.apphico.designsystem.theme.ToDoAppTheme
 
 @Composable
 fun SnackBar(
-    text: String
+    text: String,
+    endPadding: Dp,
 ) {
     Snackbar(
         modifier = Modifier
-            .padding(ToDoAppTheme.spacing.large),
+            .padding(
+                start = ToDoAppTheme.spacing.large,
+                top = ToDoAppTheme.spacing.large,
+                end = endPadding,
+                bottom = ToDoAppTheme.spacing.large
+            ),
         shape = CardDefaults.shape
     ) {
         Text(
@@ -35,5 +42,8 @@ fun SnackBar(
 @Composable
 fun SnackBarPreview(
 ) {
-    SnackBar(text = "Some message")
+    SnackBar(
+        text = "Some message",
+        endPadding = ToDoAppTheme.spacing.large
+    )
 }
