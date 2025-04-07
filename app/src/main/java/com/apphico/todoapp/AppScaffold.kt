@@ -143,11 +143,9 @@ private fun TopBar(
     val topBarSubTitle = when {
         isCalendarSelected -> {
             val (month, year) = currentMonthAndYear.value
-            if (getNowDate().year == year) {
-                month.getDisplayName(TextStyle.FULL, Locale.getDefault()).lowercase()
-            } else {
-                "${month.name.lowercase()} $year"
-            }
+            val monthName = month.getDisplayName(TextStyle.FULL, Locale.getDefault()).lowercase()
+
+            if (getNowDate().year == year) monthName else "$monthName $year"
         }
 
         else -> null

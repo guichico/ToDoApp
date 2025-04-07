@@ -68,7 +68,7 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
-import com.apphico.extensions.getGMTNowMillis
+import com.apphico.extensions.getNowGMTMillis
 import com.apphico.extensions.getNowDate
 import java.time.LocalDateTime
 
@@ -245,7 +245,7 @@ private fun EndDateField(
         placeholder = stringResource(R.string.end_date),
         onClick = {
             if (datePickerState.selectedDateMillis == null)
-                datePickerState.selectedDateMillis = getGMTNowMillis()
+                datePickerState.selectedDateMillis = getNowGMTMillis()
             isDatePickerDialogOpen.value = true
         }
     )

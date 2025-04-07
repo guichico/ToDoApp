@@ -65,7 +65,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatMediumDateAndTime
 import com.apphico.extensions.formatShortTime
-import com.apphico.extensions.getGMTNowMillis
+import com.apphico.extensions.getNowGMTMillis
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime
 import com.apphico.extensions.toMillis
@@ -400,7 +400,7 @@ private fun StarDateRow(
     onStartTimeChanged: (LocalTime) -> Unit
 ) {
     val startDatePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = startDate.value?.toMillis() ?: getGMTNowMillis()
+        initialSelectedDateMillis = startDate.value?.toMillis() ?: getNowGMTMillis()
     )
     val startTimePickerState = rememberTimePickerState(
         initialHour = startTime.value?.hour ?: getNowTime().hour,

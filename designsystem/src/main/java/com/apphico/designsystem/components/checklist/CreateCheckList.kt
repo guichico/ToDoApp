@@ -116,16 +116,18 @@ private fun CheckListItemField(
                     icon = ToDoAppIcons.icReorder,
                     onClick = {}
                 )
-                CircleCheckbox(
-                    modifier = Modifier
-                        .offset(x = (-8).dp)
-                        .align(Alignment.CenterVertically),
-                    checked = isCheckListItemDone,
-                    onCheckedChanged = {
-                        onCheckListItemDoneChanged(checkListItem, it)
-                    },
-                    tint = animatedColor
-                )
+                if (checkListItem.id != 0L) {
+                    CircleCheckbox(
+                        modifier = Modifier
+                            .offset(x = (-8).dp)
+                            .align(Alignment.CenterVertically),
+                        checked = isCheckListItemDone,
+                        onCheckedChanged = {
+                            onCheckListItemDoneChanged(checkListItem, it)
+                        },
+                        tint = animatedColor
+                    )
+                }
             }
         },
         trailingIcon = {
