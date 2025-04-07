@@ -13,5 +13,6 @@ import kotlinx.serialization.Serializable
 data class Reminder(
     val days: Int = 0,
     val hours: Int = 0,
-    val minutes: Int = 0
+    val minutes: Int = 0,
+    val soundAlarm: Boolean = true
 ) : Parcelable

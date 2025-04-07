@@ -37,7 +37,8 @@ data class TaskDB(
 data class ReminderDB(
     @ColumnInfo("reminderDays") val days: Int,
     @ColumnInfo("reminderHours") val hours: Int,
-    @ColumnInfo("reminderMinutes") val minutes: Int
+    @ColumnInfo("reminderMinutes") val minutes: Int,
+    val soundAlarm: Boolean = true
 )
 
 @Entity(

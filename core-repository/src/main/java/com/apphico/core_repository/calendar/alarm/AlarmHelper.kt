@@ -16,6 +16,7 @@ interface AlarmHelper {
         const val TASK_NAME = "task_name"
         const val TASK_DATE = "task_date"
         const val TASK_TIME = "task_time"
+        const val SOUND_ALARM = "sound_alarm"
     }
 
     fun setAlarm(task: Task)

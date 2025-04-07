@@ -56,14 +56,16 @@ fun Reminder.toReminderDB(): ReminderDB =
     ReminderDB(
         days = this.days,
         hours = this.hours,
-        minutes = this.minutes
+        minutes = this.minutes,
+        soundAlarm = this.soundAlarm
     )
 
 fun ReminderDB.toReminder(): Reminder =
     Reminder(
         days = this.days,
         hours = this.hours,
-        minutes = this.minutes
+        minutes = this.minutes,
+        soundAlarm = this.soundAlarm
     )
 
 fun Task.toTaskDB(): TaskDB =

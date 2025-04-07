@@ -12,17 +12,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.apphico.core_model.Reminder
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.NormalButton
 import com.apphico.designsystem.components.picker.NumberPicker
+import com.apphico.designsystem.components.switch.ToDoAppSwitch
 import com.apphico.designsystem.theme.ToDoAppTheme
 
 @Composable
@@ -83,18 +86,44 @@ fun ReminderDialog(
                 3 -> "${values[0]}, ${values[1]} $dateSeparator ${values[2]} "
                 2 -> "${values[0]} $dateSeparator ${values[1]} "
                 1 -> "${values[0]} "
-                else -> ""
+                else -> stringResource(R.string.at_task_time)
             }
-
-            val timeBeforeTask = valuesFormatted + stringResource(R.string.before_task)
+            val timeBeforeTask = valuesFormatted + if (values.isNotEmpty()) stringResource(R.string.before_task) else ""
 
             Text(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(vertical = ToDoAppTheme.spacing.large),
                 text = timeBeforeTask,
+                textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
+
+            var isSoundAlarm by remember { mutableStateOf(initialValue.soundAlarm) }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        bottom = ToDoAppTheme.spacing.extraExtraLarge
+                    )
+            ) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .weight(1f),
+                    text = stringResource(R.string.sound_alarm),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                ToDoAppSwitch(
+                    modifier = Modifier
+                        .padding(start = ToDoAppTheme.spacing.large),
+                    checked = isSoundAlarm,
+                    onCheckedChange = { isSoundAlarm = !isSoundAlarm }
+                )
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
@@ -108,7 +137,7 @@ fun ReminderDialog(
                 )
                 NormalButton(
                     onClick = {
-                        onConfirmClicked(Reminder(days = days, hours = hours, minutes = minutes))
+                        onConfirmClicked(Reminder(days = days, hours = hours, minutes = minutes, soundAlarm = isSoundAlarm))
                     },
                     text = stringResource(R.string.ok)
                 )
@@ -127,8 +156,7 @@ fun NumberSpinnerField(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = ToDoAppTheme.spacing.small),
-        horizontalArrangement = Arrangement.Center
+            .padding(vertical = ToDoAppTheme.spacing.small)
     ) {
         NumberPicker(
             modifier = Modifier

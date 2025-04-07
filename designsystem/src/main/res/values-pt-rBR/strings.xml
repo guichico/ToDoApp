@@ -22,6 +22,8 @@
     <string name="add_checklist_item">Adicionar item</string>
     <string name="reminder">Lembrete</string>
     <string name="add_reminder">Adicionar um lembrete</string>
+    <string name="sound_alarm">Tocar alarme</string>
+    <string name="at_task_time">na hora da tarefa</string>
     <string name="before_task">antes da tarefa</string>
     <string name="location">Localização</string>
     <string name="add_new_task">Adicionar tarefa</string>

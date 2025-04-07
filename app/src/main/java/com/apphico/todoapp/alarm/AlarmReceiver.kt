@@ -41,10 +41,12 @@ class AlarmReceiver : BroadcastReceiver() {
         when (intent.action) {
             AlarmHelper.ALARM_ACTION -> {
                 if (context.hasNotificationPermission()) {
-                    @SuppressLint("MissingPermission")
-                    context.createNotification(intent.getTask())
+                    val task = intent.getTask()
 
-                    mediaPlayerHelper.start()
+                    @SuppressLint("MissingPermission")
+                    context.createNotification(task)
+
+                    if (task.reminder?.soundAlarm == true) mediaPlayerHelper.start()
                 }
             }
 
@@ -73,7 +75,16 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentTitle(task.name)
             .setContentText(task.startTime.toString())
             .setContentIntent(createOpenTaskIntent(task))
-            .addAction(R.drawable.ic_notification, getString(com.apphico.designsystem.R.string.stop_alarm), createActionStopAlarmIntent(task.reminderId))
+
+        if (task.reminder?.soundAlarm == true) {
+            notificationBuilder.addAction(
+                R.drawable.ic_notification,
+                getString(com.apphico.designsystem.R.string.stop_alarm),
+                createActionStopAlarmIntent(task.reminderId)
+            )
+        } else {
+            notificationBuilder.setAutoCancel(true)
+        }
 
         NotificationManagerCompat
             .from(this)

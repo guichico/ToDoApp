@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import androidx.core.net.toUri
+import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.todoapp.MainActivity
@@ -32,7 +33,8 @@ fun Intent.getTask() =
         } else {
             @Suppress("DEPRECATION")
             this.getSerializableExtra(AlarmHelper.TASK_TIME) as LocalTime
-        }
+        },
+        reminder = Reminder(soundAlarm = this.getBooleanExtra(AlarmHelper.SOUND_ALARM, false))
     )
 
 fun Context.hasAlarm(taskKey: Long) =
@@ -94,4 +96,5 @@ private fun Task.getTaskBundle() = Bundle().apply {
     putString(AlarmHelper.TASK_NAME, this@getTaskBundle.name)
     putSerializable(AlarmHelper.TASK_DATE, this@getTaskBundle.startDate)
     putSerializable(AlarmHelper.TASK_TIME, this@getTaskBundle.startTime)
+    putBoolean(AlarmHelper.SOUND_ALARM, this@getTaskBundle.reminder?.soundAlarm == true)
 }

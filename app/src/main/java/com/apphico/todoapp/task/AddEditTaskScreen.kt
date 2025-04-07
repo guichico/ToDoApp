@@ -580,7 +580,7 @@ private fun ReminderField(
 
     if (isReminderDialogOpen) {
         ReminderDialog(
-            initialValue = reminder ?: Reminder(0, 0, 0),
+            initialValue = reminder ?: Reminder(0, 0, 1),
             onDismissRequest = { isReminderDialogOpen = false },
             onConfirmClicked = {
                 onReminderChanged(it)
