@@ -40,6 +40,8 @@ class CalendarViewModel @Inject constructor(
     private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
+    val calendarListOffsetY = MutableStateFlow(0f)
+
     val currentMonth = MutableStateFlow<Pair<Month, Int>>(with(getNowDate()) { month to year })
 
     val selectedDate = MutableStateFlow(LocalDate.now())
@@ -77,6 +79,10 @@ class CalendarViewModel @Inject constructor(
         }
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun onCalendarListOffsetChanged(offsetY: Float) {
+        calendarListOffsetY.value = offsetY
+    }
 
     fun onCurrentMonthChanged(month: Month?, year: Int?) {
         if (month != null && year != null) currentMonth.value = Pair(month, year)

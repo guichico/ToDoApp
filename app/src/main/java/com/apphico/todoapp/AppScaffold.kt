@@ -1,5 +1,7 @@
 package com.apphico.todoapp
 
+import android.util.Log
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,6 +79,8 @@ fun AppScaffold(
     val selectedDate = calendarViewModel.selectedDate.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
+    val calendarListOffsetY = calendarViewModel.calendarListOffsetY.collectAsState()
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackBarHostState) { data ->
@@ -91,6 +96,7 @@ fun AppScaffold(
                     calendarViewModel = calendarViewModel,
                     navBackStackEntry = navBackStackEntry,
                     bottomBarSelectedItem = bottomBarSelectedItem,
+                    calendarListOffsetY = calendarListOffsetY,
                     calendarViewMode = calendarViewMode,
                     onViewModeChanged = calendarViewModel::onViewModeChanged,
                     currentMonthAndYear = currentMonth,
@@ -105,9 +111,12 @@ fun AppScaffold(
             }
         }
     ) { padding ->
+        val offsetY = with(LocalDensity.current) { (calendarListOffsetY.value).toDp() }
+        val topPadding = padding.calculateTopPadding() - offsetY
+
         NavHost(
             modifier = Modifier
-                .padding(padding),
+                .padding(top = if (topPadding.value >= 0) topPadding else 0.dp),
             navController = navController,
             startDestination = CalendarRoute
         ) {
@@ -130,6 +139,7 @@ private fun TopBar(
     calendarViewModel: CalendarViewModel,
     navBackStackEntry: NavBackStackEntry?,
     bottomBarSelectedItem: TopLevelRoute<*>?,
+    calendarListOffsetY: State<Float>,
     calendarViewMode: State<CalendarViewMode>,
     onViewModeChanged: () -> Unit,
     currentMonthAndYear: State<Pair<Month, Int>>,
@@ -171,7 +181,7 @@ private fun TopBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(elevation = 8.dp, spotColor = Color.Transparent)
+        // .shadow(elevation = 8.dp, spotColor = Color.Transparent)
     ) {
         ToDoAppTopBar(
             title = topBarTitle,
@@ -192,6 +202,7 @@ private fun TopBar(
             }
         )
         CalendarView(
+            calendarListOffsetY = calendarListOffsetY,
             isCalendarExpanded = isCalendarExpanded,
             selectedDate = selectedDate,
             onSelectedDateChanged = onSelectedDateChanged

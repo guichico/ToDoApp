@@ -12,10 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -47,6 +51,7 @@ fun CalendarScreen(
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
     CalendarScreenContent(
+        onCalendarListOffsetChanged = calendarViewModel::onCalendarListOffsetChanged,
         onCurrentMonthChanged = calendarViewModel::onCurrentMonthChanged,
         selectedDate = selectedDate,
         calendarViewMode = calendarViewMode,
@@ -59,6 +64,7 @@ fun CalendarScreen(
 
 @Composable
 private fun CalendarScreenContent(
+    onCalendarListOffsetChanged: (Float) -> Unit,
     onCurrentMonthChanged: (Month?, Int?) -> Unit,
     selectedDate: State<LocalDate>,
     calendarViewMode: State<CalendarViewMode>,
@@ -68,6 +74,15 @@ private fun CalendarScreenContent(
     onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit
 ) {
     val calendarListState = rememberLazyListState()
+
+    val calendarListScrollOffsetY = remember { mutableFloatStateOf(0f) }
+    val calendarListNestedScrollConnection = object : NestedScrollConnection {
+        override fun onPostScroll(consumed: Offset, available: Offset, source: NestedScrollSource): Offset {
+            calendarListScrollOffsetY.floatValue = calendarListScrollOffsetY.floatValue + (consumed.y * -1)
+            onCalendarListOffsetChanged(calendarListScrollOffsetY.floatValue)
+            return super.onPostScroll(consumed, available, source)
+        }
+    }
 
     LaunchedEffect(calendarListState) {
         snapshotFlow { calendarListState.firstVisibleItemIndex }
@@ -84,6 +99,7 @@ private fun CalendarScreenContent(
 
     MainLazyList(
         listState = calendarListState,
+        nestedScrollConnection = calendarListNestedScrollConnection,
         onAddClicked = { navigateToAddEditTask(null) }
     ) {
         if (calendarViewMode.value == CalendarViewMode.DAY) {
@@ -203,6 +219,7 @@ private fun CalendarScreenPreview(
 ) {
     ToDoAppTheme {
         CalendarScreenContent(
+            onCalendarListOffsetChanged = {},
             onCurrentMonthChanged = { _, _ -> },
             selectedDate = remember { mutableStateOf(getNowDate()) },
             calendarViewMode = remember { mutableStateOf(CalendarViewMode.DAY) },
