@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -34,7 +35,7 @@ fun ToDoAppBottomBar(
         modifier = modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
             .height(80.dp)
-            .shadow(elevation = 8.dp),
+            .shadow(elevation = 8.dp, spotColor = Color.Transparent),
         containerColor = MaterialTheme.colorScheme.background
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
