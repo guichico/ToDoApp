@@ -1,5 +1,6 @@
 package com.apphico.designsystem.theme
 
+import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,8 +13,12 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
     primary = MainText,
@@ -67,6 +72,29 @@ fun ToDoAppTheme(
 
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
+    }
+
+    @Suppress("DEPRECATION")
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        val view = LocalView.current
+
+        if (!view.isInEditMode) {
+            SideEffect {
+                val window = (view.context as Activity).window
+
+                val statusBarColor = (if (darkTheme) Black else White).toArgb()
+                val navigationBarColor = (if (darkTheme) Black else White).toArgb()
+
+                window.statusBarColor = statusBarColor
+                window.navigationBarColor = navigationBarColor
+
+                WindowCompat.getInsetsController(window, view)
+                    .apply {
+                        isAppearanceLightStatusBars = !isColorDark(statusBarColor)
+                        isAppearanceLightNavigationBars = !isColorDark(navigationBarColor)
+                    }
+            }
+        }
     }
 
     MaterialTheme(

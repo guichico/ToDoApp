@@ -1,15 +1,13 @@
 package com.apphico.todoapp
 
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
@@ -43,13 +41,6 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.auto(White.toArgb(), White.toArgb()),
         )
 
-        // TODO Deprecated
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(true)
-        } else {
-            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        }
-
         setContent {
             ToDoAppTheme {
                 val navController = rememberNavController()
@@ -70,7 +61,8 @@ class MainActivity : ComponentActivity() {
 
                 Surface(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .imePadding(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     AppScaffold(

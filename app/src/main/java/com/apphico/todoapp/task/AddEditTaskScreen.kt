@@ -65,8 +65,8 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatMediumDateAndTime
 import com.apphico.extensions.formatShortTime
-import com.apphico.extensions.getNowGMTMillis
 import com.apphico.extensions.getNowDate
+import com.apphico.extensions.getNowGMTMillis
 import com.apphico.extensions.getNowTime
 import com.apphico.extensions.toMillis
 import java.time.LocalDate
