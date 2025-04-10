@@ -14,14 +14,13 @@ import com.apphico.todoapp.achievements.achievementScreen
 import com.apphico.todoapp.achievements.addEditAchievementScreen
 import com.apphico.todoapp.achievements.addEditProgressScreen
 import com.apphico.todoapp.achievements.navigateToAddEditAchievement
+import com.apphico.todoapp.achievements.navigateToAddEditProgress
 import com.apphico.todoapp.calendar.CalendarViewModel
 import com.apphico.todoapp.calendar.calendarScreen
 import com.apphico.todoapp.focus.addEditFocusScreen
 import com.apphico.todoapp.focus.focusScreen
 import com.apphico.todoapp.focus.navigateToAddEditFocus
 import com.apphico.todoapp.group.addEditGroupScreen
-import com.apphico.todoapp.group.navigateBackToAddEditTask
-import com.apphico.todoapp.group.navigateToAddEditGroup
 import com.apphico.todoapp.group.navigateToSelectGroup
 import com.apphico.todoapp.group.selectGroupScreen
 import com.apphico.todoapp.location.addEditLocationScreen
@@ -60,9 +59,7 @@ fun NavGraphBuilder.mainGraph(
     )
     selectGroupScreen(
         previousBackStackEntry = previousBackStackEntry,
-        onBackClicked = navController::navigateBack,
-        onGroupSelected = navController::navigateBackToAddEditTask,
-        onEditClicked = navController::navigateToAddEditGroup,
+        navController = navController
     )
     addEditGroupScreen(
         snackBar = snackBar,
@@ -84,16 +81,17 @@ fun NavGraphBuilder.mainGraph(
         onBackClicked = navController::navigateBack
     )
     addEditAchievementScreen(
+        snackBar = snackBar,
         onBackClicked = navController::navigateBack,
-        onSelectGroupClicked = {},
-        onAddEditProgressClicked = {}
+        onSelectGroupClicked = navController::navigateToSelectGroup,
+        onAddEditProgressClicked = navController::navigateToAddEditProgress
     )
     addEditProgressScreen(
         onBackClicked = navController::navigateBack
     )
 }
 
-private fun NavController.navigateBack() {
+fun NavController.navigateBack() {
     if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
         popBackStack()
     }

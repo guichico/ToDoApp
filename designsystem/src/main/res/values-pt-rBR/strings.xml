@@ -76,6 +76,10 @@
     <string name="task_save_error">Erro ao salvar tarefa. Tente novamente.</string>
     <string name="task_deleted">Tarefa excluída com sucesso</string>
     <string name="task_delete_error">Erro ao excluir tarefa. Tente novamente.</string>
+    <string name="achievement_saved">Meta salva com sucesso</string>
+    <string name="achievement_save_error">Erro ao salvar meta. Tente novamente.</string>
+    <string name="achievement_deleted">Meta excluída com sucesso</string>
+    <string name="achievement_delete_error">Erro ao excluir meta. Tente novamente.</string>
     <string name="group_saved">Grupo salvo com sucesso</string>
     <string name="group_save_error">Erro ao salvar grupo. Tente novamente.</string>
     <string name="group_deleted">Groupo excluído com sucesso</string>

@@ -81,9 +81,9 @@ fun AddEditTaskScreen(
     navigateBack: () -> Unit
 ) {
     val editingTask = addEditTaskViewModel.editingTask.collectAsState()
-    val isEditing = addEditTaskViewModel.isEditing
-
     val editingCheckList = addEditTaskViewModel.editingCheckList.collectAsState()
+
+    val isEditing = addEditTaskViewModel.isEditing
 
     val nameError = addEditTaskViewModel.nameError.collectAsState()
     val startDateError = addEditTaskViewModel.startDateError.collectAsState()

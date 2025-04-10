@@ -70,7 +70,7 @@ import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowGMTMillis
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 private val MeasurementValueUnit.label: Int
     @StringRes get() = when (this) {
@@ -82,15 +82,25 @@ private val MeasurementValueUnit.label: Int
 @Composable
 fun AddEditAchievementScreen(
     addEditAchievementViewModel: AddEditAchievementViewModel = hiltViewModel(),
+    snackBar: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
     navigateToAddEditProgress: () -> Unit,
     navigateBack: () -> Unit
 ) {
     val editingAchievement = addEditAchievementViewModel.editingAchievement.collectAsState()
     val editingMeasurementType = addEditAchievementViewModel.editingMeasurementType.collectAsState()
-
+    val editingCheckList = addEditAchievementViewModel.editingCheckList.collectAsState()
     val progress = addEditAchievementViewModel.progress.collectAsState()
+
     val isEditing = addEditAchievementViewModel.isEditing
+
+    val nameError = addEditAchievementViewModel.nameError.collectAsState()
+
+    val achievementSaveSuccess = stringResource(R.string.achievement_saved)
+    val achievementSaveError = stringResource(R.string.achievement_save_error)
+
+    val achievementDeleteSuccess = stringResource(R.string.achievement_deleted)
+    val achievementDeleteError = stringResource(R.string.achievement_delete_error)
 
     val showDiscardChangesDialogOnBackIfNeed = showDiscardChangesDialogOnBackIfNeed(
         hasChanges = addEditAchievementViewModel::hasChanges,
@@ -112,8 +122,18 @@ fun AddEditAchievementScreen(
             .zIndex(1f),
         title = stringResource(R.string.add_new_achievement),
         isEditing = isEditing,
-        onSaveClicked = {},
-        onDeleteClicked = {},
+        onSaveClicked = {
+            addEditAchievementViewModel.save { isSuccess ->
+                snackBar(if (isSuccess) achievementSaveSuccess else achievementSaveError)
+                if (isSuccess) navigateBack()
+            }
+        },
+        onDeleteClicked = {
+            addEditAchievementViewModel.delete { isSuccess ->
+                snackBar(if (isSuccess) achievementDeleteSuccess else achievementDeleteError)
+                if (isSuccess) navigateBack()
+            }
+        },
         navigateBack = {
             showDiscardChangesDialogOnBackIfNeed()
         }
@@ -122,15 +142,21 @@ fun AddEditAchievementScreen(
             innerPadding = innerPadding,
             scrollState = scrollState,
             achievement = editingAchievement,
+            measurementType = editingMeasurementType,
+            checkList = editingCheckList,
             progress = progress,
             isEditing = isEditing,
             onNameChange = addEditAchievementViewModel::onNameChanged,
+            nameError = nameError,
             onDescriptionChange = addEditAchievementViewModel::onDescriptionChanged,
             navigateToSelectGroup = navigateToSelectGroup,
             onGroupRemoved = addEditAchievementViewModel::onGroupRemoved,
             onEndDateChanged = addEditAchievementViewModel::onEndDateChanged,
-            editingMeasurementType = editingMeasurementType,
             onMeasurementTypeChanged = addEditAchievementViewModel::onMeasurementTypeChanged,
+            onCheckListItemChanged = addEditAchievementViewModel::onCheckListItemChanged,
+            onCheckListItemItemAdded = addEditAchievementViewModel::onCheckListItemItemAdded,
+            onCheckListItemItemRemoved = addEditAchievementViewModel::onCheckListItemItemRemoved,
+            onCheckListItemDoneChanged = addEditAchievementViewModel::setCheckListItemDone,
             onUnitChanged = addEditAchievementViewModel::onUnitChanged,
             onStartingValueChanged = addEditAchievementViewModel::ondStartingValueChanged,
             onGoalValueChanged = addEditAchievementViewModel::ondGoalValueChanged,
@@ -145,15 +171,21 @@ private fun AddEditAchievementScreenContent(
     innerPadding: PaddingValues,
     scrollState: ScrollState,
     achievement: State<Achievement>,
+    measurementType: State<MeasurementType?>,
     progress: State<Float>,
     isEditing: Boolean,
+    nameError: State<Int?>,
     onNameChange: (String) -> Unit,
     onDescriptionChange: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
     onGroupRemoved: () -> Unit,
-    onEndDateChanged: (LocalDateTime?) -> Unit,
-    editingMeasurementType: State<MeasurementType?>,
+    onEndDateChanged: (LocalDate?) -> Unit,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
+    checkList: State<List<CheckListItem>>,
+    onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
+    onCheckListItemItemAdded: (CheckListItem) -> Unit,
+    onCheckListItemItemRemoved: (CheckListItem) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit,
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
@@ -182,7 +214,7 @@ private fun AddEditAchievementScreenContent(
                 AddEditHeader(
                     nameValue = remember { derivedStateOf { achievement.value.name } },
                     namePlaceholder = stringResource(id = R.string.title),
-                    nameError = remember { mutableStateOf(null) },
+                    nameError = nameError,
                     onNameChange = onNameChange,
                     descriptionValue = remember { derivedStateOf { achievement.value.description } },
                     descriptionPlaceholder = stringResource(id = R.string.description),
@@ -201,16 +233,19 @@ private fun AddEditAchievementScreenContent(
                 )
 
                 MeasurementTypeFields(
-                    achievement = achievement,
+                    measurementType = measurementType,
                     progress = progress,
                     scrollState = scrollState,
-                    editingMeasurementType = editingMeasurementType,
                     onMeasurementTypeChanged = onMeasurementTypeChanged,
+                    checkList = checkList,
+                    onCheckListItemChanged = onCheckListItemChanged,
+                    onCheckListItemItemAdded = onCheckListItemItemAdded,
+                    onCheckListItemItemRemoved = onCheckListItemItemRemoved,
+                    onCheckListItemDoneChanged = onCheckListItemDoneChanged,
                     onUnitChanged = onUnitChanged,
                     onStartingValueChanged = onStartingValueChanged,
                     onGoalValueChanged = onGoalValueChanged,
                     onTrackedValuesChanged = onTrackedValuesChanged,
-                    isEditing = isEditing,
                     navigateToAddEditProgress = navigateToAddEditProgress
                 )
             }
@@ -225,8 +260,8 @@ private fun AddEditAchievementScreenContent(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun EndDateField(
-    endDate: State<LocalDateTime?>,
-    onEndDateChanged: (LocalDateTime?) -> Unit
+    endDate: State<LocalDate?>,
+    onEndDateChanged: (LocalDate?) -> Unit
 ) {
     val datePickerState = rememberDatePickerState()
     val isDatePickerDialogOpen = remember { mutableStateOf(false) }
@@ -235,7 +270,7 @@ private fun EndDateField(
         DateDialog(
             isDatePickerDialogOpen = isDatePickerDialogOpen,
             datePickerState = datePickerState,
-            onDateChanged = {} // TODO onEndDateChanged
+            onDateChanged = onEndDateChanged
         )
     }
 
@@ -253,22 +288,25 @@ private fun EndDateField(
 
 @Composable
 private fun MeasurementTypeFields(
-    achievement: State<Achievement>,
+    measurementType: State<MeasurementType?>,
     progress: State<Float>,
     scrollState: ScrollState,
-    editingMeasurementType: State<MeasurementType?>,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
+    checkList: State<List<CheckListItem>>,
+    onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
+    onCheckListItemItemAdded: (CheckListItem) -> Unit,
+    onCheckListItemItemRemoved: (CheckListItem) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit,
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
     onTrackedValuesChanged: (List<MeasurementType.Value.TrackedValues>) -> Unit,
-    navigateToAddEditProgress: () -> Unit,
-    isEditing: Boolean
+    navigateToAddEditProgress: () -> Unit
 ) {
     val measurementUnit = remember {
         derivedStateOf {
-            if (editingMeasurementType.value is MeasurementType.Value) {
-                (editingMeasurementType.value as MeasurementType.Value).unit
+            if (measurementType.value is MeasurementType.Value) {
+                (measurementType.value as MeasurementType.Value).unit
             } else {
                 null
             }
@@ -278,34 +316,27 @@ private fun MeasurementTypeFields(
     if (progress.value == 0f) {
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
         MeasurementTypeDialog(
-            measurementType = remember { derivedStateOf { achievement.value.measurementType } },
+            measurementType = measurementType,
             onMeasurementTypeChanged = onMeasurementTypeChanged
         )
-        Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
-        AnimatedContent(
-            targetState = achievement.value.measurementType,
-            label = ""
-        ) {
-            MeasurementTypeView(
-                scrollState = scrollState,
-                measurementType = remember { derivedStateOf { it } },
-                measurementUnit = measurementUnit,
-                onUnitChanged = onUnitChanged,
-                onStartingValueChanged = onStartingValueChanged,
-                onGoalValueChanged = onGoalValueChanged,
-                onTrackedValuesChanged = onTrackedValuesChanged,
-                navigateToAddEditProgress = navigateToAddEditProgress
-            )
-        }
+
     }
 
     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
 
-    if (isEditing) {
+    AnimatedContent(
+        targetState = measurementType.value,
+        label = ""
+    ) {
         MeasurementTypeView(
             scrollState = scrollState,
-            measurementType = remember { derivedStateOf { achievement.value.measurementType } },
+            measurementType = remember { derivedStateOf { it } },
             measurementUnit = measurementUnit,
+            checkList = checkList,
+            onCheckListItemChanged = onCheckListItemChanged,
+            onCheckListItemItemAdded = onCheckListItemItemAdded,
+            onCheckListItemItemRemoved = onCheckListItemItemRemoved,
+            onCheckListItemDoneChanged = onCheckListItemDoneChanged,
             onUnitChanged = onUnitChanged,
             onStartingValueChanged = onStartingValueChanged,
             onGoalValueChanged = onGoalValueChanged,
@@ -320,6 +351,11 @@ private fun MeasurementTypeView(
     scrollState: ScrollState,
     measurementType: State<MeasurementType?>,
     measurementUnit: State<MeasurementValueUnit?>,
+    checkList: State<List<CheckListItem>>,
+    onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
+    onCheckListItemItemAdded: (CheckListItem) -> Unit,
+    onCheckListItemItemRemoved: (CheckListItem) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit,
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
@@ -327,9 +363,16 @@ private fun MeasurementTypeView(
     navigateToAddEditProgress: () -> Unit
 ) {
     when (measurementType.value) {
-        is MeasurementType.TaskDone -> MeasurementTypeCheckList(
-            scrollState = scrollState,
-            checkList = remember { derivedStateOf { (measurementType.value as MeasurementType.TaskDone).checkList } })
+        is MeasurementType.TaskDone -> {
+            MeasurementTypeCheckList(
+                scrollState = scrollState,
+                checkList = checkList,
+                onCheckListItemChanged = onCheckListItemChanged,
+                onCheckListItemItemAdded = onCheckListItemItemAdded,
+                onCheckListItemItemRemoved = onCheckListItemItemRemoved,
+                onCheckListItemDoneChanged = onCheckListItemDoneChanged
+            )
+        }
 
         is MeasurementType.Percentage -> {
             MeasurementTypePercentage(
@@ -400,7 +443,11 @@ private fun MeasurementTypeDialog(
 @Composable
 private fun MeasurementTypeCheckList(
     scrollState: ScrollState,
-    checkList: State<List<CheckListItem>>
+    checkList: State<List<CheckListItem>>,
+    onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
+    onCheckListItemItemAdded: (CheckListItem) -> Unit,
+    onCheckListItemItemRemoved: (CheckListItem) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
 ) {
     Column {
         Text(
@@ -414,10 +461,10 @@ private fun MeasurementTypeCheckList(
             addNewItemTitle = stringResource(R.string.add_checklist_item),
             checkList = checkList,
             parentDate = remember { mutableStateOf(getNowDate()) }, // TODO Change it
-            onCheckListItemChanged = { _, _ -> },
-            onCheckListItemItemAdded = {},
-            onCheckListItemItemRemoved = {},
-            onCheckListItemDoneChanged = { _, _, _ -> }
+            onCheckListItemChanged = onCheckListItemChanged,
+            onCheckListItemItemAdded = onCheckListItemItemAdded,
+            onCheckListItemItemRemoved = onCheckListItemItemRemoved,
+            onCheckListItemDoneChanged = onCheckListItemDoneChanged
         )
     }
 }
@@ -548,7 +595,6 @@ private fun UnitDialog(
     onUnitChanged: (MeasurementValueUnit) -> Unit
 ) {
     var isDialogOpen by remember { mutableStateOf(false) }
-
 
     NormalTextField(
         modifier = Modifier.fillMaxWidth(),
@@ -741,15 +787,21 @@ private fun AddEditAchievementScreenPreview(
             innerPadding = PaddingValues(),
             scrollState = ScrollState(0),
             achievement = remember { mutableStateOf(achievement) },
+            measurementType = remember { mutableStateOf(MeasurementType.Percentage()) },
             progress = remember { mutableFloatStateOf(achievement.getProgress()) },
             isEditing = true,
+            nameError = remember { mutableStateOf(null) },
             onNameChange = {},
             onDescriptionChange = {},
             navigateToSelectGroup = {},
             onGroupRemoved = {},
             onEndDateChanged = {},
-            editingMeasurementType = remember { mutableStateOf(MeasurementType.Percentage()) },
             onMeasurementTypeChanged = {},
+            checkList = remember { mutableStateOf(emptyList()) },
+            onCheckListItemChanged = { _, _ -> },
+            onCheckListItemItemAdded = {},
+            onCheckListItemItemRemoved = {},
+            onCheckListItemDoneChanged = { _, _, _ -> },
             onUnitChanged = {},
             onStartingValueChanged = {},
             onGoalValueChanged = {},

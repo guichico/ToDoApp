@@ -1,7 +1,7 @@
 package com.apphico.core_repository.calendar.di
 
-import com.apphico.core_repository.calendar.achievements.AchievementsRepository
-import com.apphico.core_repository.calendar.achievements.AchievementsRepositoryImpl
+import com.apphico.core_repository.calendar.achievements.AchievementRepository
+import com.apphico.core_repository.calendar.achievements.AchievementRepositoryImpl
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.calendar.CalendarRepositoryImpl
@@ -15,6 +15,7 @@ import com.apphico.core_repository.calendar.group.GroupRepositoryImpl
 import com.apphico.core_repository.calendar.location.LocationRepository
 import com.apphico.core_repository.calendar.location.LocationRepositoryImpl
 import com.apphico.core_repository.calendar.room.AppDatabase
+import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
@@ -50,7 +51,7 @@ class RepositoryModule() {
 
     @Provides
     @Singleton
-    fun providesAchievementsRepository(): AchievementsRepository = AchievementsRepositoryImpl()
+    fun providesAchievementsRepository(achievementDao: AchievementDao): AchievementRepository = AchievementRepositoryImpl(achievementDao)
 
     @Provides
     @Singleton

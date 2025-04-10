@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apphico.core_model.Group
 import com.apphico.core_model.Status
-import com.apphico.core_repository.calendar.achievements.AchievementsRepository
+import com.apphico.core_repository.calendar.achievements.AchievementRepository
 import com.apphico.core_repository.calendar.settings.UserSettingsRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.startWith
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AchievementsViewModel @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
-    private val achievementsRepository: AchievementsRepository
+    private val achievementRepository: AchievementRepository
 ) : ViewModel() {
 
     val selectedStatus = userSettingsRepository.getTaskStatus()
@@ -40,7 +40,7 @@ class AchievementsViewModel @Inject constructor(
             val status = selectedStatus.value
             val groups = selectedGroups.value
 
-            achievementsRepository.getAll(status, groups)
+            achievementRepository.getAll(status, groups)
         }
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())

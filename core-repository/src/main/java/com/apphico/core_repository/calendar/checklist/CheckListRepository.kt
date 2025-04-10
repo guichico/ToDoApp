@@ -19,7 +19,7 @@ class CheckListRepositoryImpl(
     override suspend fun changeCheckListItemDone(checkListItem: CheckListItem, taskDate: LocalDate?, isDone: Boolean): Boolean {
         return try {
             if (isDone) {
-                checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = checkListItem.id, doneDate = getNowDate(), taskDate = taskDate))
+                checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = checkListItem.id, doneDate = getNowDate(), parentDate = taskDate))
             } else {
                 checkListItemDoneDao.delete(checkListItem.id, taskDate)
             }

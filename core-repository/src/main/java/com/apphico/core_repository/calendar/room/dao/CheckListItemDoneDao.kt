@@ -9,7 +9,7 @@ import java.time.LocalDate
 @Dao
 interface CheckListItemDoneDao : BaseDao<CheckListItemDoneDB> {
     @Transaction
-    @Query("DELETE FROM checkListItemDoneDB WHERE checkListItemDoneId = :checkListItemId AND (taskDate = :taskDate OR taskDate is null)")
+    @Query("DELETE FROM checkListItemDoneDB WHERE checkListItemDoneId = :checkListItemId AND (parentDate = :taskDate OR parentDate is null)")
     suspend fun delete(checkListItemId: Long, taskDate: LocalDate?)
 
     @Transaction

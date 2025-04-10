@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.AppDatabaseInitializer
+import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
@@ -36,6 +37,10 @@ class DatabaseModule() {
 
     @Provides
     @Singleton
+    fun provideAchievementDao(appDatabase: AppDatabase): AchievementDao = appDatabase.achievementDao()
+
+    @Provides
+    @Singleton
     fun provideTaskDoneDao(appDatabase: AppDatabase): TaskDoneDao = appDatabase.taskDoneDao()
 
     @Provides
@@ -60,7 +65,8 @@ class DatabaseModule() {
         @ApplicationContext appContext: Context,
         groupDaoProvider: Provider<GroupDao>,
         taskDaoProvider: Provider<TaskDao>,
-        checkListDaoProvider: Provider<CheckListItemDao>
+        checkListDaoProvider: Provider<CheckListItemDao>,
+        achievementDaoProvider: Provider<AchievementDao>,
     ): AppDatabase = Room.databaseBuilder(
         appContext,
         AppDatabase::class.java, "ToDoAppDB"
@@ -70,7 +76,8 @@ class DatabaseModule() {
                 appContext = appContext,
                 groupDaoProvider = groupDaoProvider,
                 taskDaoProvider = taskDaoProvider,
-                checkListDaoProvider = checkListDaoProvider
+                checkListDaoProvider = checkListDaoProvider,
+                achievementDaoProvider = achievementDaoProvider
             )
         )
         .setQueryCallback(

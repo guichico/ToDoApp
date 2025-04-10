@@ -1,9 +1,11 @@
 package com.apphico.core_repository.calendar.room.entities
 
+import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Coordinates
 import com.apphico.core_model.Group
 import com.apphico.core_model.Location
+import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 
@@ -102,4 +104,27 @@ fun TaskWithRelations.toTask(): Task =
         doneDates = this.taskComplete.doneDates,
         hasDeleted = this.taskComplete.hasDeleted,
         deletedDates = this.taskComplete.deletedDates
+    )
+
+fun Achievement.toAchievementDB(): AchievementDB =
+    AchievementDB(
+        achievementId = this.id,
+        name = this.name,
+        description = this.description,
+        achievementGroupId = this.group?.id,
+        endDate = this.endDate,
+        doneDate = this.doneDate
+    )
+
+fun AchievementRelations.toAchievement(): Achievement =
+    Achievement(
+        id = this.achievementDB.achievementId,
+        name = this.achievementDB.name,
+        description = this.achievementDB.description,
+        group = this.groupDB?.toGroup(),
+        measurementType = this.checkList?.let {
+            MeasurementType.TaskDone(checkList = it.map { it.toCheckListItem() })
+        },
+        endDate = this.achievementDB.endDate,
+        doneDate = this.achievementDB.doneDate
     )

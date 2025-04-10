@@ -16,12 +16,19 @@ import java.time.LocalDate
             parentColumns = arrayOf("taskId"),
             childColumns = arrayOf("checkListTaskId"),
             onDelete = CASCADE
+        ),
+        ForeignKey(
+            entity = AchievementDB::class,
+            parentColumns = arrayOf("achievementId"),
+            childColumns = arrayOf("checkListAchievementId"),
+            onDelete = CASCADE
         )
     ]
 )
 data class CheckListItemDB(
     @PrimaryKey(autoGenerate = true) val checkListItemId: Long = 0,
-    val checkListTaskId: Long,
+    val checkListTaskId: Long? = null,
+    val checkListAchievementId: Long? = null,
     val name: String
 )
 
@@ -39,7 +46,7 @@ data class CheckListItemDoneDB(
     @PrimaryKey(autoGenerate = true) val doneId: Long = 0,
     val checkListItemDoneId: Long,
     val doneDate: LocalDate,
-    val taskDate: LocalDate?
+    val parentDate: LocalDate?
 )
 
 @DatabaseView(
@@ -47,7 +54,7 @@ data class CheckListItemDoneDB(
             "FROM checklistitemdb " +
             "LEFT OUTER JOIN " +
             "( " +
-            "    SELECT checkListItemDoneId, 1 AS checkListItemHasDone, group_concat(taskDate) AS checkListItemDoneDates " +
+            "    SELECT checkListItemDoneId, 1 AS checkListItemHasDone, group_concat(parentDate) AS checkListItemDoneDates " +
             "    FROM checklistitemdonedb " +
             "    GROUP BY checkListItemDoneId " +
             ") AS checkListDoneDates " +

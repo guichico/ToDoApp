@@ -1,9 +1,11 @@
 package com.apphico.core_model
 
 import android.os.Parcelable
+import com.apphico.core_model.serializers.LocalDateSerializer
 import com.apphico.core_model.serializers.LocalDateTimeSerializer
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Serializable
@@ -63,11 +65,19 @@ data class Achievement(
     val description: String? = null,
     val group: Group? = null,
     val measurementType: MeasurementType? = null,
-    @Serializable(with = LocalDateTimeSerializer::class)
-    val endDate: LocalDateTime? = null,
-    @Serializable(with = LocalDateTimeSerializer::class)
-    val doneDate: LocalDateTime? = null
+    @Serializable(with = LocalDateSerializer::class)
+    val endDate: LocalDate? = null,
+    @Serializable(with = LocalDateSerializer::class)
+    val doneDate: LocalDate? = null
 ) : Parcelable {
+
+    fun getCheckList(): List<CheckListItem> =
+        try {
+            (measurementType as MeasurementType.TaskDone).checkList
+        } catch (_: Exception) {
+            emptyList()
+        }
+
     fun getProgress() = when {
         doneDate != null -> 1.0f
         measurementType is MeasurementType.TaskDone -> {

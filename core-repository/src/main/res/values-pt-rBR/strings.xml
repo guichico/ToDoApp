@@ -13,11 +13,19 @@
     <string name="group_name_6">Entretenimento</string>
     <string name="group_name_7">Produtividade</string>
 
-    <string name="check_list_item_1">Arroz</string>
-    <string name="check_list_item_2">Macarrão</string>
-    <string name="check_list_item_3">Ovos</string>
-    <string name="check_list_item_4">Queijo</string>
-    <string name="check_list_item_5">Leite</string>
-    <string name="check_list_item_6">Bananas</string>
-    <string name="check_list_item_7">Peixe</string>
+    <string name="task_check_list_item_1">Arroz</string>
+    <string name="task_check_list_item_2">Macarrão</string>
+    <string name="task_check_list_item_3">Ovos</string>
+    <string name="task_check_list_item_4">Queijo</string>
+    <string name="task_check_list_item_5">Leite</string>
+    <string name="task_check_list_item_6">Bananas</string>
+    <string name="task_check_list_item_7">Peixe</string>
+
+    <string name="achievement_name_1">Ficar em forma</string>
+    <string name="achievement_description_1">Pretendo entrar em forma até o final do ano</string>
+    <string name="achievement_name_2">Plantar uma árvore</string>
+    <string name="achievement_description_2">Ajudar o meio ambiente plantando uma árvore</string>
+
+    <string name="achievement_check_list_item_1">Ganhar mais músculos</string>
+    <string name="achievement_check_list_item_2">Ficar trincado</string>
 </resources>

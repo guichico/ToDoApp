@@ -6,13 +6,14 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementType.Percentage.PercentageProgress
 import com.apphico.core_model.MeasurementType.Value.TrackedValues
-import java.time.LocalDateTime
+import com.apphico.extensions.getNowDate
+import com.apphico.extensions.getNowDateTime
 
 val mockedAchievement = Achievement(
     name = "Em busca do shape inexplicável",
     description = "Esse ano eu vou bugar geral.",
     group = mockedGroup,
-    endDate = LocalDateTime.now(),
+    endDate = getNowDate(),
     measurementType = MeasurementType.TaskDone(
         checkList = listOf(
             CheckListItem(0L, "Perder 10 kg", false),
@@ -26,7 +27,7 @@ val mockedAchievements = listOf(
     Achievement(
         name = "Emagrecer",
         description = "Ficar fininho igual o seu madruga.",
-        endDate = LocalDateTime.now(),
+        endDate = getNowDate(),
         group = Group(id = 0, name = "Escola", color = -2170138),
         measurementType = MeasurementType.Value(
             startingValue = 80f,
@@ -34,31 +35,31 @@ val mockedAchievements = listOf(
             trackedValues = listOf(
                 TrackedValues(
                     trackedValue = 78f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                 ),
                 TrackedValues(
                     trackedValue = 76f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                 ),
                 TrackedValues(
                     trackedValue = 74f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                 ),
                 TrackedValues(
                     trackedValue = 71f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                 )
             )
         )
     ),
     Achievement(
         name = "Plantar uma árvore",
-        endDate = LocalDateTime.now(),
+        endDate = getNowDate(),
         measurementType = MeasurementType.Percentage(
             percentageProgress = listOf(
                 PercentageProgress(
                     progress = 0.4712f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                     description = "Plantei um pé de feijão."
                 )
             )
@@ -68,34 +69,34 @@ val mockedAchievements = listOf(
         name = "Ganhar peso",
         description = "Birlllll, ta saindo da jaula o monstro.  Eu treino pra ficar estranho mesmo, se fosse pra ficar bonito eu ia pro salão.",
         group = Group(id = 0, name = "Escola", color = -12677526),
-        endDate = LocalDateTime.now(),
+        endDate = getNowDate(),
         measurementType = MeasurementType.Value(
             startingValue = 68f,
             goalValue = 85f,
             trackedValues = listOf(
                 TrackedValues(
                     trackedValue = 70f,
-                    date = LocalDateTime.now()
+                    date = getNowDateTime()
                 ),
                 TrackedValues(
                     trackedValue = 72f,
-                    date = LocalDateTime.now()
+                    date = getNowDateTime()
                 ),
                 TrackedValues(
                     trackedValue = 73f,
-                    date = LocalDateTime.now()
+                    date = getNowDateTime()
                 )
             )
         )
     ),
     Achievement(
         name = "Ser a pessoa mais sensacional existente no planeta Terra",
-        endDate = LocalDateTime.now(),
-        doneDate = LocalDateTime.now(),
+        endDate = getNowDate(),
+        doneDate = getNowDate(),
     ),
     Achievement(
         name = "Ler 30 livros no ano",
-        endDate = LocalDateTime.now(),
+        endDate = getNowDate(),
         group = Group(id = 0, name = "Escola", color = -7745552),
         measurementType = MeasurementType.Value(
             startingValue = 0f,
@@ -103,12 +104,12 @@ val mockedAchievements = listOf(
             trackedValues = listOf(
                 TrackedValues(
                     trackedValue = 1f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                     description = "Li O pequeno príncipe"
                 ),
                 TrackedValues(
                     trackedValue = 2f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                     description = "Li Messias de Duna"
                 )
             )
@@ -116,22 +117,22 @@ val mockedAchievements = listOf(
     ),
     Achievement(
         name = "Terminar de ler a Bíblia",
-        endDate = LocalDateTime.now(),
+        endDate = getNowDate(),
         measurementType = MeasurementType.Percentage(
             percentageProgress = listOf(
                 PercentageProgress(
                     progress = 0.1f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                     description = "Just beginning"
                 ),
                 PercentageProgress(
                     progress = 0.4712f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                     description = "Its getting hard"
                 ),
                 PercentageProgress(
                     progress = 1.00f,
-                    date = LocalDateTime.now(),
+                    date = getNowDateTime(),
                     description = "Finally finished"
                 )
             )
