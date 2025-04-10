@@ -148,6 +148,7 @@ fun PercentageProgressDB.toPercentageProgress(): MeasurementType.Percentage.Perc
 
 fun MeasurementType.Percentage.PercentageProgress.toPercentageProgressDB(achievementId: Long): PercentageProgressDB =
     PercentageProgressDB(
+        id = this.id,
         achievementPercentageProgressId = achievementId,
         progress = this.progress,
         description = this.description,

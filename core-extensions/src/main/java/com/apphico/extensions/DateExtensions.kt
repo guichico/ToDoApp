@@ -43,6 +43,8 @@ fun LocalDate.formatDayAndMonth() = DateTimeFormatter.ofPattern("d MMMM").format
 
 fun LocalDate.formatMediumDate() = DateTimeFormatter.ofPattern("d MMM yyyy").format(this).replaceFirstChar(Char::titlecase)
 
+fun LocalDate.formatLongDate() = DateTimeFormatter.ofPattern("d MMMM yyyy").format(this).replaceFirstChar(Char::titlecase)
+
 fun LocalDateTime.formatDateAndTime(): String = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(this)
 
 fun LocalDate.formatShortDate(): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(this)

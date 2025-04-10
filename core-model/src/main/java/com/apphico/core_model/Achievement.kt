@@ -35,6 +35,7 @@ sealed class MeasurementType(override val title: Int) : CheckBoxItem() {
         @Parcelize
         @Serializable
         data class PercentageProgress(
+            val id: Long = 0,
             val progress: Float = 0f,
             val description: String? = null,
             @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,

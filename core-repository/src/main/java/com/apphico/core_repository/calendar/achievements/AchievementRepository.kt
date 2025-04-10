@@ -38,8 +38,6 @@ class AchievementRepositoryImpl(
             appDatabase.withTransaction {
                 val achievementId = achievementDao.insert(achievement.toAchievementDB())
 
-                Log.d("TEST", "achievement.measurementType: ${achievement.measurementType}")
-
                 when (achievement.measurementType) {
                     is MeasurementType.TaskDone -> {
                         val checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList
@@ -66,7 +64,33 @@ class AchievementRepositoryImpl(
 
     override suspend fun updateAchievement(achievement: Achievement): Boolean {
         return try {
-            achievementDao.update(achievement.toAchievementDB())
+            appDatabase.withTransaction {
+                achievementDao.update(achievement.toAchievementDB())
+
+                when (achievement.measurementType) {
+                    is MeasurementType.TaskDone -> {
+                        val checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList
+
+                        checkListItemDao.deleteAll(achievement.id, checkList.map { it.id })
+                        checkListItemDao.insertAll(checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(achievementId = achievement.id) })
+                        checkListItemDao.updateAll(checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(achievementId = achievement.id) })
+                    }
+
+                    is MeasurementType.Percentage -> {
+                        val percentageProgress = (achievement.measurementType as MeasurementType.Percentage).percentageProgress
+
+                        percentageProgressDao.deleteAll(achievement.id, percentageProgress.map { it.id })
+                        percentageProgressDao
+                            .insertAll(percentageProgress.filter { it.id == 0L }.map { it.toPercentageProgressDB(achievementId = achievement.id) })
+                        percentageProgressDao
+                            .updateAll(percentageProgress.filter { it.id != 0L }.map { it.toPercentageProgressDB(achievementId = achievement.id) })
+                    }
+
+                    else -> {
+
+                    }
+                }
+            }
 
             return true
         } catch (ex: Exception) {

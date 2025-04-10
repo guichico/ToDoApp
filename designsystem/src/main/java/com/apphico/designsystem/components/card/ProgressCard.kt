@@ -1,27 +1,22 @@
 package com.apphico.designsystem.components.card
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.dp
-import com.apphico.designsystem.theme.ProgressBlue
+import com.apphico.designsystem.components.progress.ProgressBar
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
+import com.apphico.extensions.formatLongDate
+import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatShortDate
 import com.apphico.extensions.formatShortTime
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime
-import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -60,7 +55,7 @@ fun ProgressCard(
                     }
                     if (date != null || time != null) {
                         Text(
-                            text = "${date?.formatShortDate() ?: ""} ${time?.formatShortTime() ?: ""}",
+                            text = "${date?.formatLongDate() ?: ""} ${time?.formatShortTime() ?: ""}",
                             style = dateStyle
                         )
                     }
@@ -77,24 +72,9 @@ fun ProgressCard(
                     }
                 }
             }
-            Box {
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(24.dp),
-                    color = ProgressBlue,
-                    trackColor = ProgressBlue.copy(alpha = 0.5f),
-                )
-                Text(
-                    modifier = Modifier
-                        .padding(vertical = ToDoAppTheme.spacing.extraSmall)
-                        .align(Alignment.Center),
-                    text = "${DecimalFormat("##.00").format(progress * 100)}%",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = White
-                )
-            }
+            ProgressBar(
+                progress = { progress }
+            )
         }
     }
 }

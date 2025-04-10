@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.ForeignKey.Companion.CASCADE
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import java.time.LocalDate
@@ -32,7 +33,8 @@ data class AchievementDB(
         ForeignKey(
             entity = AchievementDB::class,
             parentColumns = arrayOf("achievementId"),
-            childColumns = arrayOf("achievementPercentageProgressId")
+            childColumns = arrayOf("achievementPercentageProgressId"),
+            onDelete = CASCADE
         )
     ]
 )

@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 import kotlin.reflect.typeOf
 
@@ -68,7 +69,7 @@ class AddEditAchievementViewModel @Inject constructor(
         viewModelScope.launch {
             savedStateHandle.getStateFlow<MeasurementType.Percentage.PercentageProgress?>(PROGRESS_ARG, null)
                 .filterNotNull()
-                .map { editingPercentageProgress.value.add(it) }
+                .map { editingPercentageProgress.value.add(it).sortByDate() }
                 .flowOn(Dispatchers.IO)
                 .collectLatest(editingPercentageProgress::emit)
         }
@@ -227,4 +228,15 @@ class AddEditAchievementViewModel @Inject constructor(
             onResult(achievementRepository.deleteAchievement(achievement))
         }
     }
+
+    private fun List<MeasurementType.Percentage.PercentageProgress>.sortByDate() =
+        this.sortedWith(
+            compareBy<MeasurementType.Percentage.PercentageProgress> { progress ->
+                progress.date?.let {
+                    LocalDateTime.of(it, progress.time ?: it.atStartOfDay().toLocalTime())
+                }
+            }
+                .thenBy { it.time }
+                .thenBy { it.id }
+        )
 }

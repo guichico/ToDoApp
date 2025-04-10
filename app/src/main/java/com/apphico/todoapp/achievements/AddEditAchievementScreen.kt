@@ -325,7 +325,6 @@ private fun MeasurementTypeFields(
             measurementType = measurementType,
             onMeasurementTypeChanged = onMeasurementTypeChanged
         )
-
     }
 
     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
@@ -336,6 +335,7 @@ private fun MeasurementTypeFields(
     ) {
         MeasurementTypeView(
             scrollState = scrollState,
+            totalProgress = progress,
             measurementType = remember { derivedStateOf { it } },
             measurementUnit = measurementUnit,
             parentDate = parentDate,
@@ -357,6 +357,7 @@ private fun MeasurementTypeFields(
 @Composable
 private fun MeasurementTypeView(
     scrollState: ScrollState,
+    totalProgress: State<Float>,
     measurementType: State<MeasurementType?>,
     measurementUnit: State<MeasurementValueUnit?>,
     parentDate: State<LocalDate?>,
@@ -394,6 +395,7 @@ private fun MeasurementTypeView(
 
         is MeasurementType.Value -> {
             MeasurementTypeValue(
+                totalProgress = totalProgress,
                 onUnitChanged = onUnitChanged,
                 valueProgress = remember { derivedStateOf { measurementType.value as MeasurementType.Value } },
                 measurementUnit = measurementUnit,
@@ -486,6 +488,8 @@ private fun MeasurementTypePercentage(
     percentageProgress: State<List<MeasurementType.Percentage.PercentageProgress>>,
     navigateToAddEditProgress: () -> Unit
 ) {
+    val totalProgress = percentageProgress.value.lastOrNull()?.progress ?: 0f
+
     Column {
         Text(
             modifier = Modifier
@@ -502,24 +506,27 @@ private fun MeasurementTypePercentage(
                 onClick = navigateToAddEditProgress
             )
         }
-        SmallTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = ToDoAppTheme.spacing.small),
-            value = stringResource(R.string.add_progress),
-            onClick = navigateToAddEditProgress,
-            trailingIcon = {
-                ToDoAppIcon(
-                    icon = ToDoAppIcons.icAdd,
-                    contentDescription = "add"
-                )
-            }
-        )
+        if (totalProgress < 1f) {
+            SmallTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = ToDoAppTheme.spacing.small),
+                value = stringResource(R.string.add_progress),
+                onClick = navigateToAddEditProgress,
+                trailingIcon = {
+                    ToDoAppIcon(
+                        icon = ToDoAppIcons.icAdd,
+                        contentDescription = "add"
+                    )
+                }
+            )
+        }
     }
 }
 
 @Composable
 private fun MeasurementTypeValue(
+    totalProgress: State<Float>,
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     valueProgress: State<MeasurementType.Value?>,
     measurementUnit: State<MeasurementValueUnit?>,
@@ -587,19 +594,21 @@ private fun MeasurementTypeValue(
                 )
             }
         }
-        SmallTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = ToDoAppTheme.spacing.small),
-            value = stringResource(R.string.add_progress),
-            onClick = navigateToAddEditProgress,
-            trailingIcon = {
-                ToDoAppIcon(
-                    icon = ToDoAppIcons.icAdd,
-                    contentDescription = "add"
-                )
-            }
-        )
+        if (totalProgress.value < 1f) {
+            SmallTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = ToDoAppTheme.spacing.small),
+                value = stringResource(R.string.add_progress),
+                onClick = navigateToAddEditProgress,
+                trailingIcon = {
+                    ToDoAppIcon(
+                        icon = ToDoAppIcons.icAdd,
+                        contentDescription = "add"
+                    )
+                }
+            )
+        }
     }
 }
 
@@ -765,7 +774,7 @@ private fun DoneButton(
     isEditing: Boolean,
     progress: State<Float>
 ) {
-    if (isEditing && progress.value < 1.0f) {
+    if (isEditing && progress.value < 1f) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(),

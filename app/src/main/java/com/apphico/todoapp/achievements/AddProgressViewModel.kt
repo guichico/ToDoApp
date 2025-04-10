@@ -23,7 +23,7 @@ class AddEditProgressViewModel @Inject constructor(
     }
 
     fun onProgressChanged(progress: Float) {
-        editingProgress.value = editingProgress.value.copy(progress = progress)
+        editingProgress.value = editingProgress.value.copy(progress = (progress / 100))
     }
 
     fun onDescriptionChanged(text: String) {
