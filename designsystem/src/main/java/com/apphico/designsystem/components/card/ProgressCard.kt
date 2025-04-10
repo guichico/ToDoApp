@@ -12,8 +12,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.apphico.designsystem.components.progress.ProgressBar
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatLongDate
-import com.apphico.extensions.formatMediumDate
-import com.apphico.extensions.formatShortDate
 import com.apphico.extensions.formatShortTime
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime

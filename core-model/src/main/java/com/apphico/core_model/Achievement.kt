@@ -2,16 +2,18 @@ package com.apphico.core_model
 
 import android.os.Parcelable
 import com.apphico.core_model.serializers.LocalDateSerializer
-import com.apphico.core_model.serializers.LocalDateTimeSerializer
 import com.apphico.core_model.serializers.LocalTimeSerializer
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 
 @Serializable
-enum class MeasurementValueUnit { INT, DECIMAL, CURRENCY }
+enum class MeasurementValueUnit(val value: Int) {
+    INT(1),
+    DECIMAL(2),
+    CURRENCY(3)
+}
 
 @Parcelize
 @Serializable
@@ -46,6 +48,7 @@ sealed class MeasurementType(override val title: Int) : CheckBoxItem() {
     @Parcelize
     @Serializable
     data class Value(
+        val id: Long = 0,
         val unit: MeasurementValueUnit? = null,
         val startingValue: Float,
         val goalValue: Float,
@@ -54,9 +57,11 @@ sealed class MeasurementType(override val title: Int) : CheckBoxItem() {
         @Parcelize
         @Serializable
         data class TrackedValues(
-            val trackedValue: Float,
-            @Serializable(with = LocalDateTimeSerializer::class) val date: LocalDateTime,
-            val description: String? = null
+            val id: Long = 0,
+            val trackedValue: Float = 0f,
+            val description: String? = null,
+            @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
+            @Serializable(with = LocalTimeSerializer::class) val time: LocalTime? = null
         ) : Parcelable
     }
 }

@@ -303,12 +303,6 @@ private fun MeasurementTypeFields(
     val measurementType = achievement.value.measurementType
     val progress = achievement.value.getProgress()
 
-    val measurementUnit = remember {
-        derivedStateOf {
-            if (measurementType is MeasurementType.Value) measurementType.unit else null
-        }
-    }
-
     if (progress == 0f) {
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
         MeasurementTypeDialog(
@@ -327,7 +321,6 @@ private fun MeasurementTypeFields(
             scrollState = scrollState,
             totalProgress = remember { derivedStateOf { progress } },
             measurementType = remember { derivedStateOf { it } },
-            measurementUnit = measurementUnit,
             parentDate = parentDate,
             percentageProgress = percentageProgress,
             checkList = checkList,
@@ -349,7 +342,6 @@ private fun MeasurementTypeView(
     scrollState: ScrollState,
     totalProgress: State<Float>,
     measurementType: State<MeasurementType?>,
-    measurementUnit: State<MeasurementValueUnit?>,
     parentDate: State<LocalDate?>,
     percentageProgress: State<List<MeasurementType.Percentage.PercentageProgress>>,
     checkList: State<List<CheckListItem>>,
@@ -362,7 +354,7 @@ private fun MeasurementTypeView(
     onGoalValueChanged: (Float) -> Unit,
     onTrackedValuesChanged: (List<MeasurementType.Value.TrackedValues>) -> Unit,
     navigateToAddEditProgress: () -> Unit
-) {
+) {§
     when (measurementType.value) {
         is MeasurementType.TaskDone -> {
             MeasurementTypeCheckList(
@@ -388,7 +380,7 @@ private fun MeasurementTypeView(
                 totalProgress = totalProgress,
                 onUnitChanged = onUnitChanged,
                 valueProgress = remember { derivedStateOf { measurementType.value as MeasurementType.Value } },
-                measurementUnit = measurementUnit,
+                measurementUnit = remember { derivedStateOf { (measurementType.value as MeasurementType.Value).unit } },
                 onStartingValueChanged = onStartingValueChanged,
                 onGoalValueChanged = onGoalValueChanged,
                 onTrackedValuesChanged = onTrackedValuesChanged,
@@ -575,8 +567,8 @@ private fun MeasurementTypeValue(
                 val progress = (vp.startingValue - it.trackedValue) / track
 
                 ProgressCard(
-                    date = it.date.toLocalDate(),
-                    time = it.date.toLocalTime(),
+                    date = it.date,
+                    time = it.time,
                     progressText = "${it.trackedValue.format()}/${vp.goalValue.format()}",
                     description = it.description,
                     progress = if (progress < 0) progress * -1 else progress,

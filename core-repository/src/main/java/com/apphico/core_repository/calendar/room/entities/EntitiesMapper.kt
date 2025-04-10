@@ -6,6 +6,7 @@ import com.apphico.core_model.Coordinates
 import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.MeasurementType
+import com.apphico.core_model.MeasurementValueUnit
 import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 
@@ -124,13 +125,11 @@ fun AchievementRelations.toAchievement(): Achievement =
         description = this.achievementDB.description,
         group = this.groupDB?.toGroup(),
         measurementType = when {
-            !this.checkList.isNullOrEmpty() -> {
-                MeasurementType.TaskDone(checkList = this.checkList.map { it.toCheckListItem() })
-            }
+            !this.checkList.isNullOrEmpty() -> MeasurementType.TaskDone(checkList = this.checkList.map { it.toCheckListItem() })
 
-            !this.percentageProgress.isNullOrEmpty() -> {
-                MeasurementType.Percentage(percentageProgress = this.percentageProgress.map { it.toPercentageProgress() })
-            }
+            !this.percentageProgress.isNullOrEmpty() -> MeasurementType.Percentage(percentageProgress = this.percentageProgress.map { it.toPercentageProgress() })
+
+            this.valueProgress != null -> this.valueProgress.toValueProgress()
 
             else -> null
         },
@@ -151,6 +150,24 @@ fun MeasurementType.Percentage.PercentageProgress.toPercentageProgressDB(achieve
         id = this.id,
         achievementPercentageProgressId = achievementId,
         progress = this.progress,
+        description = this.description,
+        date = this.date,
+        time = this.time
+    )
+
+fun ValueProgressTrackedValues.toValueProgress(): MeasurementType.Value =
+    MeasurementType.Value(
+        id = this.valueProgressDB.valueProgressId,
+        unit = MeasurementValueUnit.entries.firstOrNull { it.value == this.valueProgressDB.unit },
+        startingValue = this.valueProgressDB.startingValue,
+        goalValue = this.valueProgressDB.goalValue,
+        trackedValues = this.trackedValues?.map { it.toTrackedValue() } ?: emptyList()
+    )
+
+fun TrackedValuesDB.toTrackedValue(): MeasurementType.Value.TrackedValues =
+    MeasurementType.Value.TrackedValues(
+        id = this.id,
+        trackedValue = this.trackedValue,
         description = this.description,
         date = this.date,
         time = this.time

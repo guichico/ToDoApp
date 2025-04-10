@@ -25,6 +25,9 @@ import com.apphico.core_repository.calendar.room.entities.TaskComplete
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
+import com.apphico.core_repository.calendar.room.entities.TrackedValuesDB
+import com.apphico.core_repository.calendar.room.entities.ValueProgressDB
+import com.apphico.core_repository.calendar.room.entities.ValueProgressTrackedValues
 
 @Database(
     version = 1,
@@ -36,11 +39,13 @@ import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
         TaskDeletedDB::class,
         AchievementDB::class,
         PercentageProgressDB::class,
+        ValueProgressDB::class,
+        TrackedValuesDB::class,
         CheckListItemDB::class,
         CheckListItemDoneDB::class,
         LocationDB::class
     ],
-    views = [TaskComplete::class, CheckListWithDone::class]
+    views = [TaskComplete::class, CheckListWithDone::class, ValueProgressTrackedValues::class]
 )
 @TypeConverters(DateConverters::class, ListConverters::class)
 abstract class AppDatabase : RoomDatabase() {

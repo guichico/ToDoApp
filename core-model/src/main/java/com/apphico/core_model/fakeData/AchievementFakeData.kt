@@ -7,7 +7,6 @@ import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementType.Percentage.PercentageProgress
 import com.apphico.core_model.MeasurementType.Value.TrackedValues
 import com.apphico.extensions.getNowDate
-import com.apphico.extensions.getNowDateTime
 import com.apphico.extensions.getNowTime
 
 val mockedAchievement = Achievement(
@@ -36,19 +35,23 @@ val mockedAchievements = listOf(
             trackedValues = listOf(
                 TrackedValues(
                     trackedValue = 78f,
-                    date = getNowDateTime(),
+                    date = getNowDate(),
+                    time = getNowTime()
                 ),
                 TrackedValues(
                     trackedValue = 76f,
-                    date = getNowDateTime(),
+                    date = getNowDate(),
+                    time = getNowTime()
                 ),
                 TrackedValues(
                     trackedValue = 74f,
-                    date = getNowDateTime(),
+                    date = getNowDate(),
+                    time = getNowTime()
                 ),
                 TrackedValues(
                     trackedValue = 71f,
-                    date = getNowDateTime(),
+                    date = getNowDate(),
+                    time = getNowTime()
                 )
             )
         )
@@ -78,15 +81,18 @@ val mockedAchievements = listOf(
             trackedValues = listOf(
                 TrackedValues(
                     trackedValue = 70f,
-                    date = getNowDateTime()
+                    date = getNowDate(),
+                    time = getNowTime()
                 ),
                 TrackedValues(
                     trackedValue = 72f,
-                    date = getNowDateTime()
+                    date = getNowDate(),
+                    time = getNowTime()
                 ),
                 TrackedValues(
                     trackedValue = 73f,
-                    date = getNowDateTime()
+                    date = getNowDate(),
+                    time = getNowTime()
                 )
             )
         )
@@ -106,13 +112,15 @@ val mockedAchievements = listOf(
             trackedValues = listOf(
                 TrackedValues(
                     trackedValue = 1f,
-                    date = getNowDateTime(),
-                    description = "Li O pequeno príncipe"
+                    description = "Li O pequeno príncipe",
+                    date = getNowDate(),
+                    time = getNowTime()
                 ),
                 TrackedValues(
                     trackedValue = 2f,
-                    date = getNowDateTime(),
-                    description = "Li Messias de Duna"
+                    description = "Li Messias de Duna",
+                    date = getNowDate(),
+                    time = getNowTime()
                 )
             )
         )
