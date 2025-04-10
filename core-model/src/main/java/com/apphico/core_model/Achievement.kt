@@ -50,8 +50,8 @@ sealed class MeasurementType(override val title: Int) : CheckBoxItem() {
     data class Value(
         val id: Long = 0,
         val unit: MeasurementValueUnit? = null,
-        val startingValue: Float,
-        val goalValue: Float,
+        val startingValue: Float = 0f,
+        val goalValue: Float = 0f,
         val trackedValues: List<TrackedValues> = emptyList()
     ) : MeasurementType(R.string.achievement_goal_type_value) {
         @Parcelize
@@ -98,7 +98,8 @@ data class Achievement(
         doneDate != null -> 1.0f
         measurementType is MeasurementType.TaskDone -> {
             val doneTasksCount = measurementType.checkList.filter { it.isDone(this.doneDate) }.size
-            doneTasksCount.toFloat() / measurementType.checkList.size.toFloat()
+            val progress = doneTasksCount.toFloat() / measurementType.checkList.size.toFloat()
+            progress.takeIf { !it.isNaN() } ?: 0f
         }
 
         measurementType is MeasurementType.Percentage -> measurementType.percentageProgress.lastOrNull()?.progress ?: 0f
