@@ -49,6 +49,7 @@ class AddEditAchievementViewModel @Inject constructor(
     val editingAchievement = MutableStateFlow(achievement ?: Achievement())
     val editingMeasurementType = MutableStateFlow(achievement?.measurementType)
     val editingCheckList = MutableStateFlow(achievement?.getCheckList() ?: emptyList())
+    val editingPercentageProgress = MutableStateFlow(achievement?.getPercentageProgress() ?: emptyList())
     val progress = MutableStateFlow(achievement?.getProgress() ?: 0f)
 
     val isEditing = achievement != null
@@ -62,6 +63,14 @@ class AddEditAchievementViewModel @Inject constructor(
                 .map { editingAchievement.value.copy(group = it) }
                 .flowOn(Dispatchers.IO)
                 .collectLatest(editingAchievement::emit)
+        }
+
+        viewModelScope.launch {
+            savedStateHandle.getStateFlow<MeasurementType.Percentage.PercentageProgress?>(PROGRESS_ARG, null)
+                .filterNotNull()
+                .map { editingPercentageProgress.value.add(it) }
+                .flowOn(Dispatchers.IO)
+                .collectLatest(editingPercentageProgress::emit)
         }
     }
 
@@ -173,7 +182,23 @@ class AddEditAchievementViewModel @Inject constructor(
         }
 
         if (!hasError) {
-            // achievement = achievement.copy(checkList = editingCheckList.value)
+            when (achievement.measurementType) {
+                is MeasurementType.TaskDone -> {
+                    achievement = achievement.copy(
+                        measurementType = (achievement.measurementType as MeasurementType.TaskDone).copy(checkList = editingCheckList.value)
+                    )
+                }
+
+                is MeasurementType.Percentage -> {
+                    achievement = achievement.copy(
+                        measurementType = (achievement.measurementType as MeasurementType.Percentage).copy(percentageProgress = editingPercentageProgress.value)
+                    )
+                }
+
+                else -> {
+
+                }
+            }
 
             viewModelScope.launch {
                 onResult(

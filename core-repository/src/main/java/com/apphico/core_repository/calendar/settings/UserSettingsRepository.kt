@@ -11,6 +11,9 @@ interface UserSettingsRepository {
 
     fun getTaskStatus(): Flow<Status>
     suspend fun setTaskStatus(taskStatus: Status)
+
+    fun getAchievementStatus(): Flow<Status>
+    suspend fun setAchievementStatus(achievementStatus: Status)
 }
 
 class UserSettingsRepositoryImpl(
@@ -27,5 +30,11 @@ class UserSettingsRepositoryImpl(
 
     override suspend fun setTaskStatus(taskStatus: Status) {
         userSettingsDataStore.setTaskStatus(taskStatus)
+    }
+
+    override fun getAchievementStatus(): Flow<Status> = userSettingsDataStore.achievementStatus
+
+    override suspend fun setAchievementStatus(achievementStatus: Status) {
+        userSettingsDataStore.setAchievementStatus(achievementStatus)
     }
 }

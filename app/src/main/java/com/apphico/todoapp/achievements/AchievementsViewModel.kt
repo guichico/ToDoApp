@@ -31,7 +31,7 @@ class AchievementsViewModel @Inject constructor(
     private val checkListRepository: CheckListRepository
 ) : ViewModel() {
 
-    val selectedStatus = userSettingsRepository.getTaskStatus()
+    val selectedStatus = userSettingsRepository.getAchievementStatus()
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, Status.ALL)
 
@@ -50,7 +50,7 @@ class AchievementsViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun onSelectedStatusChanged(status: Status) = viewModelScope.launch {
-        userSettingsRepository.setTaskStatus(status)
+        userSettingsRepository.setAchievementStatus(status)
     }
 
     fun onSelectedGroupChanged(group: Group) {

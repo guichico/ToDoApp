@@ -48,7 +48,7 @@ class TaskRepositoryImpl(
                 }
 
                 checkListItemDao
-                    .insertAll(task.checkList.map { it.toCheckListItemDB(taskId) })
+                    .insertAll(task.checkList.map { it.toCheckListItemDB(taskId = taskId) })
 
                 alarmHelper.setAlarm(task.copy(id = taskId))
             }
@@ -111,8 +111,8 @@ class TaskRepositoryImpl(
             } ?: locationDao.delete(this.id)
 
             checkListItemDao.deleteAll(this.id, this.checkList.map { it.id })
-            checkListItemDao.insertAll(this.checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(this.id) })
-            checkListItemDao.updateAll(this.checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(this.id) })
+            checkListItemDao.insertAll(this.checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(taskId = this.id) })
+            checkListItemDao.updateAll(this.checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(taskId = this.id) })
         }
     }
 

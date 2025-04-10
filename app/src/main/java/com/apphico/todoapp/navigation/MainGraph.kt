@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import com.apphico.todoapp.achievements.achievementScreen
 import com.apphico.todoapp.achievements.addEditAchievementScreen
 import com.apphico.todoapp.achievements.addEditProgressScreen
+import com.apphico.todoapp.achievements.navigateBackToAddEditAchievement
 import com.apphico.todoapp.achievements.navigateToAddEditAchievement
 import com.apphico.todoapp.achievements.navigateToAddEditProgress
 import com.apphico.todoapp.calendar.CalendarViewModel
@@ -87,7 +88,9 @@ fun NavGraphBuilder.mainGraph(
         onAddEditProgressClicked = navController::navigateToAddEditProgress
     )
     addEditProgressScreen(
-        onBackClicked = navController::navigateBack
+        previousBackStackEntry = previousBackStackEntry,
+        onBackClicked = navController::navigateBack,
+        onProgressAdded = navController::navigateBackToAddEditAchievement
     )
 }
 

@@ -23,10 +23,11 @@ fun GroupDB.toGroup(): Group =
         color = this.color
     )
 
-fun CheckListItem.toCheckListItemDB(taskId: Long): CheckListItemDB =
+fun CheckListItem.toCheckListItemDB(taskId: Long? = null, achievementId: Long? = null): CheckListItemDB =
     CheckListItemDB(
         checkListItemId = this.id,
         checkListTaskId = taskId,
+        checkListAchievementId = achievementId,
         name = this.name
     )
 
@@ -127,8 +128,29 @@ fun AchievementRelations.toAchievement(): Achievement =
                 MeasurementType.TaskDone(checkList = this.checkList.map { it.toCheckListItem() })
             }
 
+            !this.percentageProgress.isNullOrEmpty() -> {
+                MeasurementType.Percentage(percentageProgress = this.percentageProgress.map { it.toPercentageProgress() })
+            }
+
             else -> null
         },
         endDate = this.achievementDB.endDate,
         doneDate = this.achievementDB.doneDate
+    )
+
+fun PercentageProgressDB.toPercentageProgress(): MeasurementType.Percentage.PercentageProgress =
+    MeasurementType.Percentage.PercentageProgress(
+        progress = this.progress,
+        description = this.description,
+        date = this.date,
+        time = this.time
+    )
+
+fun MeasurementType.Percentage.PercentageProgress.toPercentageProgressDB(achievementId: Long): PercentageProgressDB =
+    PercentageProgressDB(
+        achievementPercentageProgressId = achievementId,
+        progress = this.progress,
+        description = this.description,
+        date = this.date,
+        time = this.time
     )

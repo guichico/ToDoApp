@@ -17,14 +17,18 @@ import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.theme.ProgressBlue
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
-import com.apphico.extensions.formatDateAndTime
-import com.apphico.extensions.getNowDateTime
+import com.apphico.extensions.formatShortDate
+import com.apphico.extensions.formatShortTime
+import com.apphico.extensions.getNowDate
+import com.apphico.extensions.getNowTime
 import java.text.DecimalFormat
-import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.LocalTime
 
 @Composable
 fun ProgressCard(
-    date: LocalDateTime,
+    date: LocalDate?,
+    time: LocalTime?,
     progressText: String? = null,
     description: String?,
     progress: Float,
@@ -54,10 +58,12 @@ fun ProgressCard(
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
-                    Text(
-                        text = date.formatDateAndTime(),
-                        style = dateStyle
-                    )
+                    if (date != null || time != null) {
+                        Text(
+                            text = "${date?.formatShortDate() ?: ""} ${time?.formatShortTime() ?: ""}",
+                            style = dateStyle
+                        )
+                    }
                     description?.let { description ->
                         Text(
                             modifier = Modifier
@@ -98,7 +104,8 @@ fun ProgressCard(
 private fun PercentageProgressCardPreview() {
     ToDoAppTheme {
         ProgressCard(
-            date = getNowDateTime(),
+            date = getNowDate(),
+            time = getNowTime(),
             progressText = "1.00/30.00",
             description = "Some description of my progress. A very very very very very very very very very very very very very very very very long description.",
             progress = 0.5f,

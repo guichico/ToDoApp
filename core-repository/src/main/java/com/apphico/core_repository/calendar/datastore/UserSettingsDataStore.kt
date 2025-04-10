@@ -36,4 +36,16 @@ class UserSettingsDataStore(
             settings[taskStatusPreference] = taskStatus.intValue
         }
     }
+
+    private val achievementStatusPreference = intPreferencesKey("achievement_status")
+    val achievementStatus: Flow<Status> = context.dataStore.data
+        .map { preferences ->
+            Status.entries.firstOrNull { it.intValue == preferences[achievementStatusPreference] } ?: Status.ALL
+        }
+
+    suspend fun setAchievementStatus(achievementStatus: Status) {
+        context.dataStore.edit { settings ->
+            settings[achievementStatusPreference] = achievementStatus.intValue
+        }
+    }
 }

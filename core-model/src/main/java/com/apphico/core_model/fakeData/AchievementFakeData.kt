@@ -8,6 +8,7 @@ import com.apphico.core_model.MeasurementType.Percentage.PercentageProgress
 import com.apphico.core_model.MeasurementType.Value.TrackedValues
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowDateTime
+import com.apphico.extensions.getNowTime
 
 val mockedAchievement = Achievement(
     name = "Em busca do shape inexplicável",
@@ -59,7 +60,8 @@ val mockedAchievements = listOf(
             percentageProgress = listOf(
                 PercentageProgress(
                     progress = 0.4712f,
-                    date = getNowDateTime(),
+                    date = getNowDate(),
+                    time = getNowTime(),
                     description = "Plantei um pé de feijão."
                 )
             )
@@ -122,18 +124,21 @@ val mockedAchievements = listOf(
             percentageProgress = listOf(
                 PercentageProgress(
                     progress = 0.1f,
-                    date = getNowDateTime(),
-                    description = "Just beginning"
+                    description = "Just beginning",
+                    date = getNowDate(),
+                    time = getNowTime()
                 ),
                 PercentageProgress(
                     progress = 0.4712f,
-                    date = getNowDateTime(),
-                    description = "Its getting hard"
+                    description = "Its getting hard",
+                    date = getNowDate(),
+                    time = getNowTime()
                 ),
                 PercentageProgress(
                     progress = 1.00f,
-                    date = getNowDateTime(),
-                    description = "Finally finished"
+                    description = "Finally finished",
+                    date = getNowDate(),
+                    time = getNowTime()
                 )
             )
         )

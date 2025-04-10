@@ -25,7 +25,6 @@ import com.apphico.designsystem.theme.LightBlue
 import com.apphico.designsystem.theme.MediumBlue
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatShortDate
-import com.apphico.extensions.getNowDate
 import java.time.LocalDate
 
 @Composable
