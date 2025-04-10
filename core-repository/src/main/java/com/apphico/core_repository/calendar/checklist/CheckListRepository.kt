@@ -9,19 +9,19 @@ import com.apphico.extensions.getNowDate
 import java.time.LocalDate
 
 interface CheckListRepository {
-    suspend fun changeCheckListItemDone(checkListItem: CheckListItem, taskDate: LocalDate?, isDone: Boolean): Boolean
+    suspend fun changeCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean): Boolean
 }
 
 class CheckListRepositoryImpl(
     private val checkListItemDoneDao: CheckListItemDoneDao,
 ) : CheckListRepository {
 
-    override suspend fun changeCheckListItemDone(checkListItem: CheckListItem, taskDate: LocalDate?, isDone: Boolean): Boolean {
+    override suspend fun changeCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean): Boolean {
         return try {
             if (isDone) {
-                checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = checkListItem.id, doneDate = getNowDate(), parentDate = taskDate))
+                checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = checkListItem.id, doneDate = getNowDate(), parentDate = parentDate))
             } else {
-                checkListItemDoneDao.delete(checkListItem.id, taskDate)
+                checkListItemDoneDao.delete(checkListItem.id, parentDate)
             }
 
             return true

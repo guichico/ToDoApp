@@ -12,10 +12,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Achievement
+import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.fakeData.mockedAchievements
 import com.apphico.designsystem.achievements.AchievementCard
 import com.apphico.designsystem.components.list.MainLazyList
 import com.apphico.designsystem.theme.ToDoAppTheme
+import java.time.LocalDate
 
 @Composable
 fun AchievementsScreen(
@@ -26,14 +28,22 @@ fun AchievementsScreen(
 
     AchievementsScreenContent(
         achievements = achievements,
-        navigateToAddEditAchievement = navigateToAddEditAchievement
+        navigateToAddEditAchievement = navigateToAddEditAchievement,
+        onCheckListItemDoneChanged = { checkListItem, parentDate, isDone ->
+            achievementsViewModel.setCheckListItemDone(
+                checkListItem,
+                parentDate,
+                isDone
+            )
+        }
     )
 }
 
 @Composable
 private fun AchievementsScreenContent(
     achievements: State<List<Achievement>>,
-    navigateToAddEditAchievement: (Achievement?) -> Unit
+    navigateToAddEditAchievement: (Achievement?) -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
 ) {
     MainLazyList(
         listState = rememberLazyListState(),
@@ -42,7 +52,8 @@ private fun AchievementsScreenContent(
         items(achievements.value) {
             AchievementCard(
                 achievement = it,
-                onClick = { navigateToAddEditAchievement(it) }
+                onClick = { navigateToAddEditAchievement(it) },
+                onCheckListItemDoneChanged = onCheckListItemDoneChanged
             )
         }
     }
@@ -60,7 +71,8 @@ private fun AchievementsScreenPreview(
     ToDoAppTheme {
         AchievementsScreenContent(
             achievements = remember { mutableStateOf(achievements) },
-            navigateToAddEditAchievement = {}
+            navigateToAddEditAchievement = {},
+            onCheckListItemDoneChanged = { _, _, _ -> }
         )
     }
 }

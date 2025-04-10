@@ -2,9 +2,11 @@ package com.apphico.todoapp.achievements
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Status
 import com.apphico.core_repository.calendar.achievements.AchievementRepository
+import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.settings.UserSettingsRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.startWith
@@ -18,13 +20,15 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AchievementsViewModel @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
-    private val achievementRepository: AchievementRepository
+    private val achievementRepository: AchievementRepository,
+    private val checkListRepository: CheckListRepository
 ) : ViewModel() {
 
     val selectedStatus = userSettingsRepository.getTaskStatus()
@@ -51,5 +55,9 @@ class AchievementsViewModel @Inject constructor(
 
     fun onSelectedGroupChanged(group: Group) {
         selectedGroups.value = selectedGroups.value.addOrRemove(group)
+    }
+
+    fun setCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean) = viewModelScope.launch {
+        checkListRepository.changeCheckListItemDone(checkListItem, parentDate, isDone)
     }
 }

@@ -68,7 +68,6 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
-import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowGMTMillis
 import java.time.LocalDate
 
@@ -237,6 +236,7 @@ private fun AddEditAchievementScreenContent(
                     progress = progress,
                     scrollState = scrollState,
                     onMeasurementTypeChanged = onMeasurementTypeChanged,
+                    parentDate = remember { derivedStateOf { achievement.value.endDate } },
                     checkList = checkList,
                     onCheckListItemChanged = onCheckListItemChanged,
                     onCheckListItemItemAdded = onCheckListItemItemAdded,
@@ -292,6 +292,7 @@ private fun MeasurementTypeFields(
     progress: State<Float>,
     scrollState: ScrollState,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
+    parentDate: State<LocalDate?>,
     checkList: State<List<CheckListItem>>,
     onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
     onCheckListItemItemAdded: (CheckListItem) -> Unit,
@@ -332,6 +333,7 @@ private fun MeasurementTypeFields(
             scrollState = scrollState,
             measurementType = remember { derivedStateOf { it } },
             measurementUnit = measurementUnit,
+            parentDate = parentDate,
             checkList = checkList,
             onCheckListItemChanged = onCheckListItemChanged,
             onCheckListItemItemAdded = onCheckListItemItemAdded,
@@ -351,6 +353,7 @@ private fun MeasurementTypeView(
     scrollState: ScrollState,
     measurementType: State<MeasurementType?>,
     measurementUnit: State<MeasurementValueUnit?>,
+    parentDate: State<LocalDate?>,
     checkList: State<List<CheckListItem>>,
     onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
     onCheckListItemItemAdded: (CheckListItem) -> Unit,
@@ -366,6 +369,7 @@ private fun MeasurementTypeView(
         is MeasurementType.TaskDone -> {
             MeasurementTypeCheckList(
                 scrollState = scrollState,
+                parentDate = parentDate,
                 checkList = checkList,
                 onCheckListItemChanged = onCheckListItemChanged,
                 onCheckListItemItemAdded = onCheckListItemItemAdded,
@@ -443,6 +447,7 @@ private fun MeasurementTypeDialog(
 @Composable
 private fun MeasurementTypeCheckList(
     scrollState: ScrollState,
+    parentDate: State<LocalDate?>,
     checkList: State<List<CheckListItem>>,
     onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
     onCheckListItemItemAdded: (CheckListItem) -> Unit,
@@ -460,7 +465,7 @@ private fun MeasurementTypeCheckList(
             scrollState = scrollState,
             addNewItemTitle = stringResource(R.string.add_checklist_item),
             checkList = checkList,
-            parentDate = remember { mutableStateOf(getNowDate()) }, // TODO Change it
+            parentDate = parentDate,
             onCheckListItemChanged = onCheckListItemChanged,
             onCheckListItemItemAdded = onCheckListItemItemAdded,
             onCheckListItemItemRemoved = onCheckListItemItemRemoved,

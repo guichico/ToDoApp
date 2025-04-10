@@ -1,6 +1,5 @@
 package com.apphico.designsystem.achievements
 
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -16,6 +15,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Achievement
+import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.fakeData.mockedAchievement
 import com.apphico.designsystem.components.card.MainCard
@@ -26,11 +26,13 @@ import com.apphico.designsystem.theme.MediumBlue
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatShortDate
 import com.apphico.extensions.getNowDate
+import java.time.LocalDate
 
 @Composable
 fun AchievementCard(
     achievement: Achievement,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
 ) {
     val isDone = achievement.getProgress() >= 1f
 
@@ -53,25 +55,23 @@ fun AchievementCard(
                     .offset(x = (-2).dp)
                     .padding(top = ToDoAppTheme.spacing.extraSmall),
                 checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList,
-                parentDate = getNowDate(), // TODO Change it
+                parentDate = achievement.endDate,
                 textColor = MaterialTheme.colorScheme.primary,
-                onCheckListItemDoneChanged = { _, _ -> }
+                onCheckListItemDoneChanged = { checkListItem, isDone ->
+                    onCheckListItemDoneChanged(checkListItem, achievement.endDate, isDone)
+                }
             )
         }
-        if (!isDone) {
-            LinearProgressIndicator(
-                progress = { achievement.getProgress() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(14.dp)
-                    .padding(top = ToDoAppTheme.spacing.small),
-                color = MediumBlue,
-                trackColor = LightBlue,
-                strokeCap = StrokeCap.Round,
-            )
-        } else {
-            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.extraSmall))
-        }
+        LinearProgressIndicator(
+            progress = { achievement.getProgress() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(14.dp)
+                .padding(top = ToDoAppTheme.spacing.small),
+            color = MediumBlue,
+            trackColor = LightBlue,
+            strokeCap = StrokeCap.Round,
+        )
     }
 }
 
@@ -107,7 +107,8 @@ private fun AchievementCardPreview(
     ToDoAppTheme {
         AchievementCard(
             achievement = achievement,
-            onClick = {}
+            onClick = {},
+            onCheckListItemDoneChanged = { _, _, _ -> }
         )
     }
 }

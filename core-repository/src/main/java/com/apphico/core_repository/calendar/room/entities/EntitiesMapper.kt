@@ -122,8 +122,12 @@ fun AchievementRelations.toAchievement(): Achievement =
         name = this.achievementDB.name,
         description = this.achievementDB.description,
         group = this.groupDB?.toGroup(),
-        measurementType = this.checkList?.let {
-            MeasurementType.TaskDone(checkList = it.map { it.toCheckListItem() })
+        measurementType = when {
+            !this.checkList.isNullOrEmpty() -> {
+                MeasurementType.TaskDone(checkList = this.checkList.map { it.toCheckListItem() })
+            }
+
+            else -> null
         },
         endDate = this.achievementDB.endDate,
         doneDate = this.achievementDB.doneDate

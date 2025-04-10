@@ -115,12 +115,12 @@ class AddEditAchievementViewModel @Inject constructor(
         editingCheckList.value = editingCheckList.value.remove(checkListItem)
     }
 
-    fun setCheckListItemDone(checkListItem: CheckListItem, taskDate: LocalDate?, isDone: Boolean) = viewModelScope.launch {
-        if (checkListRepository.changeCheckListItemDone(checkListItem, taskDate, isDone)) {
+    fun setCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean) = viewModelScope.launch {
+        if (checkListRepository.changeCheckListItemDone(checkListItem, parentDate, isDone)) {
             val newDoneDates = if (isDone) {
-                checkListItem.doneDates + "${if (checkListItem.doneDates.isNullOrEmpty()) "" else ", "}, $taskDate"
+                checkListItem.doneDates + "${if (checkListItem.doneDates.isNullOrEmpty()) "" else ", "}, $parentDate"
             } else {
-                checkListItem.doneDates?.replace(taskDate.toString(), "")
+                checkListItem.doneDates?.replace(parentDate.toString(), "")
             }
             val newItem = checkListItem.copy(hasDone = isDone, doneDates = newDoneDates)
 
