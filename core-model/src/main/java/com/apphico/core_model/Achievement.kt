@@ -96,7 +96,7 @@ data class Achievement(
             doneTasksCount.toFloat() / measurementType.checkList.size.toFloat()
         }
 
-        measurementType is MeasurementType.Percentage -> measurementType.percentageProgress.last().progress
+        measurementType is MeasurementType.Percentage -> measurementType.percentageProgress.lastOrNull()?.progress ?: 0f
         measurementType is MeasurementType.Value -> {
             val track = measurementType.goalValue - measurementType.startingValue
 

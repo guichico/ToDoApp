@@ -48,10 +48,8 @@ class AddEditAchievementViewModel @Inject constructor(
     ).addEditAchievementParameters.achievement
 
     val editingAchievement = MutableStateFlow(achievement ?: Achievement())
-    val editingMeasurementType = MutableStateFlow(achievement?.measurementType)
     val editingCheckList = MutableStateFlow(achievement?.getCheckList() ?: emptyList())
     val editingPercentageProgress = MutableStateFlow(achievement?.getPercentageProgress() ?: emptyList())
-    val progress = MutableStateFlow(achievement?.getProgress() ?: 0f)
 
     val isEditing = achievement != null
 
@@ -110,7 +108,6 @@ class AddEditAchievementViewModel @Inject constructor(
 
     fun onMeasurementTypeChanged(measurementType: MeasurementType) {
         editingAchievement.value = editingAchievement.value.copy(measurementType = measurementType)
-        editingMeasurementType.value = measurementType
     }
 
     fun onCheckListItemChanged(oldItem: CheckListItem, newItem: CheckListItem) {
@@ -139,27 +136,33 @@ class AddEditAchievementViewModel @Inject constructor(
     }
 
     fun onUnitChanged(unit: MeasurementValueUnit) {
-        editingMeasurementType.value = editingMeasurementType.value?.let {
-            (it as MeasurementType.Value).copy(unit = unit)
-        } ?: run {
-            MeasurementType.Value(unit = unit, startingValue = 0f, goalValue = 0f)
-        }
+        editingAchievement.value = editingAchievement.value.copy(
+            measurementType = editingAchievement.value.measurementType?.let {
+                (it as MeasurementType.Value).copy(unit = unit)
+            } ?: run {
+                MeasurementType.Value(unit = unit, startingValue = 0f, goalValue = 0f)
+            }
+        )
     }
 
     fun ondStartingValueChanged(startingValue: Float) {
-        editingMeasurementType.value = editingMeasurementType.value?.let {
-            (it as MeasurementType.Value).copy(startingValue = startingValue)
-        } ?: run {
-            MeasurementType.Value(startingValue = startingValue, goalValue = 0f)
-        }
+        editingAchievement.value = editingAchievement.value.copy(
+            measurementType = editingAchievement.value.measurementType?.let {
+                (it as MeasurementType.Value).copy(startingValue = startingValue)
+            } ?: run {
+                MeasurementType.Value(startingValue = startingValue, goalValue = 0f)
+            }
+        )
     }
 
     fun ondGoalValueChanged(goalValue: Float) {
-        editingMeasurementType.value = editingMeasurementType.value?.let {
-            (it as MeasurementType.Value).copy(goalValue = goalValue)
-        } ?: run {
-            MeasurementType.Value(startingValue = 0f, goalValue = goalValue)
-        }
+        editingAchievement.value = editingAchievement.value.copy(
+            measurementType = editingAchievement.value.measurementType?.let {
+                (it as MeasurementType.Value).copy(goalValue = goalValue)
+            } ?: run {
+                MeasurementType.Value(startingValue = 0f, goalValue = goalValue)
+            }
+        )
     }
 
     fun onTrackedValuesChanged(trackedValues: List<MeasurementType.Value.TrackedValues>) {

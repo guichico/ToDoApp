@@ -27,7 +27,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -87,10 +86,8 @@ fun AddEditAchievementScreen(
     navigateBack: () -> Unit
 ) {
     val editingAchievement = addEditAchievementViewModel.editingAchievement.collectAsState()
-    val editingMeasurementType = addEditAchievementViewModel.editingMeasurementType.collectAsState()
     val editingCheckList = addEditAchievementViewModel.editingCheckList.collectAsState()
     val editingPercentageProgress = addEditAchievementViewModel.editingPercentageProgress.collectAsState()
-    val progress = addEditAchievementViewModel.progress.collectAsState()
 
     val isEditing = addEditAchievementViewModel.isEditing
 
@@ -142,8 +139,6 @@ fun AddEditAchievementScreen(
             innerPadding = innerPadding,
             scrollState = scrollState,
             achievement = editingAchievement,
-            progress = progress,
-            measurementType = editingMeasurementType,
             checkList = editingCheckList,
             percentageProgress = editingPercentageProgress,
             isEditing = isEditing,
@@ -172,8 +167,6 @@ private fun AddEditAchievementScreenContent(
     innerPadding: PaddingValues,
     scrollState: ScrollState,
     achievement: State<Achievement>,
-    progress: State<Float>,
-    measurementType: State<MeasurementType?>,
     isEditing: Boolean,
     nameError: State<Int?>,
     onNameChange: (String) -> Unit,
@@ -235,8 +228,7 @@ private fun AddEditAchievementScreenContent(
                 )
 
                 MeasurementTypeFields(
-                    measurementType = measurementType,
-                    progress = progress,
+                    achievement = achievement,
                     scrollState = scrollState,
                     onMeasurementTypeChanged = onMeasurementTypeChanged,
                     parentDate = remember { derivedStateOf { achievement.value.endDate } },
@@ -256,7 +248,7 @@ private fun AddEditAchievementScreenContent(
         }
         DoneButton(
             isEditing = isEditing,
-            progress = progress
+            progress = remember { derivedStateOf { achievement.value.getProgress() } }
         )
     }
 }
@@ -292,9 +284,8 @@ private fun EndDateField(
 
 @Composable
 private fun MeasurementTypeFields(
-    measurementType: State<MeasurementType?>,
-    progress: State<Float>,
     scrollState: ScrollState,
+    achievement: State<Achievement>,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
     parentDate: State<LocalDate?>,
     percentageProgress: State<List<MeasurementType.Percentage.PercentageProgress>>,
@@ -309,20 +300,19 @@ private fun MeasurementTypeFields(
     onTrackedValuesChanged: (List<MeasurementType.Value.TrackedValues>) -> Unit,
     navigateToAddEditProgress: () -> Unit
 ) {
+    val measurementType = achievement.value.measurementType
+    val progress = achievement.value.getProgress()
+
     val measurementUnit = remember {
         derivedStateOf {
-            if (measurementType.value is MeasurementType.Value) {
-                (measurementType.value as MeasurementType.Value).unit
-            } else {
-                null
-            }
+            if (measurementType is MeasurementType.Value) measurementType.unit else null
         }
     }
 
-    if (progress.value == 0f) {
+    if (progress == 0f) {
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
         MeasurementTypeDialog(
-            measurementType = measurementType,
+            measurementType = remember { derivedStateOf { measurementType } },
             onMeasurementTypeChanged = onMeasurementTypeChanged
         )
     }
@@ -330,12 +320,12 @@ private fun MeasurementTypeFields(
     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
 
     AnimatedContent(
-        targetState = measurementType.value,
+        targetState = measurementType,
         label = ""
     ) {
         MeasurementTypeView(
             scrollState = scrollState,
-            totalProgress = progress,
+            totalProgress = remember { derivedStateOf { progress } },
             measurementType = remember { derivedStateOf { it } },
             measurementUnit = measurementUnit,
             parentDate = parentDate,
@@ -810,8 +800,6 @@ private fun AddEditAchievementScreenPreview(
             innerPadding = PaddingValues(),
             scrollState = ScrollState(0),
             achievement = remember { mutableStateOf(achievement) },
-            measurementType = remember { mutableStateOf(MeasurementType.Percentage()) },
-            progress = remember { mutableFloatStateOf(achievement.getProgress()) },
             isEditing = true,
             nameError = remember { mutableStateOf(null) },
             onNameChange = {},
