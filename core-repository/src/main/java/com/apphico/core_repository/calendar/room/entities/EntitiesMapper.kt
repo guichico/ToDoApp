@@ -7,6 +7,7 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.Location
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
+import com.apphico.core_model.Progress
 import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 
@@ -114,8 +115,10 @@ fun Achievement.toAchievementDB(): AchievementDB =
         name = this.name,
         description = this.description,
         achievementGroupId = this.group?.id,
+        measurementType = this.measurementType?.intValue ?: MeasurementType.None.intValue,
         endDate = this.endDate,
-        doneDate = this.doneDate
+        doneDate = this.doneDate,
+        valueProgressDB = this.getValueProgress()?.toValueProgressDB()
     )
 
 fun AchievementRelations.toAchievement(): Achievement =
@@ -124,51 +127,52 @@ fun AchievementRelations.toAchievement(): Achievement =
         name = this.achievementDB.name,
         description = this.achievementDB.description,
         group = this.groupDB?.toGroup(),
-        measurementType = when {
-            !this.checkList.isNullOrEmpty() -> MeasurementType.TaskDone(checkList = this.checkList.map { it.toCheckListItem() })
+        measurementType = when (this.achievementDB.measurementType) {
+            MeasurementType.TaskDone().intValue ->
+                MeasurementType.TaskDone(checkList = this.checkList?.map { it.toCheckListItem() } ?: emptyList())
 
-            !this.percentageProgress.isNullOrEmpty() -> MeasurementType.Percentage(percentageProgress = this.percentageProgress.map { it.toPercentageProgress() })
+            MeasurementType.Percentage().intValue ->
+                MeasurementType.Percentage(percentageProgress = this.progress?.map { it.toProgress() } ?: emptyList())
 
-            this.valueProgress != null -> this.valueProgress.toValueProgress()
+            MeasurementType.Value().intValue ->
+                this.achievementDB.valueProgressDB?.toValueProgress(this.progress?.map { it.toProgress() } ?: emptyList())
 
-            else -> null
+            else -> MeasurementType.None
         },
         endDate = this.achievementDB.endDate,
         doneDate = this.achievementDB.doneDate
     )
 
-fun PercentageProgressDB.toPercentageProgress(): MeasurementType.Percentage.PercentageProgress =
-    MeasurementType.Percentage.PercentageProgress(
-        progress = this.progress,
-        description = this.description,
-        date = this.date,
-        time = this.time
-    )
-
-fun MeasurementType.Percentage.PercentageProgress.toPercentageProgressDB(achievementId: Long): PercentageProgressDB =
-    PercentageProgressDB(
+fun ProgressDB.toProgress(): Progress =
+    Progress(
         id = this.id,
-        achievementPercentageProgressId = achievementId,
         progress = this.progress,
         description = this.description,
         date = this.date,
         time = this.time
     )
 
-fun ValueProgressTrackedValues.toValueProgress(): MeasurementType.Value =
+fun Progress.toProgressDB(achievementId: Long): ProgressDB =
+    ProgressDB(
+        id = this.id,
+        achievementProgressId = achievementId,
+        progress = this.progress,
+        description = this.description,
+        date = this.date,
+        time = this.time
+    )
+
+fun ValueProgressDB.toValueProgress(trackedValues: List<Progress>): MeasurementType.Value =
     MeasurementType.Value(
-        id = this.valueProgressDB.valueProgressId,
-        unit = MeasurementValueUnit.entries.firstOrNull { it.value == this.valueProgressDB.unit },
-        startingValue = this.valueProgressDB.startingValue,
-        goalValue = this.valueProgressDB.goalValue,
-        trackedValues = this.trackedValues?.map { it.toTrackedValue() } ?: emptyList()
+        unit = MeasurementValueUnit.entries.firstOrNull { it.value == this.unit },
+        startingValue = this.startingValue,
+        goalValue = this.goalValue,
+        trackedValues = trackedValues
     )
 
-fun TrackedValuesDB.toTrackedValue(): MeasurementType.Value.TrackedValues =
-    MeasurementType.Value.TrackedValues(
-        id = this.id,
-        trackedValue = this.trackedValue,
-        description = this.description,
-        date = this.date,
-        time = this.time
+fun MeasurementType.Value.toValueProgressDB(): ValueProgressDB =
+    ValueProgressDB(
+        unit = this.unit?.value,
+        startingValue = this.startingValue,
+        goalValue = this.goalValue
     )

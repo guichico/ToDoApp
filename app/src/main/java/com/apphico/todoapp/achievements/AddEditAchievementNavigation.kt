@@ -24,7 +24,7 @@ fun NavGraphBuilder.addEditAchievementScreen(
     snackBar: (String) -> Unit,
     onBackClicked: () -> Unit,
     onSelectGroupClicked: () -> Unit,
-    onAddEditProgressClicked: () -> Unit,
+    onAddEditProgressClicked: (Int) -> Unit,
 ) {
     composable<AddEditAchievementRoute>(
         typeMap = mapOf(

@@ -8,10 +8,12 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
+import com.apphico.core_model.Progress
 import com.apphico.core_repository.calendar.achievements.AchievementRepository
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.designsystem.R
 import com.apphico.extensions.add
+import com.apphico.extensions.combine
 import com.apphico.extensions.isEqualToBy
 import com.apphico.extensions.remove
 import com.apphico.extensions.update
@@ -50,6 +52,7 @@ class AddEditAchievementViewModel @Inject constructor(
     val editingAchievement = MutableStateFlow(achievement ?: Achievement())
     val editingCheckList = MutableStateFlow(achievement?.getCheckList() ?: emptyList())
     val editingPercentageProgress = MutableStateFlow(achievement?.getPercentageProgress() ?: emptyList())
+    val editingValueProgress = MutableStateFlow(achievement?.getValueProgress() ?: MeasurementType.Value())
 
     val isEditing = achievement != null
 
@@ -65,11 +68,24 @@ class AddEditAchievementViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            savedStateHandle.getStateFlow<MeasurementType.Percentage.PercentageProgress?>(PROGRESS_ARG, null)
-                .filterNotNull()
-                .map { editingPercentageProgress.value.add(it).sortByDate() }
+            combine(
+                savedStateHandle.getStateFlow<Int?>(MEASUREMENT_TYPE_ARG, null).filterNotNull(),
+                savedStateHandle.getStateFlow<Progress?>(PROGRESS_ARG, null).filterNotNull()
+            )
                 .flowOn(Dispatchers.IO)
-                .collectLatest(editingPercentageProgress::emit)
+                .collectLatest { (measurementType, progress) ->
+                    when (measurementType) {
+                        MeasurementType.Percentage().intValue -> {
+                            editingPercentageProgress.value = editingPercentageProgress.value.add(progress).sortByDate()
+                        }
+
+                        MeasurementType.Value().intValue -> {
+                            editingValueProgress.value = editingValueProgress.value.copy(
+                                trackedValues = editingValueProgress.value.trackedValues.add(progress)
+                            )
+                        }
+                    }
+                }
         }
     }
 
@@ -136,42 +152,19 @@ class AddEditAchievementViewModel @Inject constructor(
     }
 
     fun onUnitChanged(unit: MeasurementValueUnit) {
-        editingAchievement.value = editingAchievement.value.copy(
-            measurementType = editingAchievement.value.measurementType?.let {
-                (it as MeasurementType.Value).copy(unit = unit)
-            } ?: run {
-                MeasurementType.Value(unit = unit, startingValue = 0f, goalValue = 0f)
-            }
-        )
+        editingValueProgress.value = editingValueProgress.value.copy(unit = unit, startingValue = 0f, goalValue = 0f)
     }
 
     fun ondStartingValueChanged(startingValue: Float) {
-        editingAchievement.value = editingAchievement.value.copy(
-            measurementType = editingAchievement.value.measurementType?.let {
-                (it as MeasurementType.Value).copy(startingValue = startingValue)
-            } ?: run {
-                MeasurementType.Value(startingValue = startingValue, goalValue = 0f)
-            }
-        )
+        editingValueProgress.value = editingValueProgress.value.copy(startingValue = startingValue)
     }
 
     fun ondGoalValueChanged(goalValue: Float) {
-        editingAchievement.value = editingAchievement.value.copy(
-            measurementType = editingAchievement.value.measurementType?.let {
-                (it as MeasurementType.Value).copy(goalValue = goalValue)
-            } ?: run {
-                MeasurementType.Value(startingValue = 0f, goalValue = goalValue)
-            }
-        )
+        editingValueProgress.value = editingValueProgress.value.copy(goalValue = goalValue)
     }
 
-    fun onTrackedValuesChanged(trackedValues: List<MeasurementType.Value.TrackedValues>) {
-        editingAchievement.value = editingAchievement.value.copy(
-            measurementType = (editingAchievement.value.measurementType as MeasurementType.Value)
-                .copy(
-                    trackedValues = trackedValues
-                )
-        )
+    fun onTrackedValuesChanged(trackedValues: List<Progress>) {
+        editingValueProgress.value = editingValueProgress.value.copy(trackedValues = trackedValues)
     }
 
     fun save(
@@ -197,6 +190,10 @@ class AddEditAchievementViewModel @Inject constructor(
                     achievement = achievement.copy(
                         measurementType = (achievement.measurementType as MeasurementType.Percentage).copy(percentageProgress = editingPercentageProgress.value)
                     )
+                }
+
+                is MeasurementType.Value -> {
+                    achievement = achievement.copy(measurementType = editingValueProgress.value)
                 }
 
                 else -> {
@@ -232,9 +229,9 @@ class AddEditAchievementViewModel @Inject constructor(
         }
     }
 
-    private fun List<MeasurementType.Percentage.PercentageProgress>.sortByDate() =
+    private fun List<Progress>.sortByDate() =
         this.sortedWith(
-            compareBy<MeasurementType.Percentage.PercentageProgress> { progress ->
+            compareBy<Progress> { progress ->
                 progress.date?.let {
                     LocalDateTime.of(it, progress.time ?: it.atStartOfDay().toLocalTime())
                 }

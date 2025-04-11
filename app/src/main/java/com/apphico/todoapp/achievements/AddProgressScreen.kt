@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.apphico.core_model.MeasurementType
+import com.apphico.core_model.Progress
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
@@ -41,9 +41,10 @@ import java.time.LocalTime
 fun AddEditProgressScreen(
     addProgressViewModel: AddEditProgressViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
-    onProgressAdded: (MeasurementType.Percentage.PercentageProgress) -> Unit
+    onProgressAdded: (Int, Progress) -> Unit
 ) {
     val editingProgress = addProgressViewModel.editingProgress.collectAsState()
+    val measurementType = addProgressViewModel.measurementType
 
     val isEditing = addProgressViewModel.isEditing
 
@@ -56,7 +57,7 @@ fun AddEditProgressScreen(
         title = stringResource(R.string.add_progress),
         isEditing = isEditing,
         onSaveClicked = {
-            onProgressAdded(editingProgress.value)
+            onProgressAdded(measurementType, editingProgress.value)
         },
         onDeleteClicked = {},
         navigateBack = {
@@ -78,7 +79,7 @@ fun AddEditProgressScreen(
 @Composable
 fun AddEditProgressScreenContent(
     innerPadding: PaddingValues,
-    progress: State<MeasurementType.Percentage.PercentageProgress>,
+    progress: State<Progress>,
     onProgressChanged: (Float) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onDateChanged: (LocalDate?) -> Unit,
@@ -170,7 +171,7 @@ private fun AddEditProgressPreview() {
     ToDoAppTheme {
         AddEditProgressScreenContent(
             innerPadding = PaddingValues(),
-            progress = remember { mutableStateOf(MeasurementType.Percentage.PercentageProgress()) },
+            progress = remember { mutableStateOf(Progress()) },
             onProgressChanged = {},
             onDescriptionChanged = {},
             onDateChanged = {},

@@ -21,15 +21,22 @@ data class AchievementDB(
     @PrimaryKey(autoGenerate = true) val achievementId: Long = 0,
     @ColumnInfo("achievementName") val name: String,
     val description: String?,
-    val achievementGroupId: Long?,
+    @ColumnInfo(index = true) val achievementGroupId: Long?,
+    val measurementType: Int,
     val endDate: LocalDate?,
     val doneDate: LocalDate?,
+    @Embedded val valueProgressDB: ValueProgressDB?,
+)
+
+data class ValueProgressDB(
+    val unit: Int?,
+    val startingValue: Float,
+    val goalValue: Float
 )
 
 data class AchievementRelations(
     @Embedded val achievementDB: AchievementDB,
     @Relation(parentColumn = "achievementGroupId", entityColumn = "groupId") val groupDB: GroupDB?,
     @Relation(parentColumn = "achievementId", entityColumn = "checkListAchievementId") val checkList: List<CheckListWithDone>?,
-    @Relation(parentColumn = "achievementId", entityColumn = "achievementPercentageProgressId") val percentageProgress: List<PercentageProgressDB>?,
-    @Relation(parentColumn = "achievementId", entityColumn = "achievementValueProgressId") val valueProgress: ValueProgressTrackedValues?
+    @Relation(parentColumn = "achievementId", entityColumn = "achievementProgressId") val progress: List<ProgressDB>?
 )

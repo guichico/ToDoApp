@@ -4,8 +4,7 @@ import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.MeasurementType
-import com.apphico.core_model.MeasurementType.Percentage.PercentageProgress
-import com.apphico.core_model.MeasurementType.Value.TrackedValues
+import com.apphico.core_model.Progress
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime
 
@@ -33,23 +32,23 @@ val mockedAchievements = listOf(
             startingValue = 80f,
             goalValue = 68f,
             trackedValues = listOf(
-                TrackedValues(
-                    trackedValue = 78f,
+                Progress(
+                    progress = 78f,
                     date = getNowDate(),
                     time = getNowTime()
                 ),
-                TrackedValues(
-                    trackedValue = 76f,
+                Progress(
+                    progress = 76f,
                     date = getNowDate(),
                     time = getNowTime()
                 ),
-                TrackedValues(
-                    trackedValue = 74f,
+                Progress(
+                    progress = 74f,
                     date = getNowDate(),
                     time = getNowTime()
                 ),
-                TrackedValues(
-                    trackedValue = 71f,
+                Progress(
+                    progress = 71f,
                     date = getNowDate(),
                     time = getNowTime()
                 )
@@ -61,7 +60,7 @@ val mockedAchievements = listOf(
         endDate = getNowDate(),
         measurementType = MeasurementType.Percentage(
             percentageProgress = listOf(
-                PercentageProgress(
+                Progress(
                     progress = 0.4712f,
                     date = getNowDate(),
                     time = getNowTime(),
@@ -79,18 +78,18 @@ val mockedAchievements = listOf(
             startingValue = 68f,
             goalValue = 85f,
             trackedValues = listOf(
-                TrackedValues(
-                    trackedValue = 70f,
+                Progress(
+                    progress = 70f,
                     date = getNowDate(),
                     time = getNowTime()
                 ),
-                TrackedValues(
-                    trackedValue = 72f,
+                Progress(
+                    progress = 72f,
                     date = getNowDate(),
                     time = getNowTime()
                 ),
-                TrackedValues(
-                    trackedValue = 73f,
+                Progress(
+                    progress = 73f,
                     date = getNowDate(),
                     time = getNowTime()
                 )
@@ -110,14 +109,14 @@ val mockedAchievements = listOf(
             startingValue = 0f,
             goalValue = 30f,
             trackedValues = listOf(
-                TrackedValues(
-                    trackedValue = 1f,
+                Progress(
+                    progress = 1f,
                     description = "Li O pequeno príncipe",
                     date = getNowDate(),
                     time = getNowTime()
                 ),
-                TrackedValues(
-                    trackedValue = 2f,
+                Progress(
+                    progress = 2f,
                     description = "Li Messias de Duna",
                     date = getNowDate(),
                     time = getNowTime()
@@ -130,19 +129,19 @@ val mockedAchievements = listOf(
         endDate = getNowDate(),
         measurementType = MeasurementType.Percentage(
             percentageProgress = listOf(
-                PercentageProgress(
+                Progress(
                     progress = 0.1f,
                     description = "Just beginning",
                     date = getNowDate(),
                     time = getNowTime()
                 ),
-                PercentageProgress(
+                Progress(
                     progress = 0.4712f,
                     description = "Its getting hard",
                     date = getNowDate(),
                     time = getNowTime()
                 ),
-                PercentageProgress(
+                Progress(
                     progress = 1.00f,
                     description = "Finally finished",
                     date = getNowDate(),

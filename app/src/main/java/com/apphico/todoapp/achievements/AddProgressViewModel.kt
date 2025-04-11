@@ -1,19 +1,32 @@
 package com.apphico.todoapp.achievements
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.apphico.core_model.MeasurementType
+import androidx.navigation.toRoute
+import com.apphico.core_model.Progress
+import com.apphico.todoapp.navigation.CustomNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
+import kotlin.reflect.typeOf
 
 @HiltViewModel
 class AddEditProgressViewModel @Inject constructor(
-
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val editingProgress = MutableStateFlow(MeasurementType.Percentage.PercentageProgress())
+    val measurementType = savedStateHandle.toRoute<AddEditProgressRoute>(
+        typeMap = mapOf(
+            typeOf<AddEditProgressParameters>() to CustomNavType(
+                AddEditProgressParameters::class.java,
+                AddEditProgressParameters.serializer()
+            )
+        )
+    ).addEditProgressParameters.measurementType
+
+    val editingProgress = MutableStateFlow(Progress())
 
     // val isEditing = progressArg != null
     val isEditing = false

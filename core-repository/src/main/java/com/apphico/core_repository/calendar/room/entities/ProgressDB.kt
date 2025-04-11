@@ -1,5 +1,6 @@
 package com.apphico.core_repository.calendar.room.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
@@ -12,14 +13,14 @@ import java.time.LocalTime
         ForeignKey(
             entity = AchievementDB::class,
             parentColumns = arrayOf("achievementId"),
-            childColumns = arrayOf("achievementPercentageProgressId"),
+            childColumns = arrayOf("achievementProgressId"),
             onDelete = CASCADE
         )
     ]
 )
-data class PercentageProgressDB(
+data class ProgressDB(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val achievementPercentageProgressId: Long?,
+    @ColumnInfo(index = true) val achievementProgressId: Long?,
     val progress: Float,
     val description: String?,
     val date: LocalDate?,

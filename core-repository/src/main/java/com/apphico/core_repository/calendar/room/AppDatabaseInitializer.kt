@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.apphico.core_model.Group
+import com.apphico.core_model.MeasurementType
 import com.apphico.core_repository.R
 import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
@@ -112,8 +113,10 @@ class AppDatabaseInitializer(
                     name = appContext.getString(R.string.achievement_name_1),
                     description = appContext.getString(R.string.achievement_description_1),
                     achievementGroupId = groupIds[1],
+                    measurementType = MeasurementType.TaskDone().intValue,
                     endDate = LocalDate.of(getNowDate().year, 12, 31),
-                    doneDate = null
+                    doneDate = null,
+                    valueProgressDB = null
                 )
             )
 
@@ -129,8 +132,10 @@ class AppDatabaseInitializer(
                     name = appContext.getString(R.string.achievement_name_2),
                     description = appContext.getString(R.string.achievement_description_2),
                     achievementGroupId = null,
+                    measurementType = MeasurementType.None.intValue,
                     endDate = getNowDate().plusMonths(3),
-                    doneDate = getNowDate()
+                    doneDate = getNowDate(),
+                    valueProgressDB = null
                 )
             )
         }

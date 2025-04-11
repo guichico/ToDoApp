@@ -5,15 +5,16 @@ import androidx.room.withTransaction
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.Group
 import com.apphico.core_model.MeasurementType
+import com.apphico.core_model.Progress
 import com.apphico.core_model.Status
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
-import com.apphico.core_repository.calendar.room.dao.PercentageProgressDao
+import com.apphico.core_repository.calendar.room.dao.ProgressDao
 import com.apphico.core_repository.calendar.room.entities.toAchievement
 import com.apphico.core_repository.calendar.room.entities.toAchievementDB
 import com.apphico.core_repository.calendar.room.entities.toCheckListItemDB
-import com.apphico.core_repository.calendar.room.entities.toPercentageProgressDB
+import com.apphico.core_repository.calendar.room.entities.toProgressDB
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -28,7 +29,7 @@ class AchievementRepositoryImpl(
     private val appDatabase: AppDatabase,
     private val achievementDao: AchievementDao,
     private val checkListItemDao: CheckListItemDao,
-    private val percentageProgressDao: PercentageProgressDao
+    private val progressDao: ProgressDao
 ) : AchievementRepository {
 
     override fun getAll(status: Status, groups: List<Group>): Flow<List<Achievement>> = achievementDao.getAll().map { it.map { it.toAchievement() } }
@@ -37,6 +38,7 @@ class AchievementRepositoryImpl(
         return try {
             appDatabase.withTransaction {
                 val achievementId = achievementDao.insert(achievement.toAchievementDB())
+                var progress = emptyList<Progress>()
 
                 when (achievement.measurementType) {
                     is MeasurementType.TaskDone -> {
@@ -45,14 +47,18 @@ class AchievementRepositoryImpl(
                     }
 
                     is MeasurementType.Percentage -> {
-                        val percentageProgress = (achievement.measurementType as MeasurementType.Percentage).percentageProgress
-                        percentageProgressDao.insertAll(percentageProgress.map { it.toPercentageProgressDB(achievementId) })
+                        progress = (achievement.measurementType as MeasurementType.Percentage).percentageProgress
+                    }
+
+                    is MeasurementType.Value -> {
+                        progress = (achievement.measurementType as MeasurementType.Value).trackedValues
                     }
 
                     else -> {
-
                     }
                 }
+
+                progressDao.insertAll(progress.map { it.toProgressDB(achievementId) })
             }
 
             return true
@@ -67,6 +73,8 @@ class AchievementRepositoryImpl(
             appDatabase.withTransaction {
                 achievementDao.update(achievement.toAchievementDB())
 
+                var progress = emptyList<Progress>()
+
                 when (achievement.measurementType) {
                     is MeasurementType.TaskDone -> {
                         val checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList
@@ -77,19 +85,22 @@ class AchievementRepositoryImpl(
                     }
 
                     is MeasurementType.Percentage -> {
-                        val percentageProgress = (achievement.measurementType as MeasurementType.Percentage).percentageProgress
+                        progress = (achievement.measurementType as MeasurementType.Percentage).percentageProgress
+                    }
 
-                        percentageProgressDao.deleteAll(achievement.id, percentageProgress.map { it.id })
-                        percentageProgressDao
-                            .insertAll(percentageProgress.filter { it.id == 0L }.map { it.toPercentageProgressDB(achievementId = achievement.id) })
-                        percentageProgressDao
-                            .updateAll(percentageProgress.filter { it.id != 0L }.map { it.toPercentageProgressDB(achievementId = achievement.id) })
+                    is MeasurementType.Value -> {
+                        progress = (achievement.measurementType as MeasurementType.Value).trackedValues
                     }
 
                     else -> {
-
                     }
                 }
+
+                progressDao.deleteAll(achievement.id, progress.map { it.id })
+                progressDao
+                    .insertAll(progress.filter { it.id == 0L }.map { it.toProgressDB(achievementId = achievement.id) })
+                progressDao
+                    .updateAll(progress.filter { it.id != 0L }.map { it.toProgressDB(achievementId = achievement.id) })
             }
 
             return true

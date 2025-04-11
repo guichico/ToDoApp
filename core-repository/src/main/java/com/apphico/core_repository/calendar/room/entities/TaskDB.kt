@@ -24,7 +24,7 @@ data class TaskDB(
     @PrimaryKey(autoGenerate = true) val taskId: Long = 0,
     @ColumnInfo("taskName") val name: String,
     val description: String?,
-    val taskGroupId: Long?,
+    @ColumnInfo(index = true) val taskGroupId: Long?,
     val startDate: LocalDate?,
     val startTime: LocalTime?,
     val endDate: LocalDate?,
@@ -53,7 +53,7 @@ data class ReminderDB(
 )
 data class TaskDoneDB(
     @PrimaryKey(autoGenerate = true) val doneId: Long = 0,
-    val taskDoneId: Long,
+    @ColumnInfo(index = true) val taskDoneId: Long,
     val doneDate: LocalDate,
     val taskDate: LocalDate?
 )
@@ -70,7 +70,7 @@ data class TaskDoneDB(
 )
 data class TaskDeletedDB(
     @PrimaryKey(autoGenerate = true) val deletedId: Long = 0,
-    val taskDeleteId: Long,
+    @ColumnInfo(index = true) val taskDeleteId: Long,
     val deletedDate: LocalDate,
     val taskDate: LocalDate?
 )

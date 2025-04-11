@@ -17,54 +17,43 @@ enum class MeasurementValueUnit(val value: Int) {
 
 @Parcelize
 @Serializable
-sealed class MeasurementType(override val title: Int) : CheckBoxItem() {
+sealed class MeasurementType(val intValue: Int, override val title: Int) : CheckBoxItem() {
 
     @Parcelize
     @Serializable
-    data object None : MeasurementType(R.string.achievement_goal_type_none)
+    data object None : MeasurementType(1, R.string.achievement_goal_type_none)
 
     @Parcelize
     @Serializable
     data class TaskDone(
         val checkList: List<CheckListItem> = emptyList()
-    ) : MeasurementType(R.string.achievement_goal_type_step)
+    ) : MeasurementType(2, R.string.achievement_goal_type_step)
 
     @Parcelize
     @Serializable
     data class Percentage(
-        val percentageProgress: List<PercentageProgress> = emptyList()
-    ) : MeasurementType(R.string.achievement_goal_type_percentage) {
-        @Parcelize
-        @Serializable
-        data class PercentageProgress(
-            val id: Long = 0,
-            val progress: Float = 0f,
-            val description: String? = null,
-            @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
-            @Serializable(with = LocalTimeSerializer::class) val time: LocalTime? = null
-        ) : Parcelable
-    }
+        val percentageProgress: List<Progress> = emptyList()
+    ) : MeasurementType(3, R.string.achievement_goal_type_percentage)
 
     @Parcelize
     @Serializable
     data class Value(
-        val id: Long = 0,
         val unit: MeasurementValueUnit? = null,
         val startingValue: Float = 0f,
         val goalValue: Float = 0f,
-        val trackedValues: List<TrackedValues> = emptyList()
-    ) : MeasurementType(R.string.achievement_goal_type_value) {
-        @Parcelize
-        @Serializable
-        data class TrackedValues(
-            val id: Long = 0,
-            val trackedValue: Float = 0f,
-            val description: String? = null,
-            @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
-            @Serializable(with = LocalTimeSerializer::class) val time: LocalTime? = null
-        ) : Parcelable
-    }
+        val trackedValues: List<Progress> = emptyList()
+    ) : MeasurementType(4, R.string.achievement_goal_type_value)
 }
+
+@Parcelize
+@Serializable
+data class Progress(
+    val id: Long = 0,
+    val progress: Float = 0f,
+    val description: String? = null,
+    @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
+    @Serializable(with = LocalTimeSerializer::class) val time: LocalTime? = null
+) : Parcelable
 
 @Parcelize
 @Serializable
@@ -87,11 +76,18 @@ data class Achievement(
             emptyList()
         }
 
-    fun getPercentageProgress(): List<MeasurementType.Percentage.PercentageProgress> =
+    fun getPercentageProgress(): List<Progress> =
         try {
             (measurementType as MeasurementType.Percentage).percentageProgress
         } catch (_: Exception) {
             emptyList()
+        }
+
+    fun getValueProgress(): MeasurementType.Value? =
+        try {
+            (measurementType as MeasurementType.Value)
+        } catch (_: Exception) {
+            null
         }
 
     fun getProgress() = when {
@@ -108,7 +104,7 @@ data class Achievement(
 
             when {
                 measurementType.trackedValues.isNotEmpty() -> {
-                    val progress = (measurementType.startingValue - measurementType.trackedValues.last().trackedValue) / track
+                    val progress = (measurementType.startingValue - measurementType.trackedValues.last().progress) / track
                     if (progress < 0) progress * -1 else progress
                 }
 

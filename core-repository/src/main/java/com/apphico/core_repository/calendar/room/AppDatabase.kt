@@ -10,7 +10,7 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
-import com.apphico.core_repository.calendar.room.dao.PercentageProgressDao
+import com.apphico.core_repository.calendar.room.dao.ProgressDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
@@ -20,14 +20,11 @@ import com.apphico.core_repository.calendar.room.entities.CheckListItemDoneDB
 import com.apphico.core_repository.calendar.room.entities.CheckListWithDone
 import com.apphico.core_repository.calendar.room.entities.GroupDB
 import com.apphico.core_repository.calendar.room.entities.LocationDB
-import com.apphico.core_repository.calendar.room.entities.PercentageProgressDB
+import com.apphico.core_repository.calendar.room.entities.ProgressDB
 import com.apphico.core_repository.calendar.room.entities.TaskComplete
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
-import com.apphico.core_repository.calendar.room.entities.TrackedValuesDB
-import com.apphico.core_repository.calendar.room.entities.ValueProgressDB
-import com.apphico.core_repository.calendar.room.entities.ValueProgressTrackedValues
 
 @Database(
     version = 1,
@@ -38,14 +35,12 @@ import com.apphico.core_repository.calendar.room.entities.ValueProgressTrackedVa
         TaskDoneDB::class,
         TaskDeletedDB::class,
         AchievementDB::class,
-        PercentageProgressDB::class,
-        ValueProgressDB::class,
-        TrackedValuesDB::class,
+        ProgressDB::class,
         CheckListItemDB::class,
         CheckListItemDoneDB::class,
         LocationDB::class
     ],
-    views = [TaskComplete::class, CheckListWithDone::class, ValueProgressTrackedValues::class]
+    views = [TaskComplete::class, CheckListWithDone::class]
 )
 @TypeConverters(DateConverters::class, ListConverters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -54,7 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDoneDao(): TaskDoneDao
     abstract fun taskDeletedDao(): TaskDeletedDao
     abstract fun achievementDao(): AchievementDao
-    abstract fun percentageProgressDao(): PercentageProgressDao
+    abstract fun percentageProgressDao(): ProgressDao
     abstract fun checkListItemDao(): CheckListItemDao
     abstract fun checkListItemDoneDao(): CheckListItemDoneDao
     abstract fun locationDao(): LocationDao

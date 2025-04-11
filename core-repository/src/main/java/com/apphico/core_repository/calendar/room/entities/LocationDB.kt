@@ -1,5 +1,6 @@
 package com.apphico.core_repository.calendar.room.entities
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.Companion.CASCADE
@@ -17,7 +18,7 @@ import androidx.room.PrimaryKey
 )
 data class LocationDB(
     @PrimaryKey(autoGenerate = true) val locationId: Long = 0,
-    val locationTaskId: Long,
+    @ColumnInfo(index = true) val locationTaskId: Long,
     val latitude: Double,
     val longitude: Double,
     val address: String?

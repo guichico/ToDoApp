@@ -20,7 +20,7 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
-import com.apphico.core_repository.calendar.room.dao.PercentageProgressDao
+import com.apphico.core_repository.calendar.room.dao.ProgressDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
@@ -56,8 +56,9 @@ class RepositoryModule() {
         appDatabase: AppDatabase,
         achievementDao: AchievementDao,
         checkListItemDao: CheckListItemDao,
-        percentageProgressDao: PercentageProgressDao
-    ): AchievementRepository = AchievementRepositoryImpl(appDatabase, achievementDao, checkListItemDao, percentageProgressDao)
+        progressDao: ProgressDao
+    ): AchievementRepository =
+        AchievementRepositoryImpl(appDatabase, achievementDao, checkListItemDao, progressDao)
 
     @Provides
     @Singleton

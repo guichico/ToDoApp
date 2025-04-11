@@ -46,6 +46,7 @@ import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
+import com.apphico.core_model.Progress
 import com.apphico.core_model.fakeData.mockedAchievements
 import com.apphico.designsystem.R
 import com.apphico.designsystem.animatedElevation
@@ -82,12 +83,13 @@ fun AddEditAchievementScreen(
     addEditAchievementViewModel: AddEditAchievementViewModel = hiltViewModel(),
     snackBar: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
-    navigateToAddEditProgress: () -> Unit,
+    navigateToAddEditProgress: (Int) -> Unit,
     navigateBack: () -> Unit
 ) {
     val editingAchievement = addEditAchievementViewModel.editingAchievement.collectAsState()
     val editingCheckList = addEditAchievementViewModel.editingCheckList.collectAsState()
     val editingPercentageProgress = addEditAchievementViewModel.editingPercentageProgress.collectAsState()
+    val editingValueProgress = addEditAchievementViewModel.editingValueProgress.collectAsState()
 
     val isEditing = addEditAchievementViewModel.isEditing
 
@@ -141,6 +143,7 @@ fun AddEditAchievementScreen(
             achievement = editingAchievement,
             checkList = editingCheckList,
             percentageProgress = editingPercentageProgress,
+            valueProgress = editingValueProgress,
             isEditing = isEditing,
             onNameChange = addEditAchievementViewModel::onNameChanged,
             nameError = nameError,
@@ -175,7 +178,8 @@ private fun AddEditAchievementScreenContent(
     onGroupRemoved: () -> Unit,
     onEndDateChanged: (LocalDate?) -> Unit,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
-    percentageProgress: State<List<MeasurementType.Percentage.PercentageProgress>>,
+    percentageProgress: State<List<Progress>>,
+    valueProgress: State<MeasurementType.Value?>,
     checkList: State<List<CheckListItem>>,
     onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
     onCheckListItemItemAdded: (CheckListItem) -> Unit,
@@ -184,8 +188,8 @@ private fun AddEditAchievementScreenContent(
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
-    onTrackedValuesChanged: (List<MeasurementType.Value.TrackedValues>) -> Unit,
-    navigateToAddEditProgress: () -> Unit
+    onTrackedValuesChanged: (List<Progress>) -> Unit,
+    navigateToAddEditProgress: (Int) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -233,6 +237,7 @@ private fun AddEditAchievementScreenContent(
                     onMeasurementTypeChanged = onMeasurementTypeChanged,
                     parentDate = remember { derivedStateOf { achievement.value.endDate } },
                     percentageProgress = percentageProgress,
+                    valueProgress = valueProgress,
                     checkList = checkList,
                     onCheckListItemChanged = onCheckListItemChanged,
                     onCheckListItemItemAdded = onCheckListItemItemAdded,
@@ -288,7 +293,8 @@ private fun MeasurementTypeFields(
     achievement: State<Achievement>,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
     parentDate: State<LocalDate?>,
-    percentageProgress: State<List<MeasurementType.Percentage.PercentageProgress>>,
+    percentageProgress: State<List<Progress>>,
+    valueProgress: State<MeasurementType.Value?>,
     checkList: State<List<CheckListItem>>,
     onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
     onCheckListItemItemAdded: (CheckListItem) -> Unit,
@@ -297,10 +303,10 @@ private fun MeasurementTypeFields(
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
-    onTrackedValuesChanged: (List<MeasurementType.Value.TrackedValues>) -> Unit,
-    navigateToAddEditProgress: () -> Unit
+    onTrackedValuesChanged: (List<Progress>) -> Unit,
+    navigateToAddEditProgress: (Int) -> Unit
 ) {
-    val measurementType = achievement.value.measurementType
+    val measurementType by remember { derivedStateOf { achievement.value.measurementType } }
     val progress = achievement.value.getProgress()
 
     if (progress == 0f) {
@@ -316,80 +322,41 @@ private fun MeasurementTypeFields(
     AnimatedContent(
         targetState = measurementType,
         label = ""
-    ) {
-        MeasurementTypeView(
-            scrollState = scrollState,
-            totalProgress = remember { derivedStateOf { progress } },
-            measurementType = remember { derivedStateOf { it } },
-            parentDate = parentDate,
-            percentageProgress = percentageProgress,
-            checkList = checkList,
-            onCheckListItemChanged = onCheckListItemChanged,
-            onCheckListItemItemAdded = onCheckListItemItemAdded,
-            onCheckListItemItemRemoved = onCheckListItemItemRemoved,
-            onCheckListItemDoneChanged = onCheckListItemDoneChanged,
-            onUnitChanged = onUnitChanged,
-            onStartingValueChanged = onStartingValueChanged,
-            onGoalValueChanged = onGoalValueChanged,
-            onTrackedValuesChanged = onTrackedValuesChanged,
-            navigateToAddEditProgress = navigateToAddEditProgress
-        )
-    }
-}
+    ) { targetMeasurementType ->
+        when (targetMeasurementType) {
+            is MeasurementType.TaskDone -> {
+                MeasurementTypeCheckList(
+                    scrollState = scrollState,
+                    parentDate = parentDate,
+                    checkList = checkList,
+                    onCheckListItemChanged = onCheckListItemChanged,
+                    onCheckListItemItemAdded = onCheckListItemItemAdded,
+                    onCheckListItemItemRemoved = onCheckListItemItemRemoved,
+                    onCheckListItemDoneChanged = onCheckListItemDoneChanged
+                )
+            }
 
-@Composable
-private fun MeasurementTypeView(
-    scrollState: ScrollState,
-    totalProgress: State<Float>,
-    measurementType: State<MeasurementType?>,
-    parentDate: State<LocalDate?>,
-    percentageProgress: State<List<MeasurementType.Percentage.PercentageProgress>>,
-    checkList: State<List<CheckListItem>>,
-    onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
-    onCheckListItemItemAdded: (CheckListItem) -> Unit,
-    onCheckListItemItemRemoved: (CheckListItem) -> Unit,
-    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit,
-    onUnitChanged: (MeasurementValueUnit) -> Unit,
-    onStartingValueChanged: (Float) -> Unit,
-    onGoalValueChanged: (Float) -> Unit,
-    onTrackedValuesChanged: (List<MeasurementType.Value.TrackedValues>) -> Unit,
-    navigateToAddEditProgress: () -> Unit
-) {§
-    when (measurementType.value) {
-        is MeasurementType.TaskDone -> {
-            MeasurementTypeCheckList(
-                scrollState = scrollState,
-                parentDate = parentDate,
-                checkList = checkList,
-                onCheckListItemChanged = onCheckListItemChanged,
-                onCheckListItemItemAdded = onCheckListItemItemAdded,
-                onCheckListItemItemRemoved = onCheckListItemItemRemoved,
-                onCheckListItemDoneChanged = onCheckListItemDoneChanged
-            )
-        }
+            is MeasurementType.Percentage -> {
+                MeasurementTypePercentage(
+                    percentageProgress = percentageProgress,
+                    navigateToAddEditProgress = { navigateToAddEditProgress(MeasurementType.Percentage().intValue) }
+                )
+            }
 
-        is MeasurementType.Percentage -> {
-            MeasurementTypePercentage(
-                percentageProgress = percentageProgress,
-                navigateToAddEditProgress = navigateToAddEditProgress
-            )
-        }
+            is MeasurementType.Value -> {
+                MeasurementTypeValue(
+                    totalProgress = remember { derivedStateOf { progress } },
+                    onUnitChanged = onUnitChanged,
+                    valueProgress = valueProgress,
+                    onStartingValueChanged = onStartingValueChanged,
+                    onGoalValueChanged = onGoalValueChanged,
+                    onTrackedValuesChanged = onTrackedValuesChanged,
+                    navigateToAddEditProgress = { navigateToAddEditProgress(MeasurementType.Value().intValue) }
+                )
+            }
 
-        is MeasurementType.Value -> {
-            MeasurementTypeValue(
-                totalProgress = totalProgress,
-                onUnitChanged = onUnitChanged,
-                valueProgress = remember { derivedStateOf { measurementType.value as MeasurementType.Value } },
-                measurementUnit = remember { derivedStateOf { (measurementType.value as MeasurementType.Value).unit } },
-                onStartingValueChanged = onStartingValueChanged,
-                onGoalValueChanged = onGoalValueChanged,
-                onTrackedValuesChanged = onTrackedValuesChanged,
-                navigateToAddEditProgress = navigateToAddEditProgress
-            )
-        }
-
-        is MeasurementType.None,
-        null -> {
+            else -> {
+            }
         }
     }
 }
@@ -467,8 +434,8 @@ private fun MeasurementTypeCheckList(
 
 @Composable
 private fun MeasurementTypePercentage(
-    percentageProgress: State<List<MeasurementType.Percentage.PercentageProgress>>,
-    navigateToAddEditProgress: () -> Unit
+    percentageProgress: State<List<Progress>>,
+    navigateToAddEditProgress: (Int) -> Unit
 ) {
     val totalProgress = percentageProgress.value.lastOrNull()?.progress ?: 0f
 
@@ -485,7 +452,7 @@ private fun MeasurementTypePercentage(
                 time = it.time,
                 description = it.description,
                 progress = it.progress,
-                onClick = navigateToAddEditProgress
+                onClick = { navigateToAddEditProgress(MeasurementType.Percentage().intValue) }
             )
         }
         if (totalProgress < 1f) {
@@ -494,7 +461,7 @@ private fun MeasurementTypePercentage(
                     .fillMaxWidth()
                     .padding(vertical = ToDoAppTheme.spacing.small),
                 value = stringResource(R.string.add_progress),
-                onClick = navigateToAddEditProgress,
+                onClick = { navigateToAddEditProgress(MeasurementType.Percentage().intValue) },
                 trailingIcon = {
                     ToDoAppIcon(
                         icon = ToDoAppIcons.icAdd,
@@ -511,13 +478,14 @@ private fun MeasurementTypeValue(
     totalProgress: State<Float>,
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     valueProgress: State<MeasurementType.Value?>,
-    measurementUnit: State<MeasurementValueUnit?>,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
-    onTrackedValuesChanged: (List<MeasurementType.Value.TrackedValues>) -> Unit,
-    navigateToAddEditProgress: () -> Unit
+    onTrackedValuesChanged: (List<Progress>) -> Unit,
+    navigateToAddEditProgress: (Int) -> Unit
 ) {
     val focusRequester = FocusRequester()
+
+    val measurementUnit = remember { derivedStateOf { valueProgress.value?.unit } }
 
     Column {
         Text(
@@ -564,15 +532,15 @@ private fun MeasurementTypeValue(
         valueProgress.value?.let { vp ->
             vp.trackedValues.forEach {
                 val track = vp.goalValue - vp.startingValue
-                val progress = (vp.startingValue - it.trackedValue) / track
+                val progress = (vp.startingValue - it.progress) / track
 
                 ProgressCard(
                     date = it.date,
                     time = it.time,
-                    progressText = "${it.trackedValue.format()}/${vp.goalValue.format()}",
+                    progressText = "${it.progress.format()}/${vp.goalValue.format()}",
                     description = it.description,
                     progress = if (progress < 0) progress * -1 else progress,
-                    onClick = navigateToAddEditProgress
+                    onClick = { navigateToAddEditProgress(MeasurementType.Value().intValue) }
                 )
             }
         }
@@ -582,7 +550,7 @@ private fun MeasurementTypeValue(
                     .fillMaxWidth()
                     .padding(vertical = ToDoAppTheme.spacing.small),
                 value = stringResource(R.string.add_progress),
-                onClick = navigateToAddEditProgress,
+                onClick = { navigateToAddEditProgress(MeasurementType.Value().intValue) },
                 trailingIcon = {
                     ToDoAppIcon(
                         icon = ToDoAppIcons.icAdd,
@@ -801,6 +769,7 @@ private fun AddEditAchievementScreenPreview(
             onEndDateChanged = {},
             onMeasurementTypeChanged = {},
             percentageProgress = remember { mutableStateOf(emptyList()) },
+            valueProgress = remember { mutableStateOf(MeasurementType.Value()) },
             checkList = remember { mutableStateOf(emptyList()) },
             onCheckListItemChanged = { _, _ -> },
             onCheckListItemItemAdded = {},
