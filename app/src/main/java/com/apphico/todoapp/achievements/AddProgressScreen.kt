@@ -16,6 +16,7 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -39,6 +40,8 @@ import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatShortTime
+import com.apphico.extensions.getNowGMTMillis
+import com.apphico.extensions.toMillis
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -92,7 +95,6 @@ fun AddEditProgressScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditProgressScreenContent(
     innerPadding: PaddingValues,
@@ -105,33 +107,6 @@ fun AddEditProgressScreenContent(
     onDateChanged: (LocalDate?) -> Unit,
     onTimeChanged: (LocalTime) -> Unit
 ) {
-    val datePickerState = rememberDatePickerState(
-        // initialSelectedDateMillis = startDate.value?.toMillis() ?: getGMTNowMillis()
-    )
-    val timePickerState = rememberTimePickerState(
-        /*initialHour = startTime.value?.hour ?: 0,
-        initialMinute = startTime.value?.minute ?: 0*/
-    )
-
-    val isDatePickerDialogOpen = remember { mutableStateOf(false) }
-    val isTimePickerDialogOpen = remember { mutableStateOf(false) }
-
-    if (isDatePickerDialogOpen.value) {
-        DateDialog(
-            isDatePickerDialogOpen = isDatePickerDialogOpen,
-            datePickerState = datePickerState,
-            onDateChanged = onDateChanged
-        )
-    }
-
-    if (isTimePickerDialogOpen.value) {
-        TimeDialog(
-            isTimePickerDialogOpen = isTimePickerDialogOpen,
-            timePickerState = timePickerState,
-            onTimeChanged = onTimeChanged
-        )
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -165,23 +140,12 @@ fun AddEditProgressScreenContent(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
             )
             Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
-            Row {
-                NormalTextField(
-                    modifier = Modifier
-                        .weight(0.6f),
-                    value = progress.value.date?.formatMediumDate() ?: "",
-                    placeholder = stringResource(R.string.date),
-                    onClick = { isDatePickerDialogOpen.value = true }
-                )
-                Spacer(modifier = Modifier.weight(0.02f))
-                NormalTextField(
-                    modifier = Modifier
-                        .weight(0.4f),
-                    value = progress.value.time?.formatShortTime() ?: "",
-                    placeholder = stringResource(R.string.hour),
-                    onClick = { isTimePickerDialogOpen.value = true }
-                )
-            }
+            DateRow(
+                date = remember { derivedStateOf { progress.value.date } },
+                time = remember { derivedStateOf { progress.value.time } },
+                onDateChanged = onDateChanged,
+                onTimeChanged = onTimeChanged
+            )
         }
     }
 }
@@ -243,6 +207,60 @@ private fun ProgressTextField(
                 )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DateRow(
+    date: State<LocalDate?>,
+    time: State<LocalTime?>,
+    onDateChanged: (LocalDate?) -> Unit,
+    onTimeChanged: (LocalTime) -> Unit
+) {
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = date.value?.toMillis() ?: getNowGMTMillis()
+    )
+    val timePickerState = rememberTimePickerState(
+        initialHour = time.value?.hour ?: 0,
+        initialMinute = time.value?.minute ?: 0
+    )
+
+    val isDatePickerDialogOpen = remember { mutableStateOf(false) }
+    val isTimePickerDialogOpen = remember { mutableStateOf(false) }
+
+    if (isDatePickerDialogOpen.value) {
+        DateDialog(
+            isDatePickerDialogOpen = isDatePickerDialogOpen,
+            datePickerState = datePickerState,
+            onDateChanged = onDateChanged
+        )
+    }
+
+    if (isTimePickerDialogOpen.value) {
+        TimeDialog(
+            isTimePickerDialogOpen = isTimePickerDialogOpen,
+            timePickerState = timePickerState,
+            onTimeChanged = onTimeChanged
+        )
+    }
+
+    Row {
+        NormalTextField(
+            modifier = Modifier
+                .weight(0.6f),
+            value = date.value?.formatMediumDate() ?: "",
+            placeholder = stringResource(R.string.date),
+            onClick = { isDatePickerDialogOpen.value = true }
+        )
+        Spacer(modifier = Modifier.weight(0.02f))
+        NormalTextField(
+            modifier = Modifier
+                .weight(0.4f),
+            value = time.value?.formatShortTime() ?: "",
+            placeholder = stringResource(R.string.hour),
+            onClick = { isTimePickerDialogOpen.value = true }
+        )
     }
 }
 
