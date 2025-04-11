@@ -83,7 +83,7 @@ fun AddEditAchievementScreen(
     addEditAchievementViewModel: AddEditAchievementViewModel = hiltViewModel(),
     snackBar: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
-    navigateToAddEditProgress: (Int) -> Unit,
+    navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit,
     navigateBack: () -> Unit
 ) {
     val editingAchievement = addEditAchievementViewModel.editingAchievement.collectAsState()
@@ -159,7 +159,6 @@ fun AddEditAchievementScreen(
             onUnitChanged = addEditAchievementViewModel::onUnitChanged,
             onStartingValueChanged = addEditAchievementViewModel::ondStartingValueChanged,
             onGoalValueChanged = addEditAchievementViewModel::ondGoalValueChanged,
-            onTrackedValuesChanged = addEditAchievementViewModel::onTrackedValuesChanged,
             navigateToAddEditProgress = navigateToAddEditProgress
         )
     }
@@ -188,8 +187,7 @@ private fun AddEditAchievementScreenContent(
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
-    onTrackedValuesChanged: (List<Progress>) -> Unit,
-    navigateToAddEditProgress: (Int) -> Unit
+    navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -246,7 +244,6 @@ private fun AddEditAchievementScreenContent(
                     onUnitChanged = onUnitChanged,
                     onStartingValueChanged = onStartingValueChanged,
                     onGoalValueChanged = onGoalValueChanged,
-                    onTrackedValuesChanged = onTrackedValuesChanged,
                     navigateToAddEditProgress = navigateToAddEditProgress
                 )
             }
@@ -303,8 +300,7 @@ private fun MeasurementTypeFields(
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
-    onTrackedValuesChanged: (List<Progress>) -> Unit,
-    navigateToAddEditProgress: (Int) -> Unit
+    navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit
 ) {
     val measurementType by remember { derivedStateOf { achievement.value.measurementType } }
     val progress = achievement.value.getProgress()
@@ -339,7 +335,7 @@ private fun MeasurementTypeFields(
             is MeasurementType.Percentage -> {
                 MeasurementTypePercentage(
                     percentageProgress = percentageProgress,
-                    navigateToAddEditProgress = { navigateToAddEditProgress(MeasurementType.Percentage().intValue) }
+                    navigateToAddEditProgress = navigateToAddEditProgress
                 )
             }
 
@@ -350,8 +346,7 @@ private fun MeasurementTypeFields(
                     valueProgress = valueProgress,
                     onStartingValueChanged = onStartingValueChanged,
                     onGoalValueChanged = onGoalValueChanged,
-                    onTrackedValuesChanged = onTrackedValuesChanged,
-                    navigateToAddEditProgress = { navigateToAddEditProgress(MeasurementType.Value().intValue) }
+                    navigateToAddEditProgress = navigateToAddEditProgress
                 )
             }
 
@@ -435,7 +430,7 @@ private fun MeasurementTypeCheckList(
 @Composable
 private fun MeasurementTypePercentage(
     percentageProgress: State<List<Progress>>,
-    navigateToAddEditProgress: (Int) -> Unit
+    navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit
 ) {
     val totalProgress = percentageProgress.value.lastOrNull()?.progress ?: 0f
 
@@ -452,7 +447,7 @@ private fun MeasurementTypePercentage(
                 time = it.time,
                 description = it.description,
                 progress = it.progress,
-                onClick = { navigateToAddEditProgress(MeasurementType.Percentage().intValue) }
+                onClick = { navigateToAddEditProgress(MeasurementType.Percentage().intValue, MeasurementValueUnit.DECIMAL, it) }
             )
         }
         if (totalProgress < 1f) {
@@ -461,7 +456,7 @@ private fun MeasurementTypePercentage(
                     .fillMaxWidth()
                     .padding(vertical = ToDoAppTheme.spacing.small),
                 value = stringResource(R.string.add_progress),
-                onClick = { navigateToAddEditProgress(MeasurementType.Percentage().intValue) },
+                onClick = { navigateToAddEditProgress(MeasurementType.Percentage().intValue, MeasurementValueUnit.DECIMAL, null) },
                 trailingIcon = {
                     ToDoAppIcon(
                         icon = ToDoAppIcons.icAdd,
@@ -480,8 +475,7 @@ private fun MeasurementTypeValue(
     valueProgress: State<MeasurementType.Value?>,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
-    onTrackedValuesChanged: (List<Progress>) -> Unit,
-    navigateToAddEditProgress: (Int) -> Unit
+    navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit
 ) {
     val focusRequester = FocusRequester()
 
@@ -540,7 +534,7 @@ private fun MeasurementTypeValue(
                     progressText = "${it.progress.format()}/${vp.goalValue.format()}",
                     description = it.description,
                     progress = if (progress < 0) progress * -1 else progress,
-                    onClick = { navigateToAddEditProgress(MeasurementType.Value().intValue) }
+                    onClick = { navigateToAddEditProgress(MeasurementType.Value().intValue, measurementUnit.value, it) }
                 )
             }
         }
@@ -550,7 +544,7 @@ private fun MeasurementTypeValue(
                     .fillMaxWidth()
                     .padding(vertical = ToDoAppTheme.spacing.small),
                 value = stringResource(R.string.add_progress),
-                onClick = { navigateToAddEditProgress(MeasurementType.Value().intValue) },
+                onClick = { navigateToAddEditProgress(MeasurementType.Value().intValue, measurementUnit.value, null) },
                 trailingIcon = {
                     ToDoAppIcon(
                         icon = ToDoAppIcons.icAdd,
@@ -778,8 +772,7 @@ private fun AddEditAchievementScreenPreview(
             onUnitChanged = {},
             onStartingValueChanged = {},
             onGoalValueChanged = {},
-            onTrackedValuesChanged = {},
-            navigateToAddEditProgress = {}
+            navigateToAddEditProgress = { _, _, _ -> }
         )
     }
 }

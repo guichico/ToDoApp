@@ -70,18 +70,29 @@ class AddEditAchievementViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 savedStateHandle.getStateFlow<Int?>(MEASUREMENT_TYPE_ARG, null).filterNotNull(),
-                savedStateHandle.getStateFlow<Progress?>(PROGRESS_ARG, null).filterNotNull()
+                savedStateHandle.getStateFlow<Operation?>(OPERATION_ARG, null).filterNotNull()
             )
                 .flowOn(Dispatchers.IO)
-                .collectLatest { (measurementType, progress) ->
-                    when (measurementType) {
-                        MeasurementType.Percentage().intValue -> {
-                            editingPercentageProgress.value = editingPercentageProgress.value.add(progress).sortByDate()
-                        }
+                .collectLatest { (measurementType, operation) ->
+                    var progressList = when (measurementType) {
+                        MeasurementType.Percentage().intValue -> editingPercentageProgress.value
+                        MeasurementType.Value().intValue -> editingValueProgress.value.trackedValues
+                        else -> emptyList()
+                    }
 
+                    progressList = when (operation) {
+                        is Operation.Save -> progressList.add(operation.progress)
+                        is Operation.Update -> progressList.update(operation.oldProgress, operation.progress)
+                        is Operation.Delete -> progressList.remove(operation.progress)
+                    }
+
+                    progressList = progressList.sortByDate()
+
+                    when (measurementType) {
+                        MeasurementType.Percentage().intValue -> editingPercentageProgress.value = progressList
                         MeasurementType.Value().intValue -> {
                             editingValueProgress.value = editingValueProgress.value.copy(
-                                trackedValues = editingValueProgress.value.trackedValues.add(progress)
+                                trackedValues = progressList
                             )
                         }
                     }
@@ -93,14 +104,12 @@ class AddEditAchievementViewModel @Inject constructor(
         val achievement = achievement ?: Achievement()
         val editingAchievement = editingAchievement.value
 
-        // TODO Implement others
         return when {
             editingAchievement.name != achievement.name -> true
             editingAchievement.description != achievement.description -> true
             editingAchievement.group != achievement.group -> true
             editingAchievement.endDate != achievement.endDate -> true
             editingAchievement.getCheckList().isEqualToBy(editingCheckList.value) { it.name } -> true
-            editingAchievement.doneDate != achievement.doneDate -> true
             else -> false
         }
     }
@@ -161,10 +170,6 @@ class AddEditAchievementViewModel @Inject constructor(
 
     fun ondGoalValueChanged(goalValue: Float) {
         editingValueProgress.value = editingValueProgress.value.copy(goalValue = goalValue)
-    }
-
-    fun onTrackedValuesChanged(trackedValues: List<Progress>) {
-        editingValueProgress.value = editingValueProgress.value.copy(trackedValues = trackedValues)
     }
 
     fun save(

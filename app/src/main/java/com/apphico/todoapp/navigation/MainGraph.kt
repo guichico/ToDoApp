@@ -21,7 +21,10 @@ import com.apphico.todoapp.calendar.calendarScreen
 import com.apphico.todoapp.focus.addEditFocusScreen
 import com.apphico.todoapp.focus.focusScreen
 import com.apphico.todoapp.focus.navigateToAddEditFocus
+import com.apphico.todoapp.group.SelectGroupRouteFromAchievement
+import com.apphico.todoapp.group.SelectGroupRouteFromTask
 import com.apphico.todoapp.group.addEditGroupScreen
+import com.apphico.todoapp.group.navigateToAddEditGroup
 import com.apphico.todoapp.group.navigateToSelectGroup
 import com.apphico.todoapp.group.selectGroupScreen
 import com.apphico.todoapp.location.addEditLocationScreen
@@ -55,12 +58,14 @@ fun NavGraphBuilder.mainGraph(
     addEditTaskScreen(
         snackBar = snackBar,
         onBackClicked = navController::navigateBack,
-        onSelectGroupClicked = navController::navigateToSelectGroup,
+        onSelectGroupClicked = { navController.navigateToSelectGroup(SelectGroupRouteFromTask) },
         onSelectLocationClicked = navController::navigateToAddEditLocation
     )
     selectGroupScreen(
         previousBackStackEntry = previousBackStackEntry,
-        navController = navController
+        navController = navController,
+        onBackClicked = navController::navigateBack,
+        onEditClicked = navController::navigateToAddEditGroup
     )
     addEditGroupScreen(
         snackBar = snackBar,
@@ -84,13 +89,13 @@ fun NavGraphBuilder.mainGraph(
     addEditAchievementScreen(
         snackBar = snackBar,
         onBackClicked = navController::navigateBack,
-        onSelectGroupClicked = navController::navigateToSelectGroup,
+        onSelectGroupClicked = { navController.navigateToSelectGroup(SelectGroupRouteFromAchievement) },
         onAddEditProgressClicked = navController::navigateToAddEditProgress
     )
     addEditProgressScreen(
         previousBackStackEntry = previousBackStackEntry,
         onBackClicked = navController::navigateBack,
-        onProgressAdded = navController::navigateBackToAddEditAchievement
+        onProgressChanged = navController::navigateBackToAddEditAchievement
     )
 }
 

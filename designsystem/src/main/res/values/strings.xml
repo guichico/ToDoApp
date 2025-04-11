@@ -17,6 +17,7 @@
     <string name="empty_start_date_error_message">If the task has a end date, it must have a star date</string>
     <string name="day_of_week_should_have_start_date">When it repeats, it must have a start date</string>
     <string name="empty_start_time_error_message">If the task has a end time, it must have a star time</string>
+    <string name="progress_error_message">Progress is mandatory</string>
     <string name="checklist_header_title">Lista</string>
     <string name="repeat">Repetir</string>
     <string name="add_checklist_item">Adicionar item</string>

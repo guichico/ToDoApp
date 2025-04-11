@@ -20,6 +20,8 @@ fun CurrencyTextField(
     modifier: Modifier = Modifier,
     initialValue: Float?,
     placeholder: String? = null,
+    isError: Boolean = false,
+    errorMessage: String = "",
     onValueChange: (Float) -> Unit,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
@@ -31,6 +33,8 @@ fun CurrencyTextField(
         modifier = modifier,
         value = valueText,
         placeholder = placeholder,
+        isError = isError,
+        errorMessage = errorMessage,
         onValueChange = {
             if (it.isEmpty() || it.matches(pattern)) {
                 valueText = it.getNumber()
@@ -38,7 +42,7 @@ fun CurrencyTextField(
             }
         },
         visualTransformation = CurrencyVisualTransformation(),
-        keyboardOptions = keyboardOptions.copy(keyboardType = KeyboardType.Decimal),
+        keyboardOptions = keyboardOptions.copy(keyboardType = KeyboardType.Number),
         keyboardActions = keyboardActions
     )
 }

@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material.icons.outlined.FilterList
 import androidx.compose.material.icons.outlined.KeyboardAlt
 import androidx.compose.material.icons.outlined.ModeEdit
+import androidx.compose.material.icons.outlined.Percent
 import androidx.compose.material.icons.outlined.Place
 import androidx.compose.material.icons.outlined.Psychology
 import androidx.compose.material.icons.outlined.RadioButtonChecked
@@ -85,4 +86,5 @@ object ToDoAppIcons {
     val icEditLocation = ImageVectorIcon(Icons.Outlined.EditLocationAlt)
     val icNoInternetConnection = ImageVectorIcon(Icons.Outlined.WifiOff)
     val icError = ImageVectorIcon(Icons.Outlined.Error)
+    val icPercent = ImageVectorIcon(Icons.Outlined.Percent)
 }

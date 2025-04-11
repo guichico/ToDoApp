@@ -17,6 +17,7 @@
     <string name="empty_start_date_error_message">Se a tarefa tem um data fim ela deve ter uma data de ínicio</string>
     <string name="day_of_week_should_have_start_date">Quando a tarefa se repete ela deve ter uma data de ínicio</string>
     <string name="empty_start_time_error_message">Se a tarefa tem um hora fim ela deve ter uma hora de ínicio</string>
+    <string name="progress_error_message">O progresso é obrigatório</string>
     <string name="checklist_header_title">Lista</string>
     <string name="repeat">Repetir</string>
     <string name="add_checklist_item">Adicionar item</string>

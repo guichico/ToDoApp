@@ -5,6 +5,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.apphico.core_model.Achievement
+import com.apphico.core_model.MeasurementValueUnit
+import com.apphico.core_model.Progress
 import com.apphico.todoapp.navigation.CustomNavType
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -24,7 +26,7 @@ fun NavGraphBuilder.addEditAchievementScreen(
     snackBar: (String) -> Unit,
     onBackClicked: () -> Unit,
     onSelectGroupClicked: () -> Unit,
-    onAddEditProgressClicked: (Int) -> Unit,
+    onAddEditProgressClicked: (Int, MeasurementValueUnit?, Progress?) -> Unit,
 ) {
     composable<AddEditAchievementRoute>(
         typeMap = mapOf(

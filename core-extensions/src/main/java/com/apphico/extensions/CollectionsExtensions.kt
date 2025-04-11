@@ -13,6 +13,13 @@ fun <T> List<T>.update(oldItem: T, newItem: T) = this.toMutableList().apply {
     }
 }
 
+fun <T> List<T>.update(oldIndex: Int, newItem: T) = this.toMutableList().apply {
+    try {
+        this[oldIndex] = newItem
+    } catch (_: Exception) {
+    }
+}
+
 fun <T> List<T>.addOrRemove(item: T): List<T> {
     return this.toMutableList().apply {
         if (this.contains(item)) {

@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.toRoute
 import com.apphico.core_model.Progress
+import com.apphico.designsystem.R
 import com.apphico.todoapp.navigation.CustomNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,22 +18,36 @@ class AddEditProgressViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    val measurementType = savedStateHandle.toRoute<AddEditProgressRoute>(
+    private val addEditProgressParameters = savedStateHandle.toRoute<AddEditProgressRoute>(
         typeMap = mapOf(
             typeOf<AddEditProgressParameters>() to CustomNavType(
                 AddEditProgressParameters::class.java,
                 AddEditProgressParameters.serializer()
             )
         )
-    ).addEditProgressParameters.measurementType
+    ).addEditProgressParameters
 
-    val editingProgress = MutableStateFlow(Progress())
+    private val progressArg = addEditProgressParameters.progress
+    val editingProgress = MutableStateFlow(progressArg ?: Progress())
 
-    // val isEditing = progressArg != null
-    val isEditing = false
+    val measurementType = addEditProgressParameters.measurementType
+    val measurementUnit = addEditProgressParameters.measurementUnit
+
+    val isEditing = progressArg != null
+
+    val progressError = MutableStateFlow<Int?>(null)
 
     fun hasChanges(): Boolean {
-        return false
+        val progress = progressArg ?: Progress()
+        val editingProgress = editingProgress.value
+
+        return when {
+            editingProgress.progress != progress.progress -> true
+            editingProgress.description != progress.description -> true
+            editingProgress.date != progress.date -> true
+            editingProgress.time != progress.time -> true
+            else -> false
+        }
     }
 
     fun onProgressChanged(progress: Float) {
@@ -49,5 +64,25 @@ class AddEditProgressViewModel @Inject constructor(
 
     fun onTimeChanged(time: LocalTime) {
         editingProgress.value = editingProgress.value.copy(time = time)
+    }
+
+    fun save(onResult: (Operation) -> Unit) {
+        var progress = editingProgress.value
+        var hasError = false
+
+        editingProgress.value
+
+        if (progress.progress <= 0) {
+            hasError = true
+            progressError.value = R.string.progress_error_message
+        }
+
+        if (!hasError) {
+            onResult(if (isEditing) Operation.Update(progressArg!!, progress) else Operation.Save(progress))
+        }
+    }
+
+    fun delete(onResult: (Operation) -> Unit) {
+        onResult(Operation.Delete(editingProgress.value))
     }
 }

@@ -7,9 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import com.apphico.core_model.Group
 import com.apphico.todoapp.achievements.AddEditAchievementRoute
 import com.apphico.todoapp.achievements.AddEditAchievementViewModel
-import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import com.apphico.todoapp.navigation.composable
-import com.apphico.todoapp.navigation.navigateBack
 import com.apphico.todoapp.task.AddEditTaskRoute
 import com.apphico.todoapp.task.AddEditTaskViewModel
 import kotlinx.serialization.Serializable
@@ -17,9 +15,12 @@ import kotlinx.serialization.Serializable
 const val GROUP_ARG = "group"
 
 @Serializable
-object SelectGroupRoute
+object SelectGroupRouteFromTask
 
-fun NavController.navigateToSelectGroup() = navigate(SelectGroupRoute)
+@Serializable
+object SelectGroupRouteFromAchievement
+
+fun <T : Any> NavController.navigateToSelectGroup(route: T) = navigate(route)
 
 fun NavController.navigateBackToAddEditTask(savedStateHandle: SavedStateHandle, group: Group) {
     savedStateHandle.set<Group>(GROUP_ARG, group)
@@ -33,35 +34,30 @@ fun NavController.navigateBackToAddEditAchievement(savedStateHandle: SavedStateH
 
 fun NavGraphBuilder.selectGroupScreen(
     previousBackStackEntry: () -> NavBackStackEntry,
-    navController: NavController
+    navController: NavController,
+    onBackClicked: () -> Unit,
+    onEditClicked: (Group?) -> Unit
 ) {
-    selectGroupScreen<AddEditTaskViewModel>(
-        previousBackStackEntry = previousBackStackEntry,
-        onBackClicked = navController::navigateBack,
-        onGroupSelected = navController::navigateBackToAddEditTask,
-        onEditClicked = navController::navigateToAddEditGroup,
-    )
-    selectGroupScreen<AddEditAchievementViewModel>(
-        previousBackStackEntry = previousBackStackEntry,
-        onBackClicked = navController::navigateBack,
-        onGroupSelected = navController::navigateBackToAddEditAchievement,
-        onEditClicked = navController::navigateToAddEditGroup,
-    )
-}
-
-private inline fun <reified VM : SavedStateHandleViewModel> NavGraphBuilder.selectGroupScreen(
-    crossinline previousBackStackEntry: () -> NavBackStackEntry,
-    noinline onBackClicked: () -> Unit,
-    crossinline onGroupSelected: (SavedStateHandle, Group) -> Unit,
-    noinline onEditClicked: (Group?) -> Unit
-) {
-    composable<SelectGroupRoute, VM>(
+    composable<SelectGroupRouteFromTask, AddEditTaskViewModel>(
         previousBackStackEntry = previousBackStackEntry
     ) { previousSavedStateHandle ->
         SelectGroupScreen(
             navigateBack = onBackClicked,
             onEditGroupClicked = onEditClicked,
-            onGroupSelected = { group -> onGroupSelected(previousSavedStateHandle, group) }
+            onGroupSelected = { group ->
+                navController.navigateBackToAddEditTask(previousSavedStateHandle, group)
+            }
+        )
+    }
+    composable<SelectGroupRouteFromAchievement, AddEditAchievementViewModel>(
+        previousBackStackEntry = previousBackStackEntry
+    ) { previousSavedStateHandle ->
+        SelectGroupScreen(
+            navigateBack = onBackClicked,
+            onEditGroupClicked = onEditClicked,
+            onGroupSelected = { group ->
+                navController.navigateBackToAddEditAchievement(previousSavedStateHandle, group)
+            }
         )
     }
 }

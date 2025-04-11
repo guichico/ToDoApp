@@ -23,13 +23,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.apphico.core_model.MeasurementType
+import com.apphico.core_model.MeasurementValueUnit
 import com.apphico.core_model.Progress
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.dialogs.DateDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
+import com.apphico.designsystem.components.textfield.CurrencyTextField
 import com.apphico.designsystem.components.textfield.DecimalTextField
+import com.apphico.designsystem.components.textfield.IntTextField
 import com.apphico.designsystem.components.textfield.NormalTextField
+import com.apphico.designsystem.components.textfield.PercentageTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatMediumDate
@@ -41,10 +46,13 @@ import java.time.LocalTime
 fun AddEditProgressScreen(
     addProgressViewModel: AddEditProgressViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
-    onProgressAdded: (Int, Progress) -> Unit
+    onProgressChanged: (Int, Operation) -> Unit
 ) {
     val editingProgress = addProgressViewModel.editingProgress.collectAsState()
+    val progressError = addProgressViewModel.progressError.collectAsState()
+
     val measurementType = addProgressViewModel.measurementType
+    val measurementUnit = addProgressViewModel.measurementUnit
 
     val isEditing = addProgressViewModel.isEditing
 
@@ -57,9 +65,15 @@ fun AddEditProgressScreen(
         title = stringResource(R.string.add_progress),
         isEditing = isEditing,
         onSaveClicked = {
-            onProgressAdded(measurementType, editingProgress.value)
+            addProgressViewModel.save { operation ->
+                onProgressChanged(measurementType, operation)
+            }
         },
-        onDeleteClicked = {},
+        onDeleteClicked = {
+            addProgressViewModel.delete { operation ->
+                onProgressChanged(measurementType, operation)
+            }
+        },
         navigateBack = {
             showDiscardChangesDialogOnBackIfNeed()
         }
@@ -67,6 +81,9 @@ fun AddEditProgressScreen(
         AddEditProgressScreenContent(
             innerPadding = innerPadding,
             progress = editingProgress,
+            measurementTypeInt = measurementType,
+            measurementUnit = measurementUnit,
+            progressError = progressError,
             onProgressChanged = addProgressViewModel::onProgressChanged,
             onDescriptionChanged = addProgressViewModel::onDescriptionChanged,
             onDateChanged = addProgressViewModel::onDateChanged,
@@ -80,6 +97,9 @@ fun AddEditProgressScreen(
 fun AddEditProgressScreenContent(
     innerPadding: PaddingValues,
     progress: State<Progress>,
+    measurementTypeInt: Int,
+    measurementUnit: MeasurementValueUnit?,
+    progressError: State<Int?>,
     onProgressChanged: (Float) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onDateChanged: (LocalDate?) -> Unit,
@@ -126,13 +146,14 @@ fun AddEditProgressScreenContent(
                 )
                 .imePadding()
         ) {
-            DecimalTextField(
+            ProgressTextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                initialValue = progress.value.progress,
-                placeholder = stringResource(R.string.progress),
-                onValueChange = onProgressChanged,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                measurementTypeInt = measurementTypeInt,
+                measurementUnit = measurementUnit,
+                progress = progress,
+                progressError = progressError,
+                onProgressChanged = onProgressChanged
             )
             Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
             NormalTextField(
@@ -165,6 +186,66 @@ fun AddEditProgressScreenContent(
     }
 }
 
+@Composable
+private fun ProgressTextField(
+    modifier: Modifier = Modifier,
+    measurementTypeInt: Int,
+    measurementUnit: MeasurementValueUnit?,
+    progress: State<Progress>,
+    progressError: State<Int?>,
+    onProgressChanged: (Float) -> Unit
+) {
+    if (measurementTypeInt == MeasurementType.Percentage().intValue) {
+        PercentageTextField(
+            modifier = modifier,
+            initialValue = progress.value.progress,
+            placeholder = stringResource(R.string.progress),
+            isError = progressError.value != null,
+            errorMessage = progressError.value?.let { stringResource(it) } ?: "",
+            onValueChange = onProgressChanged,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+        )
+    } else {
+        when (measurementUnit) {
+            MeasurementValueUnit.DECIMAL -> {
+                DecimalTextField(
+                    modifier = modifier,
+                    initialValue = progress.value.progress,
+                    placeholder = stringResource(R.string.progress),
+                    isError = progressError.value != null,
+                    errorMessage = progressError.value?.let { stringResource(it) } ?: "",
+                    onValueChange = onProgressChanged,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                )
+            }
+
+            MeasurementValueUnit.CURRENCY -> {
+                CurrencyTextField(
+                    modifier = modifier,
+                    initialValue = progress.value.progress,
+                    placeholder = stringResource(R.string.progress),
+                    isError = progressError.value != null,
+                    errorMessage = progressError.value?.let { stringResource(it) } ?: "",
+                    onValueChange = onProgressChanged,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                )
+            }
+
+            else -> {
+                IntTextField(
+                    modifier = modifier,
+                    initialValue = progress.value.progress,
+                    placeholder = stringResource(R.string.progress),
+                    isError = progressError.value != null,
+                    errorMessage = progressError.value?.let { stringResource(it) } ?: "",
+                    onValueChange = onProgressChanged,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+                )
+            }
+        }
+    }
+}
+
 @PreviewLightDark
 @Composable
 private fun AddEditProgressPreview() {
@@ -172,6 +253,9 @@ private fun AddEditProgressPreview() {
         AddEditProgressScreenContent(
             innerPadding = PaddingValues(),
             progress = remember { mutableStateOf(Progress()) },
+            measurementTypeInt = MeasurementType.Percentage().intValue,
+            measurementUnit = MeasurementValueUnit.DECIMAL,
+            progressError = remember { mutableStateOf(null) },
             onProgressChanged = {},
             onDescriptionChanged = {},
             onDateChanged = {},
