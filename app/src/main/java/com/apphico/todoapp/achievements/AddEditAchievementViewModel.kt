@@ -109,7 +109,9 @@ class AddEditAchievementViewModel @Inject constructor(
             editingAchievement.description != achievement.description -> true
             editingAchievement.group != achievement.group -> true
             editingAchievement.endDate != achievement.endDate -> true
-            editingAchievement.getCheckList().isEqualToBy(editingCheckList.value) { it.name } -> true
+            !editingAchievement.getCheckList().isEqualToBy(editingCheckList.value) { it.name } -> true
+            achievement.getPercentageProgress() != editingPercentageProgress.value -> true
+            achievement.getValueProgress() != editingValueProgress.value -> true
             else -> false
         }
     }

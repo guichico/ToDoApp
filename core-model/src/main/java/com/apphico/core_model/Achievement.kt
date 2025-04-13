@@ -87,7 +87,7 @@ data class Achievement(
         try {
             (measurementType as MeasurementType.Value)
         } catch (_: Exception) {
-            null
+            MeasurementType.Value()
         }
 
     fun getProgress() = when {

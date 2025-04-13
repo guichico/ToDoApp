@@ -32,7 +32,15 @@ class AchievementRepositoryImpl(
     private val progressDao: ProgressDao
 ) : AchievementRepository {
 
-    override fun getAll(status: Status, groups: List<Group>): Flow<List<Achievement>> = achievementDao.getAll().map { it.map { it.toAchievement() } }
+    override fun getAll(status: Status, groups: List<Group>): Flow<List<Achievement>> =
+        achievementDao.getAll(
+            statusAllFlag = status == Status.ALL,
+            statusDoneFlag = status == Status.DONE,
+            statusUndoneFlag = status == Status.UNDONE,
+            nullableGroupIdsFlag = groups.isEmpty(),
+            groupIds = groups.map { it.id }
+        )
+            .map { it.map { it.toAchievement() } }
 
     override suspend fun insertAchievement(achievement: Achievement): Boolean {
         return try {

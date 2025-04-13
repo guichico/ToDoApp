@@ -11,6 +11,18 @@ import kotlinx.coroutines.flow.Flow
 interface AchievementDao : BaseDao<AchievementDB> {
 
     @Transaction
-    @Query("SELECT * FROM AchievementDB")
-    fun getAll(): Flow<List<AchievementRelations>>
+    @Query(
+        "SELECT * FROM AchievementDB " +
+                "WHERE (:nullableGroupIdsFlag OR achievementGroupId IN (:groupIds)) " +
+                "  AND (:statusAllFlag " +
+                "   OR (:statusDoneFlag AND doneDate IS NOT NULL) " +
+                "   OR (:statusUndoneFlag AND doneDate IS NULL))"
+    )
+    fun getAll(
+        statusAllFlag: Boolean,
+        statusDoneFlag: Boolean,
+        statusUndoneFlag: Boolean,
+        nullableGroupIdsFlag: Boolean,
+        groupIds: List<Long>
+    ): Flow<List<AchievementRelations>>
 }
