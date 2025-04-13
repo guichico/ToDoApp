@@ -9,12 +9,12 @@ import com.apphico.core_model.Status
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
-import com.apphico.core_repository.calendar.group.GroupRepository
 import com.apphico.core_repository.calendar.settings.UserSettingsRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.combine
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.startWith
+import com.apphico.todoapp.FilterViewModel
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -36,28 +36,23 @@ class CalendarViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val userSettingsRepository: UserSettingsRepository,
     private val calendarRepository: CalendarRepository,
-    groupRepository: GroupRepository,
     private val checkListRepository: CheckListRepository
-) : SavedStateHandleViewModel(savedStateHandle) {
+) : SavedStateHandleViewModel(savedStateHandle), FilterViewModel {
 
     val currentMonth = MutableStateFlow<Pair<Month, Int>>(with(getNowDate()) { month to year })
 
     val selectedDate = MutableStateFlow(LocalDate.now())
-    val selectedGroups = MutableStateFlow(emptyList<Group>())
+    override val selectedGroups = MutableStateFlow(emptyList<Group>())
 
     val calendarViewMode = userSettingsRepository.getViewMode()
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, CalendarViewMode.DAY)
 
-    val selectedStatus = userSettingsRepository.getTaskStatus()
+    override val selectedStatus = userSettingsRepository.getTaskStatus()
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, Status.ALL)
 
-    val groups = groupRepository.getGroups()
-        .flowOn(Dispatchers.IO)
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-    val searchClicked = MutableSharedFlow<Boolean>()
+    override val searchClicked = MutableSharedFlow<Boolean>()
 
     val calendar = combine(
         calendarViewMode,
@@ -91,20 +86,24 @@ class CalendarViewModel @Inject constructor(
         )
     }
 
-    fun onSelectedStatusChanged(status: Status) = viewModelScope.launch {
-        userSettingsRepository.setTaskStatus(status)
-    }
-
     fun onSelectedDateChanged(date: LocalDate) {
         selectedDate.value = date
     }
 
-    fun onSelectedGroupChanged(group: Group) {
+    override fun onSelectedStatusChanged(status: Status) {
+        viewModelScope.launch {
+            userSettingsRepository.setTaskStatus(status)
+        }
+    }
+
+    override fun onSelectedGroupChanged(group: Group) {
         selectedGroups.value = selectedGroups.value.addOrRemove(group)
     }
 
-    fun onSearchClicked() = viewModelScope.launch {
-        searchClicked.emit(true)
+    override fun onSearchClicked() {
+        viewModelScope.launch {
+            searchClicked.emit(true)
+        }
     }
 
     fun setTaskDone(task: Task, isDone: Boolean) = viewModelScope.launch {

@@ -10,6 +10,7 @@ import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.core_repository.calendar.settings.UserSettingsRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.startWith
+import com.apphico.todoapp.FilterViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,15 +30,15 @@ class AchievementsViewModel @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val achievementRepository: AchievementRepository,
     private val checkListRepository: CheckListRepository
-) : ViewModel() {
+) : ViewModel(), FilterViewModel {
 
-    val selectedStatus = userSettingsRepository.getAchievementStatus()
+    override val selectedStatus = userSettingsRepository.getAchievementStatus()
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, Status.ALL)
 
-    val selectedGroups = MutableStateFlow(emptyList<Group>())
+    override val selectedGroups = MutableStateFlow(emptyList<Group>())
 
-    val searchClicked = MutableSharedFlow<Boolean>()
+    override val searchClicked = MutableSharedFlow<Boolean>()
 
     val achievements = searchClicked.startWith(true)
         .flatMapLatest {
@@ -49,12 +50,20 @@ class AchievementsViewModel @Inject constructor(
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    fun onSelectedStatusChanged(status: Status) = viewModelScope.launch {
-        userSettingsRepository.setAchievementStatus(status)
+    override fun onSelectedStatusChanged(status: Status) {
+        viewModelScope.launch {
+            userSettingsRepository.setAchievementStatus(status)
+        }
     }
 
-    fun onSelectedGroupChanged(group: Group) {
+    override fun onSelectedGroupChanged(group: Group) {
         selectedGroups.value = selectedGroups.value.addOrRemove(group)
+    }
+
+    override fun onSearchClicked() {
+        viewModelScope.launch {
+            searchClicked.emit(true)
+        }
     }
 
     fun setCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean) = viewModelScope.launch {

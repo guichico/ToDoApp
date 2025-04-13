@@ -21,7 +21,7 @@ import java.time.LocalDate
 
 @Composable
 fun AchievementsScreen(
-    achievementsViewModel: AchievementsViewModel = hiltViewModel(),
+    achievementsViewModel: AchievementsViewModel,
     navigateToAddEditAchievement: (Achievement?) -> Unit
 ) {
     val achievements = achievementsViewModel.achievements.collectAsState()
@@ -45,11 +45,13 @@ private fun AchievementsScreenContent(
     navigateToAddEditAchievement: (Achievement?) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
 ) {
+    val list = achievements.value
+
     MainLazyList(
         listState = rememberLazyListState(),
         onAddClicked = { navigateToAddEditAchievement(null) }
     ) {
-        items(achievements.value) {
+        items(list) {
             AchievementCard(
                 achievement = it,
                 onClick = { navigateToAddEditAchievement(it) },

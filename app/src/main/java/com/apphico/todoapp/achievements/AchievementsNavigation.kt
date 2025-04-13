@@ -9,10 +9,12 @@ import kotlinx.serialization.Serializable
 object AchievementsRoute
 
 fun NavGraphBuilder.achievementScreen(
+    achievementsViewModel: AchievementsViewModel,
     onAchievementClicked: (Achievement?) -> Unit
 ) {
     composable<AchievementsRoute> {
         AchievementsScreen(
+            achievementsViewModel = achievementsViewModel,
             navigateToAddEditAchievement = onAchievementClicked
         )
     }

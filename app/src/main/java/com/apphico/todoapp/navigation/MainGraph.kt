@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import com.apphico.todoapp.achievements.AchievementsViewModel
 import com.apphico.todoapp.achievements.achievementScreen
 import com.apphico.todoapp.achievements.addEditAchievementScreen
 import com.apphico.todoapp.achievements.addEditProgressScreen
@@ -42,6 +43,7 @@ fun NavGraphBuilder.mainGraph(
     navController: NavController,
     snackBar: (String) -> Unit,
     calendarViewModel: CalendarViewModel,
+    achievementsViewModel: AchievementsViewModel
 ) {
     val previousBackStackEntry = { navController.previousBackStackEntry!! }
 
@@ -53,6 +55,7 @@ fun NavGraphBuilder.mainGraph(
         onTaskClicked = navController::navigateToAddEditTask
     )
     achievementScreen(
+        achievementsViewModel = achievementsViewModel,
         onAchievementClicked = navController::navigateToAddEditAchievement
     )
     addEditTaskScreen(
