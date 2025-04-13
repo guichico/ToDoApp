@@ -41,6 +41,15 @@ class AchievementRepositoryImpl(
             groupIds = groups.map { it.id }
         )
             .map { it.map { it.toAchievement() } }
+            .map {
+                it.filter {
+                    when (status) {
+                        Status.DONE -> it.getProgress() >= 1f
+                        Status.UNDONE -> it.getProgress() < 1f
+                        else -> true
+                    }
+                }
+            }
 
     override suspend fun insertAchievement(achievement: Achievement): Boolean {
         return try {
