@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.fakeData.mockedAchievements
