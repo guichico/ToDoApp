@@ -13,8 +13,8 @@ fun Float.toTextFieldFormat(): String = this.toString().replace(".", "0")
 
 fun String.getNumber(): String =
     when {
-        this.startsWith("0") -> ""
-        else -> this
+        this.toFloatOrNull() == 0.0f -> "0"
+        else -> if (this.isNotEmpty() && this[0].toString().toFloatOrNull() == 0f) this.substring(1) else this
     }
 
 fun String.toFormattedNumber(userThousandSeparator: Boolean = false): String {

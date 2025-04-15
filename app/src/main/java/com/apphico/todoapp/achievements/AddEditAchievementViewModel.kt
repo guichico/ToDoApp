@@ -165,7 +165,7 @@ class AddEditAchievementViewModel @Inject constructor(
     }
 
     fun onUnitChanged(unit: MeasurementValueUnit) {
-        editingValueProgress.value = editingValueProgress.value.copy(unit = unit, startingValue = 0f, goalValue = 0f)
+        editingValueProgress.value = editingValueProgress.value.copy(unit = unit, startingValue = null, goalValue = null)
     }
 
     fun ondStartingValueChanged(startingValue: Float) {

@@ -39,8 +39,8 @@ sealed class MeasurementType(val intValue: Int, override val title: Int) : Check
     @Serializable
     data class Value(
         val unit: MeasurementValueUnit? = null,
-        val startingValue: Float = 0f,
-        val goalValue: Float = 0f,
+        val startingValue: Float? = null,
+        val goalValue: Float? = null,
         val trackedValues: List<Progress> = emptyList()
     ) : MeasurementType(4, R.string.achievement_goal_type_value)
 }
@@ -49,7 +49,7 @@ sealed class MeasurementType(val intValue: Int, override val title: Int) : Check
 @Serializable
 data class Progress(
     val id: Long = 0,
-    val progress: Float = 0f,
+    val progress: Float? = null,
     val description: String? = null,
     @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
     @Serializable(with = LocalTimeSerializer::class) val time: LocalTime? = null
@@ -100,11 +100,11 @@ data class Achievement(
 
         measurementType is MeasurementType.Percentage -> measurementType.percentageProgress.lastOrNull()?.progress ?: 0f
         measurementType is MeasurementType.Value -> {
-            val track = measurementType.goalValue - measurementType.startingValue
+            val track = measurementType.goalValue?.minus(measurementType.startingValue ?: 0f) ?: 0f
 
             when {
                 measurementType.trackedValues.isNotEmpty() -> {
-                    val progress = (measurementType.startingValue - measurementType.trackedValues.last().progress) / track
+                    val progress = (measurementType.startingValue?.minus(measurementType.trackedValues.last().progress ?: 0f) ?: 0f) / track
                     if (progress < 0) progress * -1 else progress
                 }
 

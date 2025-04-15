@@ -453,7 +453,7 @@ private fun MeasurementTypePercentage(
                 date = it.date,
                 time = it.time,
                 description = it.description,
-                progress = it.progress,
+                progress = it.progress ?: 0f,
                 onClick = { navigateToAddEditProgress(MeasurementType.Percentage().intValue, MeasurementValueUnit.DECIMAL, it) }
             )
         }
@@ -532,13 +532,13 @@ private fun MeasurementTypeValue(
 
         valueProgress.value?.let { vp ->
             vp.trackedValues.forEach {
-                val track = vp.goalValue - vp.startingValue
-                val progress = (vp.startingValue - it.progress) / track
+                val track = vp.goalValue?.minus(vp.startingValue ?: 0f) ?: 0f
+                val progress = (vp.startingValue?.minus(it.progress ?: 0f) ?: 0f) / track
 
                 ProgressCard(
                     date = it.date,
                     time = it.time,
-                    progressText = "${it.progress.format()}/${vp.goalValue.format()}",
+                    progressText = "${it.progress?.format()}/${vp.goalValue?.format()}",
                     description = it.description,
                     progress = if (progress < 0) progress * -1 else progress,
                     onClick = { navigateToAddEditProgress(MeasurementType.Value().intValue, measurementUnit.value, it) }

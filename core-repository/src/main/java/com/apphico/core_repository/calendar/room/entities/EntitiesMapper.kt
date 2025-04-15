@@ -156,7 +156,7 @@ fun Progress.toProgressDB(achievementId: Long): ProgressDB =
     ProgressDB(
         id = this.id,
         achievementProgressId = achievementId,
-        progress = this.progress,
+        progress = this.progress ?: 0f,
         description = this.description,
         date = this.date,
         time = this.time
@@ -173,6 +173,6 @@ fun ValueProgressDB.toValueProgress(trackedValues: List<Progress>): MeasurementT
 fun MeasurementType.Value.toValueProgressDB(): ValueProgressDB =
     ValueProgressDB(
         unit = this.unit?.value,
-        startingValue = this.startingValue,
-        goalValue = this.goalValue
+        startingValue = this.startingValue ?: 0f,
+        goalValue = this.goalValue ?: 0f
     )

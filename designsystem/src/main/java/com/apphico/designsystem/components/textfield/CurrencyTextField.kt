@@ -26,8 +26,8 @@ fun CurrencyTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
-    val pattern = remember { Regex("^\\d+\$") }
-    var valueText by remember { mutableStateOf(if (initialValue != 0f) initialValue?.toTextFieldFormat() ?: "" else "") }
+    val pattern = remember { Regex("^\\d+$") }
+    var valueText by remember { mutableStateOf(initialValue?.toTextFieldFormat() ?: "") }
 
     NormalTextField(
         modifier = modifier,

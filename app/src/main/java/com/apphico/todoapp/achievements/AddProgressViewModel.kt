@@ -72,7 +72,7 @@ class AddEditProgressViewModel @Inject constructor(
 
         editingProgress.value
 
-        if (progress.progress <= 0) {
+        if ((progress.progress ?: 0f) <= 0) {
             hasError = true
             progressError.value = R.string.progress_error_message
         }

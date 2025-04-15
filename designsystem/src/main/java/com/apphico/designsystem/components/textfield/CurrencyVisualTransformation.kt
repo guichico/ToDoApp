@@ -15,7 +15,7 @@ class CurrencyVisualTransformation : VisualTransformation {
         if (inputText.isNotEmpty()) {
             val currencySymbol = DecimalFormat().decimalFormatSymbols.currencySymbol
 
-            val formattedNumber = inputText.toFormattedNumber(true).takeUnless { inputText.isEmpty() || (inputText.toFloat() == 0f) } ?: ""
+            val formattedNumber = inputText.toFormattedNumber(true).takeUnless { inputText.isEmpty() } ?: ""
 
             val newText = AnnotatedString(
                 text = "$currencySymbol $formattedNumber",

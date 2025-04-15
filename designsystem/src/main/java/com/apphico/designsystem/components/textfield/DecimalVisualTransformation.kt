@@ -11,7 +11,7 @@ class DecimalVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val inputText = text.text
 
-        val formattedNumber = inputText.toFormattedNumber(true).takeUnless { inputText.isEmpty() || (inputText.toFloat() == 0f) } ?: ""
+        val formattedNumber = inputText.toFormattedNumber(true).takeUnless { inputText.isEmpty() } ?: ""
 
         val newText = AnnotatedString(
             text = formattedNumber,

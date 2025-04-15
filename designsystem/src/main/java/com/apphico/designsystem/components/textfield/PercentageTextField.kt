@@ -29,8 +29,8 @@ fun PercentageTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
-    val pattern = remember { Regex("^\\d+\$") }
-    var valueText by remember { mutableStateOf(if (initialValue != 0f) initialValue?.toTextFieldFormat() ?: "" else "") }
+    val pattern = remember { Regex("^\\d+$") }
+    var valueText by remember { mutableStateOf(initialValue?.toTextFieldFormat() ?: "") }
 
     NormalTextField(
         modifier = modifier,
@@ -39,17 +39,11 @@ fun PercentageTextField(
         isError = isError,
         errorMessage = errorMessage,
         onValueChange = {
-            val percent = try {
-                it.toFloat()
-            } catch (_: Exception) {
-                0f
-            }
+            val percent = it.toFloatOrNull() ?: 0f
 
-            if (percent <= 10000.0) {
-                if (it.isEmpty() || it.matches(pattern)) {
-                    valueText = it.getNumber()
-                    onValueChange(it.toFormattedNumber().replace(",", ".").toFloat())
-                }
+            if (percent <= 10000.0 && (it.isEmpty() || it.matches(pattern))) {
+                valueText = it.getNumber()
+                onValueChange(it.toFormattedNumber().replace(",", ".").toFloat())
             }
         },
         trailingIcon = {
