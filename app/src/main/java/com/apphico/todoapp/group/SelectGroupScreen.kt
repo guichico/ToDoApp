@@ -88,7 +88,6 @@ fun SelectGroupScreenContent(
         modifier = Modifier
             .padding(top = innerPadding.calculateTopPadding())
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.secondaryContainer)
     ) {
         LazyColumn(
             modifier = Modifier

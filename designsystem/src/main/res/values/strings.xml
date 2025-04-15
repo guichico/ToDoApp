@@ -13,6 +13,7 @@
     <string name="minute">Minuto</string>
     <string name="minutes">Minutos</string>
     <string name="name_error_message">Name is mandatory</string>
+    <string name="date_error_message">End date is mandatory</string>
     <string name="start_date_after_end_date_error_message">Start date cannot be after the end date</string>
     <string name="empty_start_date_error_message">If the task has a end date, it must have a star date</string>
     <string name="day_of_week_should_have_start_date">When it repeats, it must have a start date</string>

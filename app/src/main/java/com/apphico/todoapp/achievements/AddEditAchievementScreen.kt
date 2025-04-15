@@ -94,6 +94,7 @@ fun AddEditAchievementScreen(
     val isEditing = addEditAchievementViewModel.isEditing
 
     val nameError = addEditAchievementViewModel.nameError.collectAsState()
+    val dateError = addEditAchievementViewModel.dateError.collectAsState()
 
     val achievementSaveSuccess = stringResource(R.string.achievement_saved)
     val achievementSaveError = stringResource(R.string.achievement_save_error)
@@ -150,6 +151,7 @@ fun AddEditAchievementScreen(
             onDescriptionChange = addEditAchievementViewModel::onDescriptionChanged,
             navigateToSelectGroup = navigateToSelectGroup,
             onGroupRemoved = addEditAchievementViewModel::onGroupRemoved,
+            dateError = dateError,
             onEndDateChanged = addEditAchievementViewModel::onEndDateChanged,
             onMeasurementTypeChanged = addEditAchievementViewModel::onMeasurementTypeChanged,
             onCheckListItemChanged = addEditAchievementViewModel::onCheckListItemChanged,
@@ -175,6 +177,7 @@ private fun AddEditAchievementScreenContent(
     onDescriptionChange: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
     onGroupRemoved: () -> Unit,
+    dateError: State<Int?>,
     onEndDateChanged: (LocalDate?) -> Unit,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
     percentageProgress: State<List<Progress>>,
@@ -226,6 +229,7 @@ private fun AddEditAchievementScreenContent(
 
                 EndDateField(
                     endDate = remember { derivedStateOf { achievement.value.endDate } },
+                    dateError = dateError,
                     onEndDateChanged = onEndDateChanged
                 )
 
@@ -259,6 +263,7 @@ private fun AddEditAchievementScreenContent(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun EndDateField(
     endDate: State<LocalDate?>,
+    dateError: State<Int?>,
     onEndDateChanged: (LocalDate?) -> Unit
 ) {
     val datePickerState = rememberDatePickerState()
@@ -276,6 +281,8 @@ private fun EndDateField(
         modifier = Modifier.fillMaxWidth(),
         value = endDate.value?.formatMediumDate() ?: "",
         placeholder = stringResource(R.string.end_date),
+        isError = dateError.value != null,
+        errorMessage = dateError.value?.let { stringResource(it) } ?: "",
         onClick = {
             if (datePickerState.selectedDateMillis == null)
                 datePickerState.selectedDateMillis = getNowGMTMillis()
@@ -760,6 +767,7 @@ private fun AddEditAchievementScreenPreview(
             onDescriptionChange = {},
             navigateToSelectGroup = {},
             onGroupRemoved = {},
+            dateError = remember { mutableStateOf(null) },
             onEndDateChanged = {},
             onMeasurementTypeChanged = {},
             percentageProgress = remember { mutableStateOf(emptyList()) },

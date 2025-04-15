@@ -57,6 +57,7 @@ class AddEditAchievementViewModel @Inject constructor(
     val isEditing = achievement != null
 
     val nameError = MutableStateFlow<Int?>(null)
+    val dateError = MutableStateFlow<Int?>(null)
 
     init {
         viewModelScope.launch {
@@ -131,6 +132,7 @@ class AddEditAchievementViewModel @Inject constructor(
 
     fun onEndDateChanged(date: LocalDate?) {
         editingAchievement.value = editingAchievement.value.copy(endDate = date)
+        dateError.value = null
     }
 
     fun onMeasurementTypeChanged(measurementType: MeasurementType) {
@@ -183,6 +185,11 @@ class AddEditAchievementViewModel @Inject constructor(
         if (achievement.name.isEmpty()) {
             hasError = true
             nameError.value = R.string.name_error_message
+        }
+
+        if (achievement.endDate == null) {
+            hasError = true
+            dateError.value = R.string.date_error_message
         }
 
         if (!hasError) {
