@@ -15,11 +15,13 @@ import com.apphico.core_repository.calendar.room.entities.toAchievement
 import com.apphico.core_repository.calendar.room.entities.toAchievementDB
 import com.apphico.core_repository.calendar.room.entities.toCheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.toProgressDB
+import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 interface AchievementRepository {
     fun getAll(status: Status, groups: List<Group>): Flow<List<Achievement>>
+    suspend fun setDone(achievement: Achievement): Boolean
     suspend fun insertAchievement(achievement: Achievement): Boolean
     suspend fun updateAchievement(achievement: Achievement): Boolean
     suspend fun deleteAchievement(achievement: Achievement): Boolean
@@ -50,6 +52,17 @@ class AchievementRepositoryImpl(
                     }
                 }
             }
+
+    override suspend fun setDone(achievement: Achievement): Boolean {
+        return try {
+            achievementDao.update(achievement.copy(doneDate = getNowDate()).toAchievementDB())
+
+            return true
+        } catch (ex: Exception) {
+            Log.d(AchievementRepository::class.simpleName, ex.stackTrace.toString())
+            return false
+        }
+    }
 
     override suspend fun insertAchievement(achievement: Achievement): Boolean {
         return try {

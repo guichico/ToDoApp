@@ -102,6 +102,9 @@ fun AddEditAchievementScreen(
     val achievementDeleteSuccess = stringResource(R.string.achievement_deleted)
     val achievementDeleteError = stringResource(R.string.achievement_delete_error)
 
+    val achievementSetDoneSuccess = stringResource(R.string.achievement_set_done)
+    val achievementSetDoneError = stringResource(R.string.achievement_set_done_error)
+
     val showDiscardChangesDialogOnBackIfNeed = showDiscardChangesDialogOnBackIfNeed(
         hasChanges = addEditAchievementViewModel::hasChanges,
         navigateBack = navigateBack
@@ -161,7 +164,13 @@ fun AddEditAchievementScreen(
             onUnitChanged = addEditAchievementViewModel::onUnitChanged,
             onStartingValueChanged = addEditAchievementViewModel::ondStartingValueChanged,
             onGoalValueChanged = addEditAchievementViewModel::ondGoalValueChanged,
-            navigateToAddEditProgress = navigateToAddEditProgress
+            navigateToAddEditProgress = navigateToAddEditProgress,
+            onDoneClicked = {
+                addEditAchievementViewModel.setDone { isSuccess ->
+                    snackBar(if (isSuccess) achievementSetDoneSuccess else achievementSetDoneError)
+                    if (isSuccess) navigateBack()
+                }
+            }
         )
     }
 }
@@ -190,7 +199,8 @@ private fun AddEditAchievementScreenContent(
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
-    navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit
+    navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit,
+    onDoneClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -255,7 +265,8 @@ private fun AddEditAchievementScreenContent(
         DoneButton(
             isEditing = isEditing,
             progress = remember { derivedStateOf { achievement.value.getProgress() } },
-            measurementType = remember { derivedStateOf { achievement.value.measurementType } }
+            measurementType = remember { derivedStateOf { achievement.value.measurementType } },
+            onDoneClicked = onDoneClicked
         )
     }
 }
@@ -724,14 +735,15 @@ private fun GoalValueField(
 private fun DoneButton(
     isEditing: Boolean,
     progress: State<Float>,
-    measurementType: State<MeasurementType?>
+    measurementType: State<MeasurementType?>,
+    onDoneClicked: () -> Unit
 ) {
     if (isEditing && progress.value < 1f && measurementType.value == MeasurementType.None) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
             shape = RectangleShape,
-            onClick = { }
+            onClick = onDoneClicked
         ) {
             Text(
                 modifier = Modifier
@@ -781,7 +793,8 @@ private fun AddEditAchievementScreenPreview(
             onUnitChanged = {},
             onStartingValueChanged = {},
             onGoalValueChanged = {},
-            navigateToAddEditProgress = { _, _, _ -> }
+            navigateToAddEditProgress = { _, _, _ -> },
+            onDoneClicked = {}
         )
     }
 }

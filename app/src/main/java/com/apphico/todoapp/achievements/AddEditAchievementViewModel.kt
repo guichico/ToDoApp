@@ -179,9 +179,13 @@ class AddEditAchievementViewModel @Inject constructor(
         editingValueProgress.value = editingValueProgress.value.copy(goalValue = goalValue)
     }
 
-    fun save(
-        onResult: (Boolean) -> Unit
-    ) {
+    fun setDone(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            onResult(achievementRepository.setDone(editingAchievement.value))
+        }
+    }
+
+    fun save(onResult: (Boolean) -> Unit) {
         var achievement = editingAchievement.value
         var hasError = false
 
@@ -233,9 +237,7 @@ class AddEditAchievementViewModel @Inject constructor(
         }
     }
 
-    fun delete(
-        onResult: (Boolean) -> Unit
-    ) {
+    fun delete(onResult: (Boolean) -> Unit) {
         var achievement = editingAchievement.value
 
         viewModelScope.launch {
