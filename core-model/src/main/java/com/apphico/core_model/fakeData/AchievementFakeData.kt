@@ -59,7 +59,7 @@ val mockedAchievements = listOf(
         name = "Plantar uma árvore",
         endDate = getNowDate(),
         measurementType = MeasurementType.Percentage(
-            percentageProgress = listOf(
+            progress = listOf(
                 Progress(
                     progress = 0.4712f,
                     date = getNowDate(),
@@ -128,7 +128,7 @@ val mockedAchievements = listOf(
         name = "Terminar de ler a Bíblia",
         endDate = getNowDate(),
         measurementType = MeasurementType.Percentage(
-            percentageProgress = listOf(
+            progress = listOf(
                 Progress(
                     progress = 0.1f,
                     description = "Just beginning",

@@ -8,7 +8,6 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
-import com.apphico.core_model.Progress
 import com.apphico.core_repository.calendar.achievements.AchievementRepository
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.designsystem.R
@@ -29,7 +28,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 import javax.inject.Inject
 import kotlin.reflect.typeOf
 
@@ -51,7 +49,7 @@ class AddEditAchievementViewModel @Inject constructor(
 
     val editingAchievement = MutableStateFlow(achievement ?: Achievement())
     val editingCheckList = MutableStateFlow(achievement?.getCheckList() ?: emptyList())
-    val editingPercentageProgress = MutableStateFlow(achievement?.getPercentageProgress() ?: emptyList())
+    val editingPercentageProgress = MutableStateFlow(achievement?.getPercentageProgress() ?: MeasurementType.Percentage())
     val editingValueProgress = MutableStateFlow(achievement?.getValueProgress() ?: MeasurementType.Value())
 
     val isEditing = achievement != null
@@ -75,8 +73,10 @@ class AddEditAchievementViewModel @Inject constructor(
             )
                 .flowOn(Dispatchers.IO)
                 .collectLatest { (measurementType, operation) ->
+                    val percentageProgress = editingPercentageProgress.value.progress
+
                     var progressList = when (measurementType) {
-                        MeasurementType.Percentage().intValue -> editingPercentageProgress.value
+                        MeasurementType.Percentage().intValue -> percentageProgress
                         MeasurementType.Value().intValue -> editingValueProgress.value.trackedValues
                         else -> emptyList()
                     }
@@ -88,7 +88,12 @@ class AddEditAchievementViewModel @Inject constructor(
                     }
 
                     when (measurementType) {
-                        MeasurementType.Percentage().intValue -> editingPercentageProgress.value = progressList
+                        MeasurementType.Percentage().intValue -> {
+                            editingPercentageProgress.value = editingPercentageProgress.value.copy(
+                                progress = progressList
+                            )
+                        }
+
                         MeasurementType.Value().intValue -> {
                             editingValueProgress.value = editingValueProgress.value.copy(
                                 trackedValues = progressList
@@ -199,9 +204,7 @@ class AddEditAchievementViewModel @Inject constructor(
                 }
 
                 is MeasurementType.Percentage -> {
-                    achievement = achievement.copy(
-                        measurementType = (achievement.measurementType as MeasurementType.Percentage).copy(percentageProgress = editingPercentageProgress.value)
-                    )
+                    achievement = achievement.copy(measurementType = editingPercentageProgress.value)
                 }
 
                 is MeasurementType.Value -> {
@@ -209,7 +212,6 @@ class AddEditAchievementViewModel @Inject constructor(
                 }
 
                 else -> {
-
                 }
             }
 

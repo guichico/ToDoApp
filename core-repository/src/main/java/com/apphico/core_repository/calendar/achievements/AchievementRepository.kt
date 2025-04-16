@@ -64,7 +64,7 @@ class AchievementRepositoryImpl(
                     }
 
                     is MeasurementType.Percentage -> {
-                        progress = (achievement.measurementType as MeasurementType.Percentage).percentageProgress
+                        progress = (achievement.measurementType as MeasurementType.Percentage).progress
                     }
 
                     is MeasurementType.Value -> {
@@ -102,7 +102,7 @@ class AchievementRepositoryImpl(
                     }
 
                     is MeasurementType.Percentage -> {
-                        progress = (achievement.measurementType as MeasurementType.Percentage).percentageProgress
+                        progress = (achievement.measurementType as MeasurementType.Percentage).progress
                     }
 
                     is MeasurementType.Value -> {

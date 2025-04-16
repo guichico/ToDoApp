@@ -180,7 +180,7 @@ private fun AddEditAchievementScreenContent(
     dateError: State<Int?>,
     onEndDateChanged: (LocalDate?) -> Unit,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
-    percentageProgress: State<List<Progress>>,
+    percentageProgress: State<MeasurementType.Percentage?>,
     valueProgress: State<MeasurementType.Value?>,
     checkList: State<List<CheckListItem>>,
     onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
@@ -298,7 +298,7 @@ private fun MeasurementTypeFields(
     achievement: State<Achievement>,
     onMeasurementTypeChanged: (MeasurementType) -> Unit,
     parentDate: State<LocalDate?>,
-    percentageProgress: State<List<Progress>>,
+    percentageProgress: State<MeasurementType.Percentage?>,
     valueProgress: State<MeasurementType.Value?>,
     checkList: State<List<CheckListItem>>,
     onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
@@ -311,9 +311,8 @@ private fun MeasurementTypeFields(
     navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit
 ) {
     val measurementType by remember { derivedStateOf { achievement.value.measurementType } }
-    val progress = achievement.value.getProgress()
 
-    if (progress == 0f) {
+    if (achievement.value.getProgress() == 0f) {
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
         MeasurementTypeDialog(
             measurementType = remember { derivedStateOf { measurementType } },
@@ -436,11 +435,9 @@ private fun MeasurementTypeCheckList(
 
 @Composable
 private fun MeasurementTypePercentage(
-    percentageProgress: State<List<Progress>>,
+    percentageProgress: State<MeasurementType.Percentage?>,
     navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit
 ) {
-    val totalProgress = percentageProgress.value.lastOrNull()?.progress ?: 0f
-
     Column {
         Text(
             modifier = Modifier
@@ -448,7 +445,7 @@ private fun MeasurementTypePercentage(
             text = stringResource(R.string.progress),
             style = MaterialTheme.typography.bodyMedium
         )
-        percentageProgress.value.forEach {
+        percentageProgress.value?.progress?.forEach {
             ProgressCard(
                 date = it.date,
                 time = it.time,
@@ -457,7 +454,7 @@ private fun MeasurementTypePercentage(
                 onClick = { navigateToAddEditProgress(MeasurementType.Percentage().intValue, MeasurementValueUnit.DECIMAL, it) }
             )
         }
-        if (totalProgress < 1f) {
+        if ((percentageProgress.value?.getProgress() ?: 0f) < 1f) {
             SmallTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -534,10 +531,13 @@ private fun MeasurementTypeValue(
                 val track = vp.goalValue?.minus(vp.startingValue ?: 0f) ?: 0f
                 val progress = (vp.startingValue?.minus(it.progress ?: 0f) ?: 0f) / track
 
+                val p = if (measurementUnit.value == MeasurementValueUnit.INT) it.progress?.toInt() else it.progress?.format()
+                val goal = if (measurementUnit.value == MeasurementValueUnit.INT) vp.goalValue?.toInt() else vp.goalValue?.format()
+
                 ProgressCard(
                     date = it.date,
                     time = it.time,
-                    progressText = "${it.progress?.format()}/${vp.goalValue?.format()}",
+                    progressText = "$p/$goal",
                     description = it.description,
                     progress = if (progress < 0) progress * -1 else progress,
                     onClick = { navigateToAddEditProgress(MeasurementType.Value().intValue, measurementUnit.value, it) }
@@ -545,9 +545,7 @@ private fun MeasurementTypeValue(
             }
         }
 
-        val totalProgress = valueProgress.value?.trackedValues?.lastOrNull()?.progress ?: 0f
-
-        if (totalProgress < 1f) {
+        if ((valueProgress.value?.getProgress() ?: 0f) < 1f) {
             SmallTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -773,7 +771,7 @@ private fun AddEditAchievementScreenPreview(
             dateError = remember { mutableStateOf(null) },
             onEndDateChanged = {},
             onMeasurementTypeChanged = {},
-            percentageProgress = remember { mutableStateOf(emptyList()) },
+            percentageProgress = remember { mutableStateOf(MeasurementType.Percentage()) },
             valueProgress = remember { mutableStateOf(MeasurementType.Value()) },
             checkList = remember { mutableStateOf(emptyList()) },
             onCheckListItemChanged = { _, _ -> },

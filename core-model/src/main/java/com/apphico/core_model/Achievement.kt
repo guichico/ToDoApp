@@ -32,8 +32,10 @@ sealed class MeasurementType(val intValue: Int, override val title: Int) : Check
     @Parcelize
     @Serializable
     data class Percentage(
-        val percentageProgress: List<Progress> = emptyList()
-    ) : MeasurementType(3, R.string.achievement_goal_type_percentage)
+        val progress: List<Progress> = emptyList()
+    ) : MeasurementType(3, R.string.achievement_goal_type_percentage) {
+        fun getProgress() = progress.lastOrNull()?.progress ?: 0f
+    }
 
     @Parcelize
     @Serializable
@@ -42,7 +44,20 @@ sealed class MeasurementType(val intValue: Int, override val title: Int) : Check
         val startingValue: Float? = null,
         val goalValue: Float? = null,
         val trackedValues: List<Progress> = emptyList()
-    ) : MeasurementType(4, R.string.achievement_goal_type_value)
+    ) : MeasurementType(4, R.string.achievement_goal_type_value) {
+        fun getProgress(): Float {
+            val track = goalValue?.minus(startingValue ?: 0f) ?: 0f
+
+            return when {
+                trackedValues.isNotEmpty() -> {
+                    val progress = (startingValue?.minus(trackedValues.last().progress ?: 0f) ?: 0f) / track
+                    if (progress < 0) progress * -1 else progress
+                }
+
+                else -> 0f
+            }
+        }
+    }
 }
 
 @Parcelize
@@ -76,11 +91,11 @@ data class Achievement(
             emptyList()
         }
 
-    fun getPercentageProgress(): List<Progress> =
+    fun getPercentageProgress(): MeasurementType.Percentage? =
         try {
-            (measurementType as MeasurementType.Percentage).percentageProgress
+            (measurementType as MeasurementType.Percentage)
         } catch (_: Exception) {
-            emptyList()
+            MeasurementType.Percentage()
         }
 
     fun getValueProgress(): MeasurementType.Value? =
@@ -98,19 +113,8 @@ data class Achievement(
             progress.takeIf { !it.isNaN() } ?: 0f
         }
 
-        measurementType is MeasurementType.Percentage -> measurementType.percentageProgress.lastOrNull()?.progress ?: 0f
-        measurementType is MeasurementType.Value -> {
-            val track = measurementType.goalValue?.minus(measurementType.startingValue ?: 0f) ?: 0f
-
-            when {
-                measurementType.trackedValues.isNotEmpty() -> {
-                    val progress = (measurementType.startingValue?.minus(measurementType.trackedValues.last().progress ?: 0f) ?: 0f) / track
-                    if (progress < 0) progress * -1 else progress
-                }
-
-                else -> 0f
-            }
-        }
+        measurementType is MeasurementType.Percentage -> measurementType.getProgress()
+        measurementType is MeasurementType.Value -> measurementType.getProgress()
 
         else -> 0f
     }

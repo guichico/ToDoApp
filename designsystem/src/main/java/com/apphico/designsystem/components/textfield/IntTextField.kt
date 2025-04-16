@@ -13,7 +13,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.getNumber
 import com.apphico.extensions.toIntFormattedNumber
-import com.apphico.extensions.toTextFieldFormat
 
 @Composable
 fun IntTextField(
@@ -27,7 +26,7 @@ fun IntTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
     val pattern = remember { Regex("^\\d+$") }
-    var valueText by remember { mutableStateOf(initialValue?.toTextFieldFormat() ?: "") }
+    var valueText by remember { mutableStateOf(initialValue?.toInt()?.toString() ?: "") }
 
     NormalTextField(
         modifier = modifier,
@@ -57,7 +56,7 @@ fun IntTextField(
 private fun IntTextFieldPreview() {
     ToDoAppTheme {
         IntTextField(
-            initialValue = 10f,
+            initialValue = 10.0f,
             placeholder = "int text field",
             onValueChange = {}
         )

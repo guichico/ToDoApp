@@ -132,7 +132,7 @@ fun AchievementRelations.toAchievement(): Achievement =
                 MeasurementType.TaskDone(checkList = this.checkList?.map { it.toCheckListItem() } ?: emptyList())
 
             MeasurementType.Percentage().intValue ->
-                MeasurementType.Percentage(percentageProgress = this.progress?.map { it.toProgress() } ?: emptyList())
+                MeasurementType.Percentage(progress = this.progress?.map { it.toProgress() } ?: emptyList())
 
             MeasurementType.Value().intValue ->
                 this.achievementDB.valueProgressDB?.toValueProgress(this.progress?.map { it.toProgress() } ?: emptyList())
