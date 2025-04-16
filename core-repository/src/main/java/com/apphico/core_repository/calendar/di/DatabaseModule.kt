@@ -72,6 +72,7 @@ class DatabaseModule() {
         taskDaoProvider: Provider<TaskDao>,
         checkListDaoProvider: Provider<CheckListItemDao>,
         achievementDaoProvider: Provider<AchievementDao>,
+        progressDaoProvider: Provider<ProgressDao>
     ): AppDatabase = Room.databaseBuilder(
         appContext,
         AppDatabase::class.java, "ToDoAppDB"
@@ -82,7 +83,8 @@ class DatabaseModule() {
                 groupDaoProvider = groupDaoProvider,
                 taskDaoProvider = taskDaoProvider,
                 checkListDaoProvider = checkListDaoProvider,
-                achievementDaoProvider = achievementDaoProvider
+                achievementDaoProvider = achievementDaoProvider,
+                progressDaoProvider = progressDaoProvider
             )
         )
         .setQueryCallback(

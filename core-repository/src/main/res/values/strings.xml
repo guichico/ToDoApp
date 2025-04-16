@@ -8,10 +8,11 @@
     <string name="group_name_1">Work</string>
     <string name="group_name_2">Health</string>
     <string name="group_name_3">Family</string>
-    <string name="group_name_4">Home</string>
-    <string name="group_name_5">Studies</string>
-    <string name="group_name_6">Entertainment</string>
-    <string name="group_name_7">Productivity</string>
+    <string name="group_name_4">Finances</string>
+    <string name="group_name_5">Home</string>
+    <string name="group_name_6">Studies</string>
+    <string name="group_name_7">Entertainment</string>
+    <string name="group_name_8">Productivity</string>
 
     <string name="task_check_list_item_1">Rice</string>
     <string name="task_check_list_item_2">Pasta</string>
@@ -23,8 +24,8 @@
 
     <string name="achievement_name_1">Get in shape</string>
     <string name="achievement_description_1">I aim to get in shape by the end of the year</string>
-    <string name="achievement_name_2">Plant a tree</string>
-    <string name="achievement_description_2">Help the environment by planting a tree</string>
+    <string name="achievement_name_2">Save money</string>
+    <string name="achievement_description_2">Achieve financial security.</string>
 
     <string name="achievement_check_list_item_1">Get more muscles</string>
     <string name="achievement_check_list_item_2">Get ripped</string>

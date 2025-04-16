@@ -5,15 +5,19 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.apphico.core_model.Group
 import com.apphico.core_model.MeasurementType
+import com.apphico.core_model.MeasurementValueUnit
 import com.apphico.core_repository.R
 import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
+import com.apphico.core_repository.calendar.room.dao.ProgressDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.entities.AchievementDB
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
+import com.apphico.core_repository.calendar.room.entities.ProgressDB
 import com.apphico.core_repository.calendar.room.entities.ReminderDB
 import com.apphico.core_repository.calendar.room.entities.TaskDB
+import com.apphico.core_repository.calendar.room.entities.ValueProgressDB
 import com.apphico.core_repository.calendar.room.entities.toGroupDB
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime
@@ -29,7 +33,8 @@ class AppDatabaseInitializer(
     private val groupDaoProvider: Provider<GroupDao>,
     private val taskDaoProvider: Provider<TaskDao>,
     private val checkListDaoProvider: Provider<CheckListItemDao>,
-    private val achievementDaoProvider: Provider<AchievementDao>
+    private val achievementDaoProvider: Provider<AchievementDao>,
+    private val progressDaoProvider: Provider<ProgressDao>
 ) : RoomDatabase.Callback() {
 
     private val applicationScope = CoroutineScope(SupervisorJob())
@@ -53,10 +58,11 @@ class AppDatabaseInitializer(
             Group(name = appContext.getString(R.string.group_name_1), color = -8432327), // Work
             Group(name = appContext.getString(R.string.group_name_2), color = -7745552), // Health
             Group(name = appContext.getString(R.string.group_name_3), color = -14198462), // Family
-            Group(name = appContext.getString(R.string.group_name_4), color = -402340), // Home
-            Group(name = appContext.getString(R.string.group_name_5), color = -1886900), // Studies
-            Group(name = appContext.getString(R.string.group_name_6), color = -17587), // Entertainment
-            Group(name = appContext.getString(R.string.group_name_7), color = -10938214), // Productivity
+            Group(name = appContext.getString(R.string.group_name_4), color = -1886900), // Finances
+            Group(name = appContext.getString(R.string.group_name_5), color = -402340), // Home
+            Group(name = appContext.getString(R.string.group_name_6), color = -17587), // Studies
+            Group(name = appContext.getString(R.string.group_name_7), color = -13095), // Entertainment
+            Group(name = appContext.getString(R.string.group_name_8), color = -10938214), // Productivity
         )
 
         return groupDaoProvider.get().insertAll(groups.map { it.toGroupDB() })
@@ -82,7 +88,7 @@ class AppDatabaseInitializer(
                 TaskDB(
                     name = appContext.getString(R.string.task_name_2),
                     description = appContext.getString(R.string.task_description_2),
-                    taskGroupId = groupIds[3],
+                    taskGroupId = groupIds[4],
                     startDate = getNowDate(),
                     startTime = getNowTime().withHour(18).withMinute(30),
                     endDate = getNowDate(),
@@ -92,17 +98,17 @@ class AppDatabaseInitializer(
                 )
             )
 
-            val task2CheckList = listOf<CheckListItemDB>(
-                CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_1)),
-                CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_2)),
-                CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_3)),
-                CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_4)),
-                CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_5)),
-                CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_6)),
-                CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_7))
+            checkListDaoProvider.get().insertAll(
+                listOf(
+                    CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_1)),
+                    CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_2)),
+                    CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_3)),
+                    CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_4)),
+                    CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_5)),
+                    CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_6)),
+                    CheckListItemDB(checkListTaskId = task2Id, name = appContext.getString(R.string.task_check_list_item_7))
+                )
             )
-
-            checkListDaoProvider.get().insertAll(task2CheckList)
         }
     }
 
@@ -120,22 +126,52 @@ class AppDatabaseInitializer(
                 )
             )
 
-            val achievement1CheckList = listOf<CheckListItemDB>(
-                CheckListItemDB(checkListAchievementId = achievement1Id, name = appContext.getString(R.string.achievement_check_list_item_1)),
-                CheckListItemDB(checkListAchievementId = achievement1Id, name = appContext.getString(R.string.achievement_check_list_item_2))
+            checkListDaoProvider.get().insertAll(
+                listOf(
+                    CheckListItemDB(checkListAchievementId = achievement1Id, name = appContext.getString(R.string.achievement_check_list_item_1)),
+                    CheckListItemDB(checkListAchievementId = achievement1Id, name = appContext.getString(R.string.achievement_check_list_item_2))
+                )
             )
 
-            checkListDaoProvider.get().insertAll(achievement1CheckList)
-
-            insert(
+            val achievement2Id = insert(
                 AchievementDB(
                     name = appContext.getString(R.string.achievement_name_2),
                     description = appContext.getString(R.string.achievement_description_2),
-                    achievementGroupId = null,
-                    measurementType = MeasurementType.None.intValue,
-                    endDate = getNowDate().plusMonths(3),
-                    doneDate = getNowDate(),
-                    valueProgressDB = null
+                    achievementGroupId = groupIds[3],
+                    measurementType = MeasurementType.Value().intValue,
+                    endDate = getNowDate().plusMonths(12),
+                    doneDate = null,
+                    valueProgressDB = ValueProgressDB(
+                        unit = MeasurementValueUnit.CURRENCY.value,
+                        startingValue = 0f,
+                        goalValue = 12000f
+                    )
+                )
+            )
+
+            progressDaoProvider.get().insertAll(
+                listOf(
+                    ProgressDB(
+                        achievementProgressId = achievement2Id,
+                        progress = 1000f,
+                        description = null,
+                        date = getNowDate().plusMonths(1),
+                        time = null
+                    ),
+                    ProgressDB(
+                        achievementProgressId = achievement2Id,
+                        progress = 2000f,
+                        description = null,
+                        date = getNowDate().plusMonths(2),
+                        time = null
+                    ),
+                    ProgressDB(
+                        achievementProgressId = achievement2Id,
+                        progress = 3000f,
+                        description = null,
+                        date = getNowDate().plusMonths(3),
+                        time = null
+                    )
                 )
             )
         }

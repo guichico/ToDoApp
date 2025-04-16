@@ -9,8 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import com.apphico.core_model.MeasurementType
-import com.apphico.core_model.MeasurementValueUnit
 import com.apphico.designsystem.components.progress.ProgressBar
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatLongDate

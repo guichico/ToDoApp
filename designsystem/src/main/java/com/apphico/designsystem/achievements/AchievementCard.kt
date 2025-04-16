@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -18,6 +19,7 @@ import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.fakeData.mockedAchievement
+import com.apphico.designsystem.R
 import com.apphico.designsystem.components.card.MainCard
 import com.apphico.designsystem.components.checklist.CheckList
 import com.apphico.designsystem.components.text.LineThroughText
@@ -62,14 +64,16 @@ fun AchievementCard(
             )
         }
         LinearProgressIndicator(
-            progress = { achievement.getProgress() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(14.dp)
                 .padding(top = ToDoAppTheme.spacing.small),
+            progress = { achievement.getProgress() },
             color = MediumBlue,
             trackColor = LightBlue,
             strokeCap = StrokeCap.Round,
+            gapSize = (-15).dp,
+            drawStopIndicator = {}
         )
     }
 }
@@ -80,14 +84,14 @@ private fun DatesColumn(
 ) {
     achievement.endDate?.let {
         Text(
-            text = "até ${it.formatShortDate()}",
+            text = "${stringResource(R.string.until)} ${it.formatShortDate()}",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.secondary
         )
     }
     achievement.doneDate?.let {
         Text(
-            text = "concluído em ${it.formatShortDate()}",
+            text = "${stringResource(R.string.completed_in)} ${it.formatShortDate()}",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.secondary
         )
