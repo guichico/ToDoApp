@@ -87,8 +87,6 @@ class AddEditAchievementViewModel @Inject constructor(
                         is Operation.Delete -> progressList.remove(operation.progress)
                     }
 
-                    progressList = progressList.sortByDate()
-
                     when (measurementType) {
                         MeasurementType.Percentage().intValue -> editingPercentageProgress.value = progressList
                         MeasurementType.Value().intValue -> {
@@ -242,15 +240,4 @@ class AddEditAchievementViewModel @Inject constructor(
             onResult(achievementRepository.deleteAchievement(achievement))
         }
     }
-
-    private fun List<Progress>.sortByDate() =
-        this.sortedWith(
-            compareBy<Progress> { progress ->
-                progress.date?.let {
-                    LocalDateTime.of(it, progress.time ?: it.atStartOfDay().toLocalTime())
-                }
-            }
-                .thenBy { it.time }
-                .thenBy { it.id }
-        )
 }

@@ -3,6 +3,7 @@ package com.apphico.todoapp.achievements
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.toRoute
+import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.Progress
 import com.apphico.designsystem.R
 import com.apphico.todoapp.navigation.CustomNavType
@@ -51,7 +52,8 @@ class AddEditProgressViewModel @Inject constructor(
     }
 
     fun onProgressChanged(progress: Float) {
-        editingProgress.value = editingProgress.value.copy(progress = (progress / 100))
+        val p = if (measurementType == MeasurementType.Percentage().intValue) progress / 100 else progress
+        editingProgress.value = editingProgress.value.copy(progress = p)
     }
 
     fun onDescriptionChanged(text: String) {

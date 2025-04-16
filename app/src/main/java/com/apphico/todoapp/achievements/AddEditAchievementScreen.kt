@@ -254,7 +254,8 @@ private fun AddEditAchievementScreenContent(
         }
         DoneButton(
             isEditing = isEditing,
-            progress = remember { derivedStateOf { achievement.value.getProgress() } }
+            progress = remember { derivedStateOf { achievement.value.getProgress() } },
+            measurementType = remember { derivedStateOf { achievement.value.measurementType } }
         )
     }
 }
@@ -348,7 +349,6 @@ private fun MeasurementTypeFields(
 
             is MeasurementType.Value -> {
                 MeasurementTypeValue(
-                    totalProgress = remember { derivedStateOf { progress } },
                     onUnitChanged = onUnitChanged,
                     valueProgress = valueProgress,
                     onStartingValueChanged = onStartingValueChanged,
@@ -477,7 +477,6 @@ private fun MeasurementTypePercentage(
 
 @Composable
 private fun MeasurementTypeValue(
-    totalProgress: State<Float>,
     onUnitChanged: (MeasurementValueUnit) -> Unit,
     valueProgress: State<MeasurementType.Value?>,
     onStartingValueChanged: (Float) -> Unit,
@@ -545,7 +544,10 @@ private fun MeasurementTypeValue(
                 )
             }
         }
-        if (totalProgress.value < 1f) {
+
+        val totalProgress = valueProgress.value?.trackedValues?.lastOrNull()?.progress ?: 0f
+
+        if (totalProgress < 1f) {
             SmallTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -723,9 +725,10 @@ private fun GoalValueField(
 @Composable
 private fun DoneButton(
     isEditing: Boolean,
-    progress: State<Float>
+    progress: State<Float>,
+    measurementType: State<MeasurementType?>
 ) {
-    if (isEditing && progress.value < 1f) {
+    if (isEditing && progress.value < 1f && measurementType.value == MeasurementType.None) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
