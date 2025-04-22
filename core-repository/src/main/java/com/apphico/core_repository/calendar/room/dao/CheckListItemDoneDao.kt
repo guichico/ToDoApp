@@ -18,8 +18,4 @@ interface CheckListItemDoneDao : BaseDao<CheckListItemDoneDB> {
     @Transaction
     @Query("DELETE FROM checkListItemDoneDB WHERE checkListItemDoneId = :checkListItemId AND (parentDate = :taskDate OR parentDate is null)")
     suspend fun delete(checkListItemId: Long, taskDate: LocalDate?)
-
-    @Transaction
-    @Query("DELETE FROM checkListItemDoneDB WHERE checkListItemDoneId IN (:checkListItemIds)")
-    suspend fun deleteAll(checkListItemIds: List<Long>)
 }

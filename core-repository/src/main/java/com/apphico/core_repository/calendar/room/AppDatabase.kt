@@ -49,7 +49,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun taskDoneDao(): TaskDoneDao
     abstract fun taskDeletedDao(): TaskDeletedDao
     abstract fun achievementDao(): AchievementDao
-    abstract fun percentageProgressDao(): ProgressDao
+    abstract fun progressDao(): ProgressDao
     abstract fun checkListItemDao(): CheckListItemDao
     abstract fun checkListItemDoneDao(): CheckListItemDoneDao
     abstract fun locationDao(): LocationDao

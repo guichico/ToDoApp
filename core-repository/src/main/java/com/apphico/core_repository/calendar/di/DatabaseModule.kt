@@ -42,7 +42,7 @@ class DatabaseModule() {
 
     @Provides
     @Singleton
-    fun providePercentageProgressDao(appDatabase: AppDatabase): ProgressDao = appDatabase.percentageProgressDao()
+    fun provideProgressDao(appDatabase: AppDatabase): ProgressDao = appDatabase.progressDao()
 
     @Provides
     @Singleton
