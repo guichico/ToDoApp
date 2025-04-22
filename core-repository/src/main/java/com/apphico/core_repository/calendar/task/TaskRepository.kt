@@ -110,7 +110,7 @@ class TaskRepositoryImpl(
                 locationDao.insertOrUpdate(it.toLocationDB(this.id))
             } ?: locationDao.delete(this.id)
 
-            checkListItemDao.deleteAll(this.id, this.checkList.map { it.id })
+            checkListItemDao.deleteAll(taskId = this.id, checkListItemIds = this.checkList.map { it.id })
             checkListItemDao.insertAll(this.checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(taskId = this.id) })
             checkListItemDao.updateAll(this.checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(taskId = this.id) })
         }

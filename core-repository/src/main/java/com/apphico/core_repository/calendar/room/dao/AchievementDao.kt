@@ -5,10 +5,15 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.apphico.core_repository.calendar.room.entities.AchievementDB
 import com.apphico.core_repository.calendar.room.entities.AchievementRelations
+import com.apphico.core_repository.calendar.room.entities.TaskWithRelations
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface AchievementDao : BaseDao<AchievementDB> {
+
+    @Transaction
+    @Query("SELECT * FROM AchievementDB WHERE achievementId = :achievementId")
+    fun getAchievement(achievementId: Long): AchievementRelations
 
     @Transaction
     @Query(

@@ -109,7 +109,7 @@ class AchievementRepositoryImpl(
                     is MeasurementType.TaskDone -> {
                         val checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList
 
-                        checkListItemDao.deleteAll(achievement.id, checkList.map { it.id })
+                        checkListItemDao.deleteAll(achievementId = achievement.id, checkListItemIds = checkList.map { it.id })
                         checkListItemDao.insertAll(checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(achievementId = achievement.id) })
                         checkListItemDao.updateAll(checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(achievementId = achievement.id) })
                     }
