@@ -7,8 +7,8 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.TaskDao
-import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
-import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
+import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
+import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import com.apphico.core_repository.calendar.room.entities.toTask
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.extensions.getNowDate
@@ -20,12 +20,12 @@ import org.junit.runner.RunWith
 import java.io.IOException
 
 @RunWith(AndroidJUnit4::class)
-class TaskDoneDaoTest {
+class TaskDeletedDaoTest {
 
     private lateinit var db: AppDatabase
 
     private lateinit var taskDao: TaskDao
-    private lateinit var taskDoneDao: TaskDoneDao
+    private lateinit var taskDeletedDao: TaskDeletedDao
 
     @Before
     fun createDb() {
@@ -33,7 +33,7 @@ class TaskDoneDaoTest {
         db = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java).build()
 
         taskDao = db.taskDao()
-        taskDoneDao = db.taskDoneDao()
+        taskDeletedDao = db.taskDeletedDao()
     }
 
     @After
@@ -44,24 +44,21 @@ class TaskDoneDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun testDoneChanged() {
+    fun testDeleteFutureTask() {
         runBlocking {
-            val taskId = taskDao.insert(Task(name = "Test task").toTaskDB())
+            val taskDate = getNowDate()
+            val tomorrow = taskDate.plusDays(1)
+
+            val taskId = taskDao.insert(Task(name = "Test task", startDate = taskDate).toTaskDB())
             var insertedTask = taskDao.getTask(taskId).toTask()
 
-            assert(!insertedTask.isDone())
+            assert(!insertedTask.isDeleted())
 
-            taskDoneDao.insert(TaskDoneDB(taskDoneId = taskId, doneDate = getNowDate(), taskDate = null))
+            taskDeletedDao.insert(TaskDeletedDB(taskDeleteId = taskId, deletedDate = tomorrow, taskDate = tomorrow))
 
-            insertedTask = taskDao.getTask(taskId).toTask()
+            insertedTask = taskDao.getTask(taskId).toTask().copy(startDate = tomorrow)
 
-            assert(insertedTask.isDone())
-
-            taskDoneDao.delete(taskId, null)
-
-            insertedTask = taskDao.getTask(taskId).toTask()
-
-            assert(!insertedTask.isDone())
+            assert(insertedTask.isDeleted())
         }
     }
 }

@@ -24,6 +24,8 @@ class GroupDaoTest {
 
     private lateinit var groupDao: GroupDao
 
+    private fun sampleGroup() = GroupDB(name = appContext.getString(R.string.group_name_2), color = -7745552)
+
     @Before
     fun createDb() {
         appContext = ApplicationProvider.getApplicationContext<Context>()
@@ -42,7 +44,7 @@ class GroupDaoTest {
     @Throws(Exception::class)
     fun insert() {
         runBlocking {
-            groupDao.insert(GroupDB(name = appContext.getString(R.string.group_name_2), color = -7745552))
+            groupDao.insert(sampleGroup())
 
             assert(groupDao.getAll().first().size == 1)
         }
@@ -52,7 +54,8 @@ class GroupDaoTest {
     @Throws(Exception::class)
     fun update() {
         runBlocking {
-            val group = GroupDB(name = appContext.getString(R.string.group_name_2), color = -7745552)
+            val group = sampleGroup()
+
             val groupId = groupDao.insert(group)
             val insertedGroup = group.copy(groupId = groupId)
 
@@ -71,7 +74,8 @@ class GroupDaoTest {
     @Throws(Exception::class)
     fun delete() {
         runBlocking {
-            val group = GroupDB(name = appContext.getString(R.string.group_name_2), color = -7745552)
+            val group = sampleGroup()
+
             val groupId = groupDao.insert(group)
             val insertedGroup = group.copy(groupId = groupId)
 
