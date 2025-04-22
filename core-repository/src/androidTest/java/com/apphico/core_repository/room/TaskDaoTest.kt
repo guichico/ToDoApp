@@ -125,12 +125,17 @@ class TaskDaoTest {
 
             assert(getAllTasks().contains(insertedTask))
 
+            val name = "Test name"
+            val description = "Test description"
+            val endDate = getNowDate().plusMonths(1)
+            val endTime = getNowTime()
+
             val updatedTask = insertedTask
                 .copy(
-                    name = "Test name",
-                    description = "Test description",
-                    endDate = getNowDate().plusMonths(1),
-                    endTime = getNowTime()
+                    name = name,
+                    description = description,
+                    endDate = endDate,
+                    endTime = endTime
                 )
 
             taskDao.update(updatedTask.toTaskDB())
@@ -139,6 +144,13 @@ class TaskDaoTest {
 
             assert(!allTasks.contains(insertedTask))
             assert(allTasks.contains(updatedTask))
+
+            with(allTasks[0]) {
+                assert(name == name)
+                assert(description == description)
+                assert(endDate == endDate)
+                assert(endTime == endTime)
+            }
         }
     }
 
