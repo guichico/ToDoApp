@@ -12,7 +12,7 @@ import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import com.apphico.core_repository.calendar.room.entities.toTask
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.extensions.getNowDate
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -44,21 +44,19 @@ class TaskDeletedDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun testDeleteFutureTask() {
-        runBlocking {
-            val taskDate = getNowDate()
-            val tomorrow = taskDate.plusDays(1)
+    fun testDeleteFutureTask() = runTest {
+        val taskDate = getNowDate()
+        val tomorrow = taskDate.plusDays(1)
 
-            val taskId = taskDao.insert(Task(name = "Test task", startDate = taskDate).toTaskDB())
-            var insertedTask = taskDao.getTask(taskId).toTask()
+        val taskId = taskDao.insert(Task(name = "Test task", startDate = taskDate).toTaskDB())
+        var insertedTask = taskDao.getTask(taskId).toTask()
 
-            assert(!insertedTask.isDeleted())
+        assert(!insertedTask.isDeleted())
 
-            taskDeletedDao.insert(TaskDeletedDB(taskDeleteId = taskId, deletedDate = tomorrow, taskDate = tomorrow))
+        taskDeletedDao.insert(TaskDeletedDB(taskDeleteId = taskId, deletedDate = tomorrow, taskDate = tomorrow))
 
-            insertedTask = taskDao.getTask(taskId).toTask().copy(startDate = tomorrow)
+        insertedTask = taskDao.getTask(taskId).toTask().copy(startDate = tomorrow)
 
-            assert(insertedTask.isDeleted())
-        }
+        assert(insertedTask.isDeleted())
     }
 }

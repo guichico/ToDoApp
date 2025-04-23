@@ -72,16 +72,15 @@ class AchievementRepositoryImpl(
 
                 when (achievement.measurementType) {
                     is MeasurementType.TaskDone -> {
-                        val checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList
-                        checkListItemDao.insertAll(checkList.map { it.toCheckListItemDB(achievementId = achievementId) })
+                        checkListItemDao.insertAll(achievement.getCheckList().map { it.toCheckListItemDB(achievementId = achievementId) })
                     }
 
                     is MeasurementType.Percentage -> {
-                        progress = (achievement.measurementType as MeasurementType.Percentage).progress
+                        progress = achievement.getPercentageProgress().progress
                     }
 
                     is MeasurementType.Value -> {
-                        progress = (achievement.measurementType as MeasurementType.Value).trackedValues
+                        progress = achievement.getValueProgress().trackedValues
                     }
 
                     else -> {
@@ -107,7 +106,7 @@ class AchievementRepositoryImpl(
 
                 when (achievement.measurementType) {
                     is MeasurementType.TaskDone -> {
-                        val checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList
+                        val checkList = achievement.getCheckList()
 
                         checkListItemDao.deleteAll(achievementId = achievement.id, checkListItemIds = checkList.map { it.id })
                         checkListItemDao.insertAll(checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(achievementId = achievement.id) })
@@ -115,11 +114,11 @@ class AchievementRepositoryImpl(
                     }
 
                     is MeasurementType.Percentage -> {
-                        progress = (achievement.measurementType as MeasurementType.Percentage).progress
+                        progress = achievement.getPercentageProgress().progress
                     }
 
                     is MeasurementType.Value -> {
-                        progress = (achievement.measurementType as MeasurementType.Value).trackedValues
+                        progress = achievement.getValueProgress().trackedValues
                     }
 
                     else -> {

@@ -8,6 +8,16 @@ import kotlinx.serialization.Serializable
 import java.time.LocalDate
 import java.time.LocalTime
 
+@Parcelize
+@Serializable
+data class Progress(
+    val id: Long = 0,
+    val progress: Float? = null,
+    val description: String? = null,
+    @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
+    @Serializable(with = LocalTimeSerializer::class) val time: LocalTime? = null
+) : Parcelable
+
 @Serializable
 enum class MeasurementValueUnit(val value: Int) {
     INT(1),
@@ -62,16 +72,6 @@ sealed class MeasurementType(val intValue: Int, override val title: Int) : Check
 
 @Parcelize
 @Serializable
-data class Progress(
-    val id: Long = 0,
-    val progress: Float? = null,
-    val description: String? = null,
-    @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
-    @Serializable(with = LocalTimeSerializer::class) val time: LocalTime? = null
-) : Parcelable
-
-@Parcelize
-@Serializable
 data class Achievement(
     val id: Long = 0,
     val name: String = "",
@@ -91,14 +91,14 @@ data class Achievement(
             emptyList()
         }
 
-    fun getPercentageProgress(): MeasurementType.Percentage? =
+    fun getPercentageProgress(): MeasurementType.Percentage =
         try {
             (measurementType as MeasurementType.Percentage)
         } catch (_: Exception) {
             MeasurementType.Percentage()
         }
 
-    fun getValueProgress(): MeasurementType.Value? =
+    fun getValueProgress(): MeasurementType.Value =
         try {
             (measurementType as MeasurementType.Value)
         } catch (_: Exception) {

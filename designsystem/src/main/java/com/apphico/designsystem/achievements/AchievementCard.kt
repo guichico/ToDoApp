@@ -55,7 +55,7 @@ fun AchievementCard(
                     .fillMaxWidth()
                     .offset(x = (-2).dp)
                     .padding(top = ToDoAppTheme.spacing.extraSmall),
-                checkList = (achievement.measurementType as MeasurementType.TaskDone).checkList,
+                checkList = achievement.getCheckList(),
                 parentDate = achievement.endDate,
                 textColor = MaterialTheme.colorScheme.primary,
                 onCheckListItemDoneChanged = { checkListItem, isDone ->

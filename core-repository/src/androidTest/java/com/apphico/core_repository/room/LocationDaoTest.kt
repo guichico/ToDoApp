@@ -11,7 +11,7 @@ import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.entities.LocationDB
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -43,24 +43,22 @@ class LocationDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertAndDelete() {
-        runBlocking {
-            val taskId = taskDao.insert(Task(name = "Task test").toTaskDB())
+    fun insertAndDelete() = runTest {
+        val taskId = taskDao.insert(Task(name = "Task test").toTaskDB())
 
-            locationDao.insert(
-                LocationDB(
-                    locationTaskId = taskId,
-                    latitude = 37.42253323528007,
-                    longitude = -122.08524665141145,
-                    address = "1600 Amphitheater Pkwy, Mountain View, CA 94043, United States"
-                )
+        locationDao.insert(
+            LocationDB(
+                locationTaskId = taskId,
+                latitude = 37.42253323528007,
+                longitude = -122.08524665141145,
+                address = "1600 Amphitheater Pkwy, Mountain View, CA 94043, United States"
             )
+        )
 
-            assert(locationDao.getAll().first().size == 1)
+        assert(locationDao.getAll().first().size == 1)
 
-            locationDao.delete(taskId = taskId)
+        locationDao.delete(taskId = taskId)
 
-            assert(locationDao.getAll().first().isEmpty())
-        }
+        assert(locationDao.getAll().first().isEmpty())
     }
 }

@@ -12,7 +12,7 @@ import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
 import com.apphico.core_repository.calendar.room.entities.toTask
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.extensions.getNowDate
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -44,24 +44,22 @@ class TaskDoneDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun testDoneChanged() {
-        runBlocking {
-            val taskId = taskDao.insert(Task(name = "Test task").toTaskDB())
-            var insertedTask = taskDao.getTask(taskId).toTask()
+    fun testDoneChanged() = runTest {
+        val taskId = taskDao.insert(Task(name = "Test task").toTaskDB())
+        var insertedTask = taskDao.getTask(taskId).toTask()
 
-            assert(!insertedTask.isDone())
+        assert(!insertedTask.isDone())
 
-            taskDoneDao.insert(TaskDoneDB(taskDoneId = taskId, doneDate = getNowDate(), taskDate = null))
+        taskDoneDao.insert(TaskDoneDB(taskDoneId = taskId, doneDate = getNowDate(), taskDate = null))
 
-            insertedTask = taskDao.getTask(taskId).toTask()
+        insertedTask = taskDao.getTask(taskId).toTask()
 
-            assert(insertedTask.isDone())
+        assert(insertedTask.isDone())
 
-            taskDoneDao.delete(taskId, null)
+        taskDoneDao.delete(taskId, null)
 
-            insertedTask = taskDao.getTask(taskId).toTask()
+        insertedTask = taskDao.getTask(taskId).toTask()
 
-            assert(!insertedTask.isDone())
-        }
+        assert(!insertedTask.isDone())
     }
 }

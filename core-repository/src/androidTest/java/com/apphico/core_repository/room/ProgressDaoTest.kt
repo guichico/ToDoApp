@@ -15,7 +15,7 @@ import com.apphico.core_repository.calendar.room.entities.toAchievementDB
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -47,25 +47,24 @@ class ProgressDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertAndDelete() {
-        runBlocking {
-            val achievementId = achievementDao.insert(Achievement(name = "Achievement test", measurementType = MeasurementType.Percentage()).toAchievementDB())
+    fun insertAndDelete() = runTest {
+        val achievementId =
+            achievementDao.insert(Achievement(name = "Achievement test", measurementType = MeasurementType.Percentage()).toAchievementDB())
 
-            progressDao.insertAll(
-                listOf(
-                    ProgressDB(0, achievementId, 0.3f, "Progress 1", getNowDate(), getNowTime()),
-                    ProgressDB(0, achievementId, 0.6f, "Progress 2", getNowDate(), getNowTime()),
-                    ProgressDB(0, achievementId, 1f, "Progress 3", getNowDate(), getNowTime())
-                )
+        progressDao.insertAll(
+            listOf(
+                ProgressDB(0, achievementId, 0.3f, "Progress 1", getNowDate(), getNowTime()),
+                ProgressDB(0, achievementId, 0.6f, "Progress 2", getNowDate(), getNowTime()),
+                ProgressDB(0, achievementId, 1f, "Progress 3", getNowDate(), getNowTime())
             )
+        )
 
-            assert(progressDao.getAll().first().size == 3)
-            assert(achievementDao.getAchievement(achievementId).toAchievement().getProgress() == 1f)
+        assert(progressDao.getAll().first().size == 3)
+        assert(achievementDao.getAchievement(achievementId).toAchievement().getProgress() == 1f)
 
-            progressDao.deleteAll(achievementId, emptyList())
+        progressDao.deleteAll(achievementId, emptyList())
 
-            assert(progressDao.getAll().first().isEmpty())
-            assert(achievementDao.getAchievement(achievementId).toAchievement().getProgress() == 0f)
-        }
+        assert(progressDao.getAll().first().isEmpty())
+        assert(achievementDao.getAchievement(achievementId).toAchievement().getProgress() == 0f)
     }
 }

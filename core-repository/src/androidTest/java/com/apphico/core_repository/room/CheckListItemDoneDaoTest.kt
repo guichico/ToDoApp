@@ -18,7 +18,7 @@ import com.apphico.core_repository.calendar.room.entities.toCheckListItem
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -54,37 +54,35 @@ class CheckListItemDoneDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertAndDelete() {
-        runBlocking {
-            val taskId = taskDao.insert(Task(name = "Task test").toTaskDB())
-            val achievementId = achievementDao.insert(Achievement(name = "Achievement test").toAchievementDB())
+    fun insertAndDelete() = runTest {
+        val taskId = taskDao.insert(Task(name = "Task test").toTaskDB())
+        val achievementId = achievementDao.insert(Achievement(name = "Achievement test").toAchievementDB())
 
-            val ids = checkListItemDao.insertAll(
-                listOf(
-                    CheckListItemDB(checkListTaskId = taskId, name = "Item 1"),
-                    CheckListItemDB(checkListTaskId = taskId, name = "Item 2"),
-                    CheckListItemDB(checkListAchievementId = achievementId, name = "Item 1"),
-                    CheckListItemDB(checkListAchievementId = achievementId, name = "Item 2"),
-                )
+        val ids = checkListItemDao.insertAll(
+            listOf(
+                CheckListItemDB(checkListTaskId = taskId, name = "Item 1"),
+                CheckListItemDB(checkListTaskId = taskId, name = "Item 2"),
+                CheckListItemDB(checkListAchievementId = achievementId, name = "Item 1"),
+                CheckListItemDB(checkListAchievementId = achievementId, name = "Item 2"),
             )
+        )
 
-            assert(checkListItemDoneDao.getAll().first().isEmpty())
+        assert(checkListItemDoneDao.getAll().first().isEmpty())
 
-            checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = ids[0], doneDate = getNowDate(), parentDate = null))
-            checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = ids[2], doneDate = getNowDate(), parentDate = null))
+        checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = ids[0], doneDate = getNowDate(), parentDate = null))
+        checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = ids[2], doneDate = getNowDate(), parentDate = null))
 
-            assert(checkListItemDoneDao.getAll().first().size == 2)
+        assert(checkListItemDoneDao.getAll().first().size == 2)
 
-            assert(taskDao.getTask(taskId).checkList?.map { it.toCheckListItem() }?.filter { it.isDone(null) }?.size == 1)
-            assert(achievementDao.getAchievement(achievementId).checkList?.map { it.toCheckListItem() }?.filter { it.isDone(null) }?.size == 1)
+        assert(taskDao.getTask(taskId).checkList?.map { it.toCheckListItem() }?.filter { it.isDone(null) }?.size == 1)
+        assert(achievementDao.getAchievement(achievementId).checkList?.map { it.toCheckListItem() }?.filter { it.isDone(null) }?.size == 1)
 
-            checkListItemDoneDao.delete(ids[0], null)
-            checkListItemDoneDao.delete(ids[2], null)
+        checkListItemDoneDao.delete(ids[0], null)
+        checkListItemDoneDao.delete(ids[2], null)
 
-            assert(checkListItemDoneDao.getAll().first().isEmpty())
+        assert(checkListItemDoneDao.getAll().first().isEmpty())
 
-            assert(taskDao.getTask(taskId).checkList?.map { it.toCheckListItem() }?.filter { it.isDone(null) }.isNullOrEmpty())
-            assert(achievementDao.getAchievement(achievementId).checkList?.map { it.toCheckListItem() }?.filter { it.isDone(null) }.isNullOrEmpty())
-        }
+        assert(taskDao.getTask(taskId).checkList?.map { it.toCheckListItem() }?.filter { it.isDone(null) }.isNullOrEmpty())
+        assert(achievementDao.getAchievement(achievementId).checkList?.map { it.toCheckListItem() }?.filter { it.isDone(null) }.isNullOrEmpty())
     }
 }

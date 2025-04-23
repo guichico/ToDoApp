@@ -6,7 +6,6 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apphico.core_model.Status
 import com.apphico.core_model.Task
-import com.apphico.core_repository.R
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
@@ -17,7 +16,6 @@ import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDoneDB
-import com.apphico.core_repository.calendar.room.entities.GroupDB
 import com.apphico.core_repository.calendar.room.entities.LocationDB
 import com.apphico.core_repository.calendar.room.entities.ReminderDB
 import com.apphico.core_repository.calendar.room.entities.TaskDB
@@ -25,10 +23,12 @@ import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
 import com.apphico.core_repository.calendar.room.entities.toTask
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
+import com.apphico.core_repository.utils.sampleGroup
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -41,7 +41,6 @@ import java.time.temporal.TemporalAdjusters
 @RunWith(AndroidJUnit4::class)
 class TaskDaoTest {
 
-    private lateinit var appContext: Context
     private lateinit var db: AppDatabase
 
     private lateinit var groupDao: GroupDao
@@ -57,7 +56,7 @@ class TaskDaoTest {
 
     @Before
     fun createDb() {
-        appContext = ApplicationProvider.getApplicationContext<Context>()
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java).build()
 
         groupDao = db.groupDao()
@@ -70,7 +69,7 @@ class TaskDaoTest {
 
         fromDate = getNowDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY))
         runBlocking {
-            groupId = groupDao.insert(GroupDB(name = appContext.getString(R.string.group_name_2), color = -7745552))
+            groupId = groupDao.insert(sampleGroup())
         }
     }
 
@@ -82,97 +81,89 @@ class TaskDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun writeTaskAndReadInList() {
-        runBlocking {
-            val insertedTask = insertTask(groupId)
+    fun writeTaskAndReadInList() = runTest {
+        val insertedTask = insertTask(groupId)
 
-            assert(getAllTasks().contains(insertedTask))
-            assert(getDayTasks(fromDate).contains(insertedTask))
+        assert(getAllTasks().contains(insertedTask))
+        assert(getDayTasks(fromDate).contains(insertedTask))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testFilters() = runTest {
+        insertTask(groupId)
+        insertTask(endDate = fromDate.plusDays(1))
+
+        val sunday = fromDate.minusDays(1)
+        val tuesday = fromDate.plusDays(1)
+        val wednesday = fromDate.plusDays(2)
+
+        assert(getAllTasks(sunday, true, emptyList()).size == 2)
+        assert(getAllTasks(wednesday, true, emptyList()).size == 1)
+        assert(getAllTasks(fromDate, false, listOf(groupId)).size == 1)
+        assert(getAllTasks(fromDate, false, listOf(Long.MAX_VALUE)).isEmpty())
+
+        assert(getDayTasks(sunday).isEmpty())
+        assert(getDayTasks(tuesday).isEmpty())
+        assert(getDayTasks(wednesday, Status.ALL).size == 1)
+        assert(getDayTasks(wednesday, Status.DONE).isEmpty())
+        assert(getDayTasks(wednesday, Status.UNDONE).size == 1)
+        assert(getDayTasks(date = wednesday, groupIds = listOf(groupId)).size == 1)
+        assert(getDayTasks(date = wednesday, groupIds = listOf(Long.MAX_VALUE)).isEmpty())
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun update() = runTest {
+        val insertedTask = insertTask(groupId)
+
+        assert(getAllTasks().contains(insertedTask))
+
+        val name = "Task updated"
+        val description = "description updated"
+        val endDate = getNowDate().plusMonths(1)
+        val endTime = getNowTime()
+
+        val updatedTask = insertedTask
+            .copy(
+                name = name,
+                description = description,
+                endDate = endDate,
+                endTime = endTime
+            )
+
+        taskDao.update(updatedTask.toTaskDB())
+
+        val allTasks = getAllTasks()
+
+        assert(!allTasks.contains(insertedTask))
+        assert(allTasks.contains(updatedTask))
+
+        with(allTasks[0]) {
+            assert(name == name)
+            assert(description == description)
+            assert(endDate == endDate)
+            assert(endTime == endTime)
         }
     }
 
     @Test
     @Throws(Exception::class)
-    fun testFilters() {
-        runBlocking {
-            insertTask(groupId)
-            insertTask(endDate = fromDate.plusDays(1))
+    fun delete() = runTest {
+        val insertedTask = insertTask(groupId)
 
-            val sunday = fromDate.minusDays(1)
-            val tuesday = fromDate.plusDays(1)
-            val wednesday = fromDate.plusDays(2)
+        assert(getAllTasks().contains(insertedTask))
 
-            assert(getAllTasks(sunday, true, emptyList()).size == 2)
-            assert(getAllTasks(wednesday, true, emptyList()).size == 1)
-            assert(getAllTasks(fromDate, false, listOf(groupId)).size == 1)
-            assert(getAllTasks(fromDate, false, listOf(Long.MAX_VALUE)).isEmpty())
+        taskDao.delete(insertedTask.toTaskDB())
 
-            assert(getDayTasks(sunday).isEmpty())
-            assert(getDayTasks(tuesday).isEmpty())
-            assert(getDayTasks(wednesday, Status.ALL).size == 1)
-            assert(getDayTasks(wednesday, Status.DONE).isEmpty())
-            assert(getDayTasks(wednesday, Status.UNDONE).size == 1)
-            assert(getDayTasks(date = wednesday, groupIds = listOf(groupId)).size == 1)
-            assert(getDayTasks(date = wednesday, groupIds = listOf(Long.MAX_VALUE)).isEmpty())
-        }
-    }
+        assert(!getAllTasks().contains(insertedTask))
 
-    @Test
-    @Throws(Exception::class)
-    fun updateTask() {
-        runBlocking {
-            val insertedTask = insertTask(groupId)
-
-            assert(getAllTasks().contains(insertedTask))
-
-            val name = "Test name"
-            val description = "Test description"
-            val endDate = getNowDate().plusMonths(1)
-            val endTime = getNowTime()
-
-            val updatedTask = insertedTask
-                .copy(
-                    name = name,
-                    description = description,
-                    endDate = endDate,
-                    endTime = endTime
-                )
-
-            taskDao.update(updatedTask.toTaskDB())
-
-            val allTasks = getAllTasks()
-
-            assert(!allTasks.contains(insertedTask))
-            assert(allTasks.contains(updatedTask))
-
-            with(allTasks[0]) {
-                assert(name == name)
-                assert(description == description)
-                assert(endDate == endDate)
-                assert(endTime == endTime)
-            }
-        }
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun deleteTask() {
-        runBlocking {
-            val insertedTask = insertTask(groupId)
-
-            assert(getAllTasks().contains(insertedTask))
-
-            taskDao.delete(insertedTask.toTaskDB())
-
-            assert(!getAllTasks().contains(insertedTask))
-
-            assert(groupDao.getAll().first().size == 1)
-            assert(taskDoneDao.getAll().first().isEmpty())
-            assert(taskDeletedDao.getAll().first().isEmpty())
-            assert(checkListItemDao.getAll().first().isEmpty())
-            assert(checkListItemDoneDao.getAll().first().isEmpty())
-            assert(locationDao.getAll().first().isEmpty())
-        }
+        assert(groupDao.getAll().first().size == 1)
+        assert(taskDoneDao.getAll().first().isEmpty())
+        assert(taskDeletedDao.getAll().first().isEmpty())
+        assert(checkListItemDao.getAll().first().isEmpty())
+        assert(checkListItemDoneDao.getAll().first().isEmpty())
+        assert(locationDao.getAll().first().isEmpty())
     }
 
     suspend fun getAllTasks(fromStartDate: LocalDate = getNowDate(), nullableGroupIdsFlag: Boolean = true, groupIds: List<Long> = emptyList<Long>()) =
@@ -206,8 +197,8 @@ class TaskDaoTest {
     }
 
     private fun sampleTask(groupId: Long? = null, endDate: LocalDate? = null) = TaskDB(
-        name = appContext.getString(R.string.task_name_1),
-        description = appContext.getString(R.string.task_description_1),
+        name = "Task test",
+        description = "description test",
         taskGroupId = groupId,
         startDate = getNowDate(),
         startTime = getNowTime().withHour(8).withMinute(0),
@@ -218,8 +209,8 @@ class TaskDaoTest {
     )
 
     private fun sampleCheckList(taskId: Long) = listOf(
-        CheckListItemDB(checkListTaskId = taskId, name = appContext.getString(R.string.task_check_list_item_1)),
-        CheckListItemDB(checkListTaskId = taskId, name = appContext.getString(R.string.task_check_list_item_2))
+        CheckListItemDB(checkListTaskId = taskId, name = "Item 1"),
+        CheckListItemDB(checkListTaskId = taskId, name = "Item 2")
     )
 
     private fun sampleLocation(taskId: Long) = LocationDB(

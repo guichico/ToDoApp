@@ -72,11 +72,9 @@ class AddEditAchievementViewModel @Inject constructor(
                 savedStateHandle.getStateFlow<Operation?>(OPERATION_ARG, null).filterNotNull()
             )
                 .flowOn(Dispatchers.IO)
-                .collectLatest { (measurementType, operation) ->
-                    val percentageProgress = editingPercentageProgress.value.progress
-
+                .map { (measurementType, operation) ->
                     var progressList = when (measurementType) {
-                        MeasurementType.Percentage().intValue -> percentageProgress
+                        MeasurementType.Percentage().intValue -> editingPercentageProgress.value.progress
                         MeasurementType.Value().intValue -> editingValueProgress.value.trackedValues
                         else -> emptyList()
                     }
@@ -87,6 +85,9 @@ class AddEditAchievementViewModel @Inject constructor(
                         is Operation.Delete -> progressList.remove(operation.progress)
                     }
 
+                    measurementType to progressList
+                }
+                .collectLatest { (measurementType, progressList) ->
                     when (measurementType) {
                         MeasurementType.Percentage().intValue -> {
                             editingPercentageProgress.value = editingPercentageProgress.value.copy(
@@ -179,10 +180,8 @@ class AddEditAchievementViewModel @Inject constructor(
         editingValueProgress.value = editingValueProgress.value.copy(goalValue = goalValue)
     }
 
-    fun setDone(onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            onResult(achievementRepository.setDone(editingAchievement.value))
-        }
+    fun setDone(onResult: (Boolean) -> Unit) = viewModelScope.launch {
+        onResult(achievementRepository.setDone(editingAchievement.value))
     }
 
     fun save(onResult: (Boolean) -> Unit) {

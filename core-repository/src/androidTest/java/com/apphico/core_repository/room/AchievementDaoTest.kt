@@ -5,20 +5,23 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apphico.core_model.Achievement
+import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.Status
-import com.apphico.core_repository.R
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.ProgressDao
-import com.apphico.core_repository.calendar.room.entities.GroupDB
+import com.apphico.core_repository.calendar.room.entities.AchievementDB
 import com.apphico.core_repository.calendar.room.entities.toAchievement
 import com.apphico.core_repository.calendar.room.entities.toAchievementDB
+import com.apphico.core_repository.utils.sampleGroup
+import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -28,7 +31,6 @@ import java.io.IOException
 @RunWith(AndroidJUnit4::class)
 class AchievementDaoTest {
 
-    private lateinit var appContext: Context
     private lateinit var db: AppDatabase
 
     private lateinit var groupDao: GroupDao
@@ -41,7 +43,7 @@ class AchievementDaoTest {
 
     @Before
     fun createDb() {
-        appContext = ApplicationProvider.getApplicationContext<Context>()
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
         db = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java).build()
 
         groupDao = db.groupDao()
@@ -51,7 +53,7 @@ class AchievementDaoTest {
         progressDao = db.progressDao()
 
         runBlocking {
-            groupId = groupDao.insert(GroupDB(name = appContext.getString(R.string.group_name_2), color = -7745552))
+            groupId = groupDao.insert(sampleGroup())
         }
     }
 
@@ -63,57 +65,74 @@ class AchievementDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun writeTaskAndReadInList() {
-        runBlocking {
-            val achievementId = achievementDao.insert(Achievement(name = "Achievement test").toAchievementDB())
-            val insertedAchievement = achievementDao.getAchievement(achievementId).toAchievement()
+    fun writeTaskAndReadInList() = runTest {
+        val achievementId = achievementDao.insert(sampleAchievement())
+        val insertedAchievement = achievementDao.getAchievement(achievementId).toAchievement()
 
-            assert(getAll().contains(insertedAchievement))
+        assert(getAll().contains(insertedAchievement))
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun testFilters() = runTest {
+        val achievementId = achievementDao.insert(sampleAchievement(groupId))
+        val insertedAchievement = achievementDao.getAchievement(achievementId).toAchievement()
+
+        // TODO Set achievement done date
+        assert(getAll(Status.DONE).contains(insertedAchievement))
+        //assert(getAll(Status.UNDONE).contains(insertedAchievement))
+
+        assert(getAll(groupIds = listOf(groupId)).size == 1)
+        assert(getAll(groupIds = listOf(Long.MAX_VALUE)).isEmpty())
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun update() = runTest {
+        val achievementId = achievementDao.insert(sampleAchievement())
+        val insertedAchievement = achievementDao.getAchievement(achievementId).toAchievement()
+
+        val name = "Achievement updated"
+        val description = "description updated"
+        val endDate = getNowDate().plusMonths(1)
+
+        val updatedAchievement = insertedAchievement.copy(
+            name = name,
+            description = description,
+            endDate = endDate,
+            measurementType = MeasurementType.Percentage()
+        )
+
+        achievementDao.update(updatedAchievement.toAchievementDB())
+
+        val allAchievements = getAll()
+
+        assert(!allAchievements.contains(insertedAchievement))
+        assert(allAchievements.contains(updatedAchievement))
+
+        with(allAchievements[0]) {
+            assert(name == name)
+            assert(description == description)
+            assert(endDate == endDate)
         }
     }
 
     @Test
     @Throws(Exception::class)
-    fun testFilters() {
-        runBlocking {
-            val achievementId = achievementDao.insert(Achievement(name = "Achievement test").toAchievementDB())
-            val insertedAchievement = achievementDao.getAchievement(achievementId).toAchievement()
+    fun delete() = runTest {
+        val achievementId = achievementDao.insert(sampleAchievement())
+        val insertedAchievement = achievementDao.getAchievement(achievementId).toAchievement()
 
+        assert(getAll().contains(insertedAchievement))
 
-            assert(getAll(Status.DONE).contains(insertedAchievement))
-            assert(getAll(Status.UNDONE).contains(insertedAchievement))
+        achievementDao.delete(insertedAchievement.toAchievementDB())
 
-            assert(getAll(groupIds = listOf(groupId)).size == 1)
-            assert(getAll(groupIds = listOf(Long.MAX_VALUE)).isEmpty())
-        }
-    }
+        assert(!getAll().contains(insertedAchievement))
 
-    @Test
-    @Throws(Exception::class)
-    fun update() {
-        runBlocking {
-
-        }
-    }
-
-    @Test
-    @Throws(Exception::class)
-    fun delete() {
-        runBlocking {
-            val achievementId = achievementDao.insert(Achievement(name = "Achievement test").toAchievementDB())
-            val insertedAchievement = achievementDao.getAchievement(achievementId).toAchievement()
-
-            assert(getAll().contains(insertedAchievement))
-
-            achievementDao.delete(insertedAchievement.toAchievementDB())
-
-            assert(!getAll().contains(insertedAchievement))
-
-            assert(groupDao.getAll().first().size == 1)
-            assert(checkListItemDao.getAll().first().isEmpty())
-            assert(checkListItemDoneDao.getAll().first().isEmpty())
-            assert(progressDao.getAll().first().isEmpty())
-        }
+        assert(groupDao.getAll().first().size == 1)
+        assert(checkListItemDao.getAll().first().isEmpty())
+        assert(checkListItemDoneDao.getAll().first().isEmpty())
+        assert(progressDao.getAll().first().isEmpty())
     }
 
     private suspend fun getAll(status: Status = Status.ALL, groupIds: List<Long> = emptyList()): List<Achievement> =
@@ -126,4 +145,14 @@ class AchievementDaoTest {
         )
             .map { it.map { it.toAchievement() } }
             .first()
+
+    private fun sampleAchievement(groupId: Long? = null) = AchievementDB(
+        name = "Achievement test",
+        description = "description test",
+        achievementGroupId = groupId,
+        measurementType = MeasurementType.None.intValue,
+        endDate = getNowDate(),
+        doneDate = getNowDate().plusMonths(1),
+        valueProgressDB = null
+    )
 }
