@@ -9,6 +9,7 @@ import androidx.room.Update
 
 @Dao
 interface BaseDao<T> {
+
     @Insert()
     suspend fun insert(obj: T): Long
 
