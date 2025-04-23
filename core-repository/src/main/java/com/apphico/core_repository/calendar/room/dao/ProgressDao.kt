@@ -4,7 +4,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.ProgressDB
 import kotlinx.coroutines.flow.Flow
 
