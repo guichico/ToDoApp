@@ -66,7 +66,9 @@ class AchievementsViewModel @Inject constructor(
         }
     }
 
-    fun setCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean) = viewModelScope.launch {
-        checkListRepository.changeCheckListItemDone(checkListItem, parentDate, isDone)
+    fun setCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean) {
+        viewModelScope.launch {
+            checkListRepository.changeCheckListItemDone(checkListItem, parentDate, isDone)
+        }
     }
 }

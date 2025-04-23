@@ -35,7 +35,7 @@ fun AchievementCard(
     onClick: () -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
 ) {
-    val isDone = achievement.getProgress() >= 1f
+    val isDone = achievement.isDone()
 
     MainCard(
         isDone = isDone,

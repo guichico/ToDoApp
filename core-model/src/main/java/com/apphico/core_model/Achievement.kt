@@ -105,17 +105,21 @@ data class Achievement(
             MeasurementType.Value()
         }
 
-    fun getProgress() = when {
-        doneDate != null -> 1.0f
-        measurementType is MeasurementType.TaskDone -> {
+    fun getProgress() = when (measurementType) {
+        is MeasurementType.None -> {
+            if (doneDate != null) 1.0f else 0f
+        }
+
+        is MeasurementType.TaskDone -> {
             val doneTasksCount = measurementType.checkList.filter { it.isDone(this.doneDate) }.size
             val progress = doneTasksCount.toFloat() / measurementType.checkList.size.toFloat()
             progress.takeIf { !it.isNaN() } ?: 0f
         }
 
-        measurementType is MeasurementType.Percentage -> measurementType.getProgress()
-        measurementType is MeasurementType.Value -> measurementType.getProgress()
-
+        is MeasurementType.Percentage -> measurementType.getProgress()
+        is MeasurementType.Value -> measurementType.getProgress()
         else -> 0f
     }
+
+    fun isDone() = this.getProgress() >= 1f
 }

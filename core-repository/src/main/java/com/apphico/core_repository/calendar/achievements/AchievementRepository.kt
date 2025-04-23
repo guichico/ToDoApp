@@ -42,16 +42,7 @@ class AchievementRepositoryImpl(
             nullableGroupIdsFlag = groups.isEmpty(),
             groupIds = groups.map { it.id }
         )
-            .map { it.map { it.toAchievement() } }
-            .map {
-                it.filter {
-                    when (status) {
-                        Status.DONE -> it.getProgress() >= 1f
-                        Status.UNDONE -> it.getProgress() < 1f
-                        else -> true
-                    }
-                }
-            }
+            .map { it.map { it.toAchievement() }.filterStatus(status) }
 
     override suspend fun setDone(achievement: Achievement): Boolean {
         return try {
@@ -67,7 +58,9 @@ class AchievementRepositoryImpl(
     override suspend fun insertAchievement(achievement: Achievement): Boolean {
         return try {
             appDatabase.withTransaction {
-                val achievementId = achievementDao.insert(achievement.toAchievementDB())
+                val doneDate = if (achievement.isDone()) achievement.doneDate ?: getNowDate() else null
+                val achievementId = achievementDao.insert(achievement.copy(doneDate = doneDate).toAchievementDB())
+
                 var progress = emptyList<Progress>()
 
                 when (achievement.measurementType) {
@@ -100,7 +93,8 @@ class AchievementRepositoryImpl(
     override suspend fun updateAchievement(achievement: Achievement): Boolean {
         return try {
             appDatabase.withTransaction {
-                achievementDao.update(achievement.toAchievementDB())
+                val doneDate = if (achievement.isDone()) achievement.doneDate ?: getNowDate() else null
+                achievementDao.update(achievement.copy(doneDate = doneDate).toAchievementDB())
 
                 var progress = emptyList<Progress>()
 
@@ -149,4 +143,13 @@ class AchievementRepositoryImpl(
             return false
         }
     }
+
+    private fun List<Achievement>.filterStatus(status: Status) =
+        this.filter {
+            when (status) {
+                Status.DONE -> it.isDone()
+                Status.UNDONE -> !it.isDone()
+                else -> true
+            }
+        }
 }
