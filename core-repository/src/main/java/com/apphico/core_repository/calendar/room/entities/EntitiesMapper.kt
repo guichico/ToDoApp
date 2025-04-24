@@ -38,6 +38,7 @@ fun CheckListWithDone.toCheckListItem(): CheckListItem =
         id = this.checkListItem.checkListItemId,
         name = this.checkListItem.name,
         hasDone = this.checkListItemHasDone,
+        doneDate = this.checkListItemDoneDate,
         doneDates = this.checkListItemDoneDates
     )
 
@@ -117,8 +118,8 @@ fun Achievement.toAchievementDB(): AchievementDB =
         achievementGroupId = this.group?.id,
         measurementType = this.measurementType?.intValue ?: MeasurementType.None.intValue,
         endDate = this.endDate,
-        doneDate = this.doneDate,
-        valueProgressDB = this.getValueProgress()?.toValueProgressDB()
+        doneDate = this.getDoneDate(),
+        valueProgressDB = this.getValueProgress().toValueProgressDB()
     )
 
 fun AchievementRelations.toAchievement(): Achievement =

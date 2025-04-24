@@ -50,11 +50,11 @@ data class CheckListItemDoneDB(
 )
 
 @DatabaseView(
-    "SELECT checklistitemdb.*, checkListDoneDates.checkListItemHasDone, checkListDoneDates.checkListItemDoneDates " +
+    "SELECT checklistitemdb.*, checkListDoneDates.checkListItemHasDone, checkListDoneDates.doneDate AS checkListItemDoneDate, checkListDoneDates.checkListItemDoneDates " +
             "FROM checklistitemdb " +
             "LEFT OUTER JOIN " +
             "( " +
-            "    SELECT checkListItemDoneId, 1 AS checkListItemHasDone, group_concat(parentDate) AS checkListItemDoneDates " +
+            "    SELECT checkListItemDoneId, 1 AS checkListItemHasDone, doneDate, group_concat(parentDate) AS checkListItemDoneDates " +
             "    FROM checklistitemdonedb " +
             "    GROUP BY checkListItemDoneId " +
             ") AS checkListDoneDates " +
@@ -63,5 +63,6 @@ data class CheckListItemDoneDB(
 data class CheckListWithDone(
     @Embedded val checkListItem: CheckListItemDB,
     @ColumnInfo("checkListItemHasDone") val checkListItemHasDone: Boolean?,
+    @ColumnInfo("checkListItemDoneDate") val checkListItemDoneDate: LocalDate?,
     @ColumnInfo("checkListItemDoneDates") val checkListItemDoneDates: String?,
 )

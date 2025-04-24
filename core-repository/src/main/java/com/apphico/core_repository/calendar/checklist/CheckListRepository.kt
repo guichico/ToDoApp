@@ -13,13 +13,15 @@ interface CheckListRepository {
 }
 
 class CheckListRepositoryImpl(
-    private val checkListItemDoneDao: CheckListItemDoneDao,
+    private val checkListItemDoneDao: CheckListItemDoneDao
 ) : CheckListRepository {
 
     override suspend fun changeCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean): Boolean {
         return try {
             if (isDone) {
-                checkListItemDoneDao.insert(CheckListItemDoneDB(checkListItemDoneId = checkListItem.id, doneDate = getNowDate(), parentDate = parentDate))
+                checkListItemDoneDao.insert(
+                    CheckListItemDoneDB(checkListItemDoneId = checkListItem.id, doneDate = getNowDate(), parentDate = parentDate)
+                )
             } else {
                 checkListItemDoneDao.delete(checkListItem.id, parentDate)
             }

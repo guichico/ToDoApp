@@ -89,7 +89,7 @@ private fun DatesColumn(
             color = MaterialTheme.colorScheme.secondary
         )
     }
-    achievement.doneDate?.let {
+    achievement.getDoneDate()?.let {
         Text(
             text = "${stringResource(R.string.completed_in)} ${it.formatShortDate()}",
             style = MaterialTheme.typography.bodyMedium,

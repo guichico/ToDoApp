@@ -58,7 +58,7 @@ class AchievementRepositoryImpl(
     override suspend fun insertAchievement(achievement: Achievement): Boolean {
         return try {
             appDatabase.withTransaction {
-                val doneDate = if (achievement.isDone()) achievement.doneDate ?: getNowDate() else null
+                val doneDate = if (achievement.isDone()) achievement.getDoneDate() ?: getNowDate() else null
                 val achievementId = achievementDao.insert(achievement.copy(doneDate = doneDate).toAchievementDB())
 
                 var progress = emptyList<Progress>()
@@ -93,7 +93,7 @@ class AchievementRepositoryImpl(
     override suspend fun updateAchievement(achievement: Achievement): Boolean {
         return try {
             appDatabase.withTransaction {
-                val doneDate = if (achievement.isDone()) achievement.doneDate ?: getNowDate() else null
+                val doneDate = if (achievement.isDone()) achievement.getDoneDate() ?: getNowDate() else null
                 achievementDao.update(achievement.copy(doneDate = doneDate).toAchievementDB())
 
                 var progress = emptyList<Progress>()

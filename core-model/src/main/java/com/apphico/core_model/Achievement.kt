@@ -81,7 +81,7 @@ data class Achievement(
     @Serializable(with = LocalDateSerializer::class)
     val endDate: LocalDate? = null,
     @Serializable(with = LocalDateSerializer::class)
-    val doneDate: LocalDate? = null
+    private val doneDate: LocalDate? = null
 ) : Parcelable {
 
     fun getCheckList(): List<CheckListItem> =
@@ -122,4 +122,10 @@ data class Achievement(
     }
 
     fun isDone() = this.getProgress() >= 1f
+
+    fun getDoneDate() = if (isDone() && measurementType is MeasurementType.TaskDone) {
+        getCheckList().map { it.doneDate }.sortedBy { it }.last()
+    } else {
+        doneDate
+    }
 }
