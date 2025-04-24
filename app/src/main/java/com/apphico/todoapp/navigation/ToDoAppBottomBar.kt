@@ -1,6 +1,8 @@
 package com.apphico.todoapp.navigation
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -31,51 +33,56 @@ fun ToDoAppBottomBar(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    NavigationBar(
-        modifier = modifier
-            .windowInsetsPadding(WindowInsets.navigationBars)
-            .height(80.dp)
-            .shadow(elevation = 8.dp, spotColor = Color.Transparent),
-        containerColor = MaterialTheme.colorScheme.background
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(elevation = 8.dp, spotColor = Color.Transparent)
     ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
+        NavigationBar(
+            modifier = modifier
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .height(80.dp),
+            containerColor = MaterialTheme.colorScheme.background
+        ) {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
 
-        topLevelRoutes.forEach { topLevelRoute ->
-            val isSelected = currentDestination?.hasRoute(topLevelRoute.route::class) == true
+            topLevelRoutes.forEach { topLevelRoute ->
+                val isSelected = currentDestination?.hasRoute(topLevelRoute.route::class) == true
 
-            NavigationBarItem(
-                selected = isSelected,
-                onClick = {
-                    navController.navigate(topLevelRoute.route) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
+                NavigationBarItem(
+                    selected = isSelected,
+                    onClick = {
+                        navController.navigate(topLevelRoute.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+
+                            launchSingleTop = true
+                            restoreState = true
                         }
-
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                label = {
-                    Text(
-                        text = stringResource(id = topLevelRoute.name),
-                        style = MaterialTheme.typography.labelLarge
+                    },
+                    label = {
+                        Text(
+                            text = stringResource(id = topLevelRoute.name),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    },
+                    icon = {
+                        ToDoAppIcon(
+                            icon = if (isSelected) topLevelRoute.selectedIcon else topLevelRoute.unselectedIcon,
+                            contentDescription = null
+                        )
+                    },
+                    colors = NavigationBarItemDefaults.colors(
+                        selectedIconColor = MaterialTheme.colorScheme.primary,
+                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        unselectedIconColor = MaterialTheme.colorScheme.inverseSurface,
+                        unselectedTextColor = MaterialTheme.colorScheme.inverseSurface,
+                        indicatorColor = LightBlue
                     )
-                },
-                icon = {
-                    ToDoAppIcon(
-                        icon = if (isSelected) topLevelRoute.selectedIcon else topLevelRoute.unselectedIcon,
-                        contentDescription = null
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.primary,
-                    selectedTextColor = MaterialTheme.colorScheme.primary,
-                    unselectedIconColor = MaterialTheme.colorScheme.inverseSurface,
-                    unselectedTextColor = MaterialTheme.colorScheme.inverseSurface,
-                    indicatorColor = LightBlue
                 )
-            )
+            }
         }
     }
 }
