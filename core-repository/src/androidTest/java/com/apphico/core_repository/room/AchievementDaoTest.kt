@@ -27,6 +27,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import java.time.LocalDate
 
 @RunWith(AndroidJUnit4::class)
 class AchievementDaoTest {
@@ -75,14 +76,25 @@ class AchievementDaoTest {
     @Test
     @Throws(Exception::class)
     fun testFilters() = runTest {
-        val achievementId = achievementDao.insert(sampleAchievement(groupId))
-        val insertedAchievement = achievementDao.getAchievement(achievementId).toAchievement()
+        val achievementId1 = achievementDao.insert(sampleAchievement(groupId))
+        val achievementId2 = achievementDao.insert(sampleAchievement(groupId, MeasurementType.Percentage().intValue))
+        val achievementId3 = achievementDao.insert(sampleAchievement(groupId = groupId, doneDate = null))
 
-        // TODO Set achievement done date
-        assert(getAll(Status.DONE).contains(insertedAchievement))
-        //assert(getAll(Status.UNDONE).contains(insertedAchievement))
+        val insertedAchievement1 = achievementDao.getAchievement(achievementId1).toAchievement()
+        val insertedAchievement2 = achievementDao.getAchievement(achievementId2).toAchievement()
+        val insertedAchievement3 = achievementDao.getAchievement(achievementId3).toAchievement()
 
-        assert(getAll(groupIds = listOf(groupId)).size == 1)
+        val doneAchievements = getAll(Status.DONE)
+
+        assert(doneAchievements.size == 2)
+        assert(doneAchievements.containsAll(listOf(insertedAchievement1, insertedAchievement2)))
+
+        val undoneAchievements = getAll(Status.UNDONE)
+
+        assert(undoneAchievements.size == 1)
+        assert(undoneAchievements.contains(insertedAchievement3))
+
+        assert(getAll(groupIds = listOf(groupId)).size == 3)
         assert(getAll(groupIds = listOf(Long.MAX_VALUE)).isEmpty())
     }
 
@@ -146,13 +158,17 @@ class AchievementDaoTest {
             .map { it.map { it.toAchievement() } }
             .first()
 
-    private fun sampleAchievement(groupId: Long? = null) = AchievementDB(
+    private fun sampleAchievement(
+        groupId: Long? = null,
+        measurementType: Int = MeasurementType.None.intValue,
+        doneDate: LocalDate? = getNowDate().plusMonths(1)
+    ) = AchievementDB(
         name = "Achievement test",
         description = "description test",
         achievementGroupId = groupId,
-        measurementType = MeasurementType.None.intValue,
+        measurementType = measurementType,
         endDate = getNowDate(),
-        doneDate = getNowDate().plusMonths(1),
+        doneDate = doneDate,
         valueProgressDB = null
     )
 }
