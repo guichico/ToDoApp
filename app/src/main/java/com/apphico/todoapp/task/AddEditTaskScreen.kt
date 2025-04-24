@@ -21,6 +21,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -380,9 +381,7 @@ private fun Dates(
         )
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
         EndDateRow(
-            startDate = startDate,
             endDate = endDate,
-            startTime = startTime,
             endTime = endTime,
             onEndDateChanged = onEndDateChanged,
             onEndTimeChanged = onEndTimeChanged
@@ -422,13 +421,11 @@ private fun StarDateRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EndDateRow(
-    startDate: State<LocalDate?>,
     endDate: State<LocalDate?>,
     onEndDateChanged: (LocalDate?) -> Unit,
-    startTime: State<LocalTime?>,
     endTime: State<LocalTime?>,
     onEndTimeChanged: (LocalTime) -> Unit
-) { // TODO
+) {
     var initialEndHour = endTime.value?.hour ?: getNowTime().hour.plus(1)
     var initialEndDate = endDate.value ?: getNowDate()
 
@@ -444,6 +441,11 @@ private fun EndDateRow(
         initialHour = initialEndHour,
         initialMinute = endTime.value?.minute ?: 0
     )
+
+    LaunchedEffect(endTime.value) {
+        endTimePickerState.hour = initialEndHour
+        endTimePickerState.minute = endTime.value?.minute ?: 0
+    }
 
     DateRow(
         date = endDate,
@@ -469,20 +471,20 @@ private fun DateRow(
     timePickerState: TimePickerState,
     onTimeChanged: (LocalTime) -> Unit,
 ) {
-    val isStartDatePickerDialogOpen = remember { mutableStateOf(false) }
-    val isStartTimePickerDialogOpen = remember { mutableStateOf(false) }
+    val isDatePickerDialogOpen = remember { mutableStateOf(false) }
+    val isTimePickerDialogOpen = remember { mutableStateOf(false) }
 
-    if (isStartDatePickerDialogOpen.value) {
+    if (isDatePickerDialogOpen.value) {
         DateDialog(
-            isDatePickerDialogOpen = isStartDatePickerDialogOpen,
+            isDatePickerDialogOpen = isDatePickerDialogOpen,
             datePickerState = datePickerState,
             onDateChanged = onDateChanged
         )
     }
 
-    if (isStartTimePickerDialogOpen.value) {
+    if (isTimePickerDialogOpen.value) {
         TimeDialog(
-            isTimePickerDialogOpen = isStartTimePickerDialogOpen,
+            isTimePickerDialogOpen = isTimePickerDialogOpen,
             timePickerState = timePickerState,
             onTimeChanged = onTimeChanged
         )
@@ -495,7 +497,7 @@ private fun DateRow(
                     .weight(0.6f),
                 value = date.value?.formatMediumDate() ?: "",
                 placeholder = datePlaceholder,
-                onClick = { isStartDatePickerDialogOpen.value = true }
+                onClick = { isDatePickerDialogOpen.value = true }
             )
             Spacer(modifier = Modifier.weight(0.02f))
             NormalTextField(
@@ -503,7 +505,7 @@ private fun DateRow(
                     .weight(0.4f),
                 value = time.value?.formatShortTime() ?: "",
                 placeholder = stringResource(R.string.hour),
-                onClick = { isStartTimePickerDialogOpen.value = true }
+                onClick = { isTimePickerDialogOpen.value = true }
             )
         }
         if (dateError.value != null) {
