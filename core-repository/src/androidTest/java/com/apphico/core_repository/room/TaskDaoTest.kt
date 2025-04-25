@@ -14,16 +14,15 @@ import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
-import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDoneDB
-import com.apphico.core_repository.calendar.room.entities.LocationDB
-import com.apphico.core_repository.calendar.room.entities.ReminderDB
-import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
 import com.apphico.core_repository.calendar.room.entities.toTask
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.core_repository.utils.sampleGroup
+import com.apphico.core_repository.utils.sampleLocation
+import com.apphico.core_repository.utils.sampleTask
+import com.apphico.core_repository.utils.sampleTaskCheckList
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowTime
 import kotlinx.coroutines.flow.first
@@ -53,6 +52,7 @@ class TaskDaoTest {
 
     private var groupId: Long = 0
     private lateinit var fromDate: LocalDate
+    private lateinit var insertedTask: Task
 
     @Before
     fun createDb() {
@@ -68,8 +68,10 @@ class TaskDaoTest {
         locationDao = db.locationDao()
 
         fromDate = getNowDate().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY))
+
         runBlocking {
             groupId = groupDao.insert(sampleGroup())
+            insertedTask = insertTask(groupId)
         }
     }
 
@@ -82,8 +84,6 @@ class TaskDaoTest {
     @Test
     @Throws(Exception::class)
     fun writeTaskAndReadInList() = runTest {
-        val insertedTask = insertTask(groupId)
-
         assert(getAllTasks().contains(insertedTask))
         assert(getDayTasks(fromDate).contains(insertedTask))
     }
@@ -91,7 +91,6 @@ class TaskDaoTest {
     @Test
     @Throws(Exception::class)
     fun testFilters() = runTest {
-        insertTask(groupId)
         insertTask(endDate = fromDate.plusDays(1))
 
         val sunday = fromDate.minusDays(1)
@@ -115,8 +114,6 @@ class TaskDaoTest {
     @Test
     @Throws(Exception::class)
     fun update() = runTest {
-        val insertedTask = insertTask(groupId)
-
         assert(getAllTasks().contains(insertedTask))
 
         val name = "Task updated"
@@ -150,8 +147,6 @@ class TaskDaoTest {
     @Test
     @Throws(Exception::class)
     fun delete() = runTest {
-        val insertedTask = insertTask(groupId)
-
         assert(getAllTasks().contains(insertedTask))
 
         taskDao.delete(insertedTask.toTaskDB())
@@ -166,25 +161,14 @@ class TaskDaoTest {
         assert(locationDao.getAll().first().isEmpty())
     }
 
-    suspend fun getAllTasks(fromStartDate: LocalDate = getNowDate(), nullableGroupIdsFlag: Boolean = true, groupIds: List<Long> = emptyList<Long>()) =
-        taskDao.getAllTasks(fromStartDate, nullableGroupIdsFlag, groupIds).first().map { it.toTask() }
-
-    suspend fun getDayTasks(date: LocalDate = getNowDate(), status: Status = Status.ALL, groupIds: List<Long> = emptyList()) = taskDao.getFromDay(
-        date = date,
-        statusAllFlag = status == Status.ALL,
-        statusDoneFlag = status == Status.DONE,
-        statusUndoneFlag = status == Status.UNDONE,
-        nullableGroupIdsFlag = groupIds.isEmpty(),
-        groupIds = groupIds
-    )
-        .first()
-        .map { it.toTask() }
-
-    private suspend fun insertTask(groupId: Long? = null, endDate: LocalDate? = null): Task {
+    private suspend fun insertTask(
+        groupId: Long? = null,
+        endDate: LocalDate? = null
+    ): Task {
         val task = sampleTask(groupId, endDate)
         val taskId = taskDao.insert(task)
 
-        val checkListIds = checkListItemDao.insertAll(sampleCheckList(taskId))
+        val checkListIds = checkListItemDao.insertAll(sampleTaskCheckList(taskId))
         checkListItemDoneDao
             .insert(CheckListItemDoneDB(checkListItemDoneId = checkListIds[0], doneDate = getNowDate(), parentDate = task.startDate))
 
@@ -196,27 +180,21 @@ class TaskDaoTest {
         return taskDao.getTask(taskId).toTask()
     }
 
-    private fun sampleTask(groupId: Long? = null, endDate: LocalDate? = null) = TaskDB(
-        name = "Task test",
-        description = "description test",
-        taskGroupId = groupId,
-        startDate = getNowDate(),
-        startTime = getNowTime().withHour(8).withMinute(0),
-        endTime = getNowTime().withHour(8).withMinute(30),
-        endDate = endDate,
-        reminder = ReminderDB(0, 0, 20),
-        daysOfWeek = listOf(2, 4, 6),
-    )
+    private suspend fun getAllTasks(
+        fromStartDate: LocalDate = getNowDate(),
+        nullableGroupIdsFlag: Boolean = true,
+        groupIds: List<Long> = emptyList<Long>()
+    ) = taskDao.getAllTasks(fromStartDate, nullableGroupIdsFlag, groupIds).first().map { it.toTask() }
 
-    private fun sampleCheckList(taskId: Long) = listOf(
-        CheckListItemDB(checkListTaskId = taskId, name = "Item 1"),
-        CheckListItemDB(checkListTaskId = taskId, name = "Item 2")
-    )
-
-    private fun sampleLocation(taskId: Long) = LocationDB(
-        locationTaskId = taskId,
-        latitude = 37.42253323528007,
-        longitude = -122.08524665141145,
-        address = "1600 Amphitheater Pkwy, Mountain View, CA 94043, United States"
-    )
+    private suspend fun getDayTasks(date: LocalDate = getNowDate(), status: Status = Status.ALL, groupIds: List<Long> = emptyList()) =
+        taskDao.getFromDay(
+            date = date,
+            statusAllFlag = status == Status.ALL,
+            statusDoneFlag = status == Status.DONE,
+            statusUndoneFlag = status == Status.UNDONE,
+            nullableGroupIdsFlag = groupIds.isEmpty(),
+            groupIds = groupIds
+        )
+            .first()
+            .map { it.toTask() }
 }

@@ -13,6 +13,9 @@ import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.toAchievementDB
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
+import com.apphico.core_repository.utils.sampleAchievementCheckList
+import com.apphico.core_repository.utils.sampleTask
+import com.apphico.core_repository.utils.sampleTaskCheckList
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -49,16 +52,11 @@ class CheckListItemDaoTest {
     @Test
     @Throws(Exception::class)
     fun insertAndDelete() = runTest {
-        val taskId = taskDao.insert(Task(name = "Task test").toTaskDB())
+        val taskId = taskDao.insert(sampleTask())
         val achievementId = achievementDao.insert(Achievement(name = "Achievement test").toAchievementDB())
 
         checkListItemDao.insertAll(
-            listOf(
-                CheckListItemDB(checkListTaskId = taskId, name = "Item 1"),
-                CheckListItemDB(checkListTaskId = taskId, name = "Item 2"),
-                CheckListItemDB(checkListAchievementId = achievementId, name = "Item 1"),
-                CheckListItemDB(checkListAchievementId = achievementId, name = "Item 2"),
-            )
+            sampleTaskCheckList(taskId) + sampleAchievementCheckList(achievementId)
         )
 
         assert(checkListItemDao.getAll().first().size == 4)

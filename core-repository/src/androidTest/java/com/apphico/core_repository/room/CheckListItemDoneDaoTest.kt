@@ -5,17 +5,17 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apphico.core_model.Achievement
-import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
-import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDoneDB
 import com.apphico.core_repository.calendar.room.entities.toAchievementDB
 import com.apphico.core_repository.calendar.room.entities.toCheckListItem
-import com.apphico.core_repository.calendar.room.entities.toTaskDB
+import com.apphico.core_repository.utils.sampleAchievementCheckList
+import com.apphico.core_repository.utils.sampleTask
+import com.apphico.core_repository.utils.sampleTaskCheckList
 import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
@@ -55,16 +55,11 @@ class CheckListItemDoneDaoTest {
     @Test
     @Throws(Exception::class)
     fun insertAndDelete() = runTest {
-        val taskId = taskDao.insert(Task(name = "Task test").toTaskDB())
+        val taskId = taskDao.insert(sampleTask())
         val achievementId = achievementDao.insert(Achievement(name = "Achievement test").toAchievementDB())
 
         val ids = checkListItemDao.insertAll(
-            listOf(
-                CheckListItemDB(checkListTaskId = taskId, name = "Item 1"),
-                CheckListItemDB(checkListTaskId = taskId, name = "Item 2"),
-                CheckListItemDB(checkListAchievementId = achievementId, name = "Item 1"),
-                CheckListItemDB(checkListAchievementId = achievementId, name = "Item 2"),
-            )
+            sampleTaskCheckList(taskId) + sampleAchievementCheckList(achievementId)
         )
 
         assert(checkListItemDoneDao.getAll().first().isEmpty())

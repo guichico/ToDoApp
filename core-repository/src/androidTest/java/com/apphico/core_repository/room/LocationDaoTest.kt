@@ -4,12 +4,11 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
-import com.apphico.core_repository.calendar.room.entities.LocationDB
-import com.apphico.core_repository.calendar.room.entities.toTaskDB
+import com.apphico.core_repository.utils.sampleLocation
+import com.apphico.core_repository.utils.sampleTask
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -44,16 +43,9 @@ class LocationDaoTest {
     @Test
     @Throws(Exception::class)
     fun insertAndDelete() = runTest {
-        val taskId = taskDao.insert(Task(name = "Task test").toTaskDB())
+        val taskId = taskDao.insert(sampleTask())
 
-        locationDao.insert(
-            LocationDB(
-                locationTaskId = taskId,
-                latitude = 37.42253323528007,
-                longitude = -122.08524665141145,
-                address = "1600 Amphitheater Pkwy, Mountain View, CA 94043, United States"
-            )
-        )
+        locationDao.insert(sampleLocation(taskId))
 
         assert(locationDao.getAll().first().size == 1)
 
