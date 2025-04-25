@@ -1,12 +1,7 @@
 package com.apphico.core_repository.room
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apphico.core_model.Status
 import com.apphico.core_model.Task
-import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
@@ -28,20 +23,13 @@ import com.apphico.extensions.getNowTime
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import java.io.IOException
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
 
-@RunWith(AndroidJUnit4::class)
-class TaskDaoTest {
-
-    private lateinit var db: AppDatabase
-
+class TaskDaoTest : BaseDaoTest() {
     private lateinit var groupDao: GroupDao
     private lateinit var taskDao: TaskDao
     private lateinit var taskDoneDao: TaskDoneDao
@@ -55,10 +43,7 @@ class TaskDaoTest {
     private lateinit var insertedTask: Task
 
     @Before
-    fun createDb() {
-        val appContext = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java).build()
-
+    fun init() {
         groupDao = db.groupDao()
         taskDao = db.taskDao()
         taskDoneDao = db.taskDoneDao()
@@ -73,12 +58,6 @@ class TaskDaoTest {
             groupId = groupDao.insert(sampleGroup())
             insertedTask = insertTask(groupId)
         }
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
     }
 
     @Test

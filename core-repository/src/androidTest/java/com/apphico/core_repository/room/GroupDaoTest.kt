@@ -1,39 +1,18 @@
 package com.apphico.core_repository.room
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.utils.sampleGroup
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import java.io.IOException
 
-@RunWith(AndroidJUnit4::class)
-class GroupDaoTest {
-
-    private lateinit var db: AppDatabase
-
+class GroupDaoTest : BaseDaoTest() {
     private lateinit var groupDao: GroupDao
 
     @Before
-    fun createDb() {
-        val appContext = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java).build()
-
+    fun init() {
         groupDao = db.groupDao()
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
     }
 
     @Test

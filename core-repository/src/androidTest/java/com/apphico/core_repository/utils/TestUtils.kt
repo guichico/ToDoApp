@@ -1,5 +1,7 @@
 package com.apphico.core_repository.utils
 
+import com.apphico.core_model.MeasurementType
+import com.apphico.core_repository.calendar.room.entities.AchievementDB
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.GroupDB
 import com.apphico.core_repository.calendar.room.entities.LocationDB
@@ -38,4 +40,18 @@ fun sampleLocation(taskId: Long) = LocationDB(
     latitude = 37.42253323528007,
     longitude = -122.08524665141145,
     address = "1600 Amphitheater Pkwy, Mountain View, CA 94043, United States"
+)
+
+fun sampleAchievement(
+    groupId: Long? = null,
+    measurementType: Int = MeasurementType.None.intValue,
+    doneDate: LocalDate? = getNowDate().plusMonths(1)
+) = AchievementDB(
+    name = "Achievement test",
+    description = "description test",
+    achievementGroupId = groupId,
+    measurementType = measurementType,
+    endDate = getNowDate(),
+    doneDate = doneDate,
+    valueProgressDB = null
 )

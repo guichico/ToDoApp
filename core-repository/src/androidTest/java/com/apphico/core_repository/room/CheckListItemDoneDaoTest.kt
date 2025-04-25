@@ -1,62 +1,40 @@
 package com.apphico.core_repository.room
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.apphico.core_model.Achievement
-import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.entities.CheckListItemDoneDB
-import com.apphico.core_repository.calendar.room.entities.toAchievementDB
 import com.apphico.core_repository.calendar.room.entities.toCheckListItem
+import com.apphico.core_repository.utils.sampleAchievement
 import com.apphico.core_repository.utils.sampleAchievementCheckList
 import com.apphico.core_repository.utils.sampleTask
 import com.apphico.core_repository.utils.sampleTaskCheckList
 import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import java.io.IOException
 
-@RunWith(AndroidJUnit4::class)
-class CheckListItemDoneDaoTest {
-
-    private lateinit var db: AppDatabase
-
+class CheckListItemDoneDaoTest : BaseDaoTest() {
     private lateinit var taskDao: TaskDao
     private lateinit var achievementDao: AchievementDao
     private lateinit var checkListItemDao: CheckListItemDao
     private lateinit var checkListItemDoneDao: CheckListItemDoneDao
 
     @Before
-    fun createDb() {
-        val appContext = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java).build()
-
+    fun init() {
         taskDao = db.taskDao()
         achievementDao = db.achievementDao()
         checkListItemDao = db.checkListItemDao()
         checkListItemDoneDao = db.checkListItemDoneDao()
     }
 
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
-    }
-
     @Test
     @Throws(Exception::class)
     fun insertAndDelete() = runTest {
         val taskId = taskDao.insert(sampleTask())
-        val achievementId = achievementDao.insert(Achievement(name = "Achievement test").toAchievementDB())
+        val achievementId = achievementDao.insert(sampleAchievement())
 
         val ids = checkListItemDao.insertAll(
             sampleTaskCheckList(taskId) + sampleAchievementCheckList(achievementId)

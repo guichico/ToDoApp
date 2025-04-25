@@ -1,39 +1,26 @@
 package com.apphico.core_repository.room
 
-import android.content.Context
-import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.Status
-import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.ProgressDao
-import com.apphico.core_repository.calendar.room.entities.AchievementDB
 import com.apphico.core_repository.calendar.room.entities.toAchievement
 import com.apphico.core_repository.calendar.room.entities.toAchievementDB
+import com.apphico.core_repository.utils.sampleAchievement
 import com.apphico.core_repository.utils.sampleGroup
 import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import java.io.IOException
-import java.time.LocalDate
 
-@RunWith(AndroidJUnit4::class)
-class AchievementDaoTest {
-
-    private lateinit var db: AppDatabase
-
+class AchievementDaoTest : BaseDaoTest() {
     private lateinit var groupDao: GroupDao
     private lateinit var achievementDao: AchievementDao
     private lateinit var checkListItemDao: CheckListItemDao
@@ -43,10 +30,7 @@ class AchievementDaoTest {
     private var groupId: Long = 0
 
     @Before
-    fun createDb() {
-        val appContext = ApplicationProvider.getApplicationContext<Context>()
-        db = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java).build()
-
+    fun init() {
         groupDao = db.groupDao()
         achievementDao = db.achievementDao()
         checkListItemDao = db.checkListItemDao()
@@ -56,12 +40,6 @@ class AchievementDaoTest {
         runBlocking {
             groupId = groupDao.insert(sampleGroup())
         }
-    }
-
-    @After
-    @Throws(IOException::class)
-    fun closeDb() {
-        db.close()
     }
 
     @Test
@@ -157,18 +135,4 @@ class AchievementDaoTest {
         )
             .map { it.map { it.toAchievement() } }
             .first()
-
-    private fun sampleAchievement(
-        groupId: Long? = null,
-        measurementType: Int = MeasurementType.None.intValue,
-        doneDate: LocalDate? = getNowDate().plusMonths(1)
-    ) = AchievementDB(
-        name = "Achievement test",
-        description = "description test",
-        achievementGroupId = groupId,
-        measurementType = measurementType,
-        endDate = getNowDate(),
-        doneDate = doneDate,
-        valueProgressDB = null
-    )
 }
