@@ -10,19 +10,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import com.apphico.core_model.CheckBoxItem
 import com.apphico.core_model.RecurringTask
 import com.apphico.designsystem.components.buttons.AlertButton
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.emptyLambda
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.isColorDark
 
 @Composable
 fun CheckBoxDialog(
@@ -54,7 +50,7 @@ fun CheckBoxDialog(
                             ),
                         text = it,
                         style = MaterialTheme.typography.titleMedium,
-                        color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 values.forEach {
@@ -72,7 +68,7 @@ fun CheckBoxDialog(
                                 )
                                 .align(Alignment.CenterVertically),
                             icon = if (selectedItem == it) ToDoAppIcons.icRadioButtonChecked else ToDoAppIcons.icRadioButtonUnchecked,
-                            tint = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             modifier = Modifier
@@ -80,7 +76,7 @@ fun CheckBoxDialog(
                                 .align(Alignment.CenterVertically),
                             text = stringResource(it.title),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -106,7 +102,7 @@ fun CheckBoxDialog(
     }
 }
 
-@Preview
+@PreviewLightDark
 @Composable
 fun SaveRecurringTaskDialogPreview() {
     ToDoAppTheme {

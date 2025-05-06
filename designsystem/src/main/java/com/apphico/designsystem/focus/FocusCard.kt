@@ -66,7 +66,7 @@ fun FocusCard(
                         .weight(1f),
                     text = focus.name,
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Column(
                     modifier = Modifier
@@ -82,13 +82,13 @@ fun FocusCard(
                                 .weight(1f),
                             text = "Tempo de foco",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             modifier = Modifier,
                             text = focus.timer.formatHours(),
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                     Row(
@@ -100,13 +100,13 @@ fun FocusCard(
                                 .weight(1f),
                             text = "Intervalo",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             modifier = Modifier,
                             text = focus.interval.formatHours(),
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }

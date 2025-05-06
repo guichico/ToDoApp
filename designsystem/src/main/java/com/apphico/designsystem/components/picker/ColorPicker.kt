@@ -82,7 +82,7 @@ fun ColorPicker(
                     shape = CircleShape,
                     border = BorderStroke(
                         width = 1.dp,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 )
             }

@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -21,10 +20,7 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.fakeData.mockedGroup
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
-import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.isColorDark
 
 @Composable
 fun GroupField(
@@ -51,11 +47,9 @@ fun GroupField(
         },
         trailingIcon = group.value?.let {
             {
-                val iconTint = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black
-
                 ToDoAppIconButton(
                     icon = ToDoAppIcons.icRemove,
-                    tint = iconTint,
+                    tint = MaterialTheme.colorScheme.primary,
                     onClick = onGroupRemoved
                 )
             }
@@ -64,7 +58,7 @@ fun GroupField(
                 ToDoAppIcon(
                     icon = ToDoAppIcons.icArrowRight,
                     contentDescription = "arrow",
-                    tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
                 )
             }
         }

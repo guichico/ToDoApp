@@ -1,7 +1,6 @@
 package com.apphico.designsystem.components.topbar
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +25,6 @@ import androidx.compose.ui.unit.sp
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.emptyLambda
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
@@ -42,8 +40,6 @@ fun ToDoAppTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    val textColor = if (isSystemInDarkTheme()) White else Black
-
     TopAppBar(
         modifier = modifier,
         title = {
@@ -60,7 +56,7 @@ fun ToDoAppTopBar(
                         HeaderWithSubtitle(
                             title = title,
                             subTitle = subTitle,
-                            textColor = textColor
+                            textColor = MaterialTheme.colorScheme.primary
                         )
                     } ?: run {
                         Text(
@@ -68,7 +64,7 @@ fun ToDoAppTopBar(
                                 .padding(top = 4.dp, end = 4.dp, bottom = 4.dp),
                             text = title,
                             style = MaterialTheme.typography.titleLarge,
-                            color = textColor
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
@@ -88,7 +84,7 @@ fun ToDoAppTopBar(
                 ) {
                     ToDoAppIconButton(
                         icon = ToDoAppIcons.icBack,
-                        tint = textColor,
+                        tint = MaterialTheme.colorScheme.primary,
                         onClick = navigateBack
                     )
                 }
@@ -135,7 +131,7 @@ private fun HeaderWithSubtitle(
             ),
         text = subTitle,
         style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp),
-        color = MaterialTheme.colorScheme.secondary
+        color = MaterialTheme.colorScheme.tertiary
     )
 }
 

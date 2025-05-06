@@ -46,7 +46,7 @@ fun ReminderDialog(
                     .padding(bottom = ToDoAppTheme.spacing.large),
                 text = stringResource(R.string.reminder),
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.secondary
             )
 
             var minutes by remember { mutableIntStateOf(initialValue.minutes) }
@@ -97,7 +97,7 @@ fun ReminderDialog(
                 text = timeBeforeTask,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.secondary
             )
 
             var isSoundAlarm by remember { mutableStateOf(initialValue.soundAlarm) }
@@ -115,7 +115,7 @@ fun ReminderDialog(
                         .weight(1f),
                     text = stringResource(R.string.sound_alarm),
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 ToDoAppSwitch(
                     modifier = Modifier
@@ -177,7 +177,7 @@ fun NumberSpinnerField(
                     .align(Alignment.Center),
                 text = label,
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.secondary
             )
         }
     }

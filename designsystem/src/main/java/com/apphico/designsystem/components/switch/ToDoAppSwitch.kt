@@ -23,11 +23,11 @@ fun ToDoAppSwitch(
         onCheckedChange = onCheckedChange,
         colors = SwitchDefaults.colors(
             checkedThumbColor = White,
-            checkedTrackColor = MaterialTheme.colorScheme.primary,
-            checkedBorderColor = MaterialTheme.colorScheme.primary,
-            uncheckedThumbColor = MaterialTheme.colorScheme.primary,
+            checkedTrackColor = MaterialTheme.colorScheme.secondary,
+            checkedBorderColor = MaterialTheme.colorScheme.secondary,
+            uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
             uncheckedTrackColor = White,
-            uncheckedBorderColor = MaterialTheme.colorScheme.primary,
+            uncheckedBorderColor = MaterialTheme.colorScheme.secondary,
         )
     )
 }

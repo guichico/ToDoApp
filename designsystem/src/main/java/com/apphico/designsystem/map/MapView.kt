@@ -36,10 +36,8 @@ import com.apphico.designsystem.R
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.textfield.NormalTextField
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 
 @Composable
 fun MapView(
@@ -84,7 +82,7 @@ fun MapView(
                         pressedElevation = 8.dp
                     ),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = White
+                        containerColor = MaterialTheme.colorScheme.surface
                     ),
                     onClick = { onEditLocationClicked(locationUpdates.value) }
                 ) {
@@ -93,12 +91,12 @@ fun MapView(
                             .padding(end = ToDoAppTheme.spacing.small),
                         icon = ToDoAppIcons.icEditLocation,
                         contentDescription = "edit location",
-                        tint = Black
+                        tint = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         text = stringResource(R.string.select_location_on_map),
                         style = MaterialTheme.typography.titleSmall,
-                        color = Black
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

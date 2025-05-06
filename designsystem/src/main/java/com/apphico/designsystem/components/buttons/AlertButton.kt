@@ -6,12 +6,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.isColorDark
 
 @Composable
 fun AlertButton(
@@ -24,7 +20,7 @@ fun AlertButton(
     ) {
         Text(
             text = text,
-            color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }

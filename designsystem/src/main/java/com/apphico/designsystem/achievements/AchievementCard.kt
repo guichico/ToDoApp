@@ -57,7 +57,7 @@ fun AchievementCard(
                     .padding(top = ToDoAppTheme.spacing.extraSmall),
                 checkList = achievement.getCheckList(),
                 parentDate = achievement.endDate,
-                textColor = MaterialTheme.colorScheme.primary,
+                textColor = MaterialTheme.colorScheme.secondary,
                 onCheckListItemDoneChanged = { checkListItem, isDone ->
                     onCheckListItemDoneChanged(checkListItem, achievement.endDate, isDone)
                 }
@@ -86,14 +86,14 @@ private fun DatesColumn(
         Text(
             text = "${stringResource(R.string.until)} ${it.formatShortDate()}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.tertiary
         )
     }
     achievement.getDoneDate()?.let {
         Text(
             text = "${stringResource(R.string.completed_in)} ${it.formatShortDate()}",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.tertiary
         )
     }
 }

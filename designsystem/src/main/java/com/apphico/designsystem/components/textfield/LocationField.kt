@@ -7,7 +7,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -17,11 +16,8 @@ import com.apphico.core_model.Task
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.isColorDark
 
 @Composable
 fun LocationField(
@@ -30,7 +26,6 @@ fun LocationField(
     navigateToSelectLocation: (Location?) -> Unit
 ) {
     val context = LocalContext.current
-    val iconTint = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black
 
     NormalTextField(
         modifier = modifier,
@@ -50,14 +45,14 @@ fun LocationField(
             ToDoAppIcon(
                 icon = ToDoAppIcons.icLocation,
                 contentDescription = "location",
-                tint = iconTint
+                tint = MaterialTheme.colorScheme.primary
             )
         },
         trailingIcon = {
             task.value.location?.let {
                 ToDoAppIconButton(
                     icon = ToDoAppIcons.icEdit,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.secondary,
                     onClick = {
                         navigateToSelectLocation(task.value.location)
                     }

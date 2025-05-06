@@ -75,8 +75,8 @@ fun ToDoAppBottomBar(
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = MaterialTheme.colorScheme.primary,
-                        selectedTextColor = MaterialTheme.colorScheme.primary,
+                        selectedIconColor = MaterialTheme.colorScheme.secondary,
+                        selectedTextColor = MaterialTheme.colorScheme.secondary,
                         unselectedIconColor = MaterialTheme.colorScheme.inverseSurface,
                         unselectedTextColor = MaterialTheme.colorScheme.inverseSurface,
                         indicatorColor = LightBlue

@@ -44,7 +44,7 @@ fun DaysOfWeekGrid(
     ) {
         daysOfWeek.forEachIndexed { index, dayOfWeek ->
             val isSelected = selectedDaysState.value.contains(index + 1)
-            val backColor = if (isSelected) MaterialTheme.colorScheme.primary else White
+            val backColor = if (isSelected) MaterialTheme.colorScheme.secondary else White
             val shape = CircleShape
 
             Box(
@@ -58,7 +58,7 @@ fun DaysOfWeekGrid(
                         shape = shape,
                         border = BorderStroke(
                             width = 1.dp,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     )
                     .clickable {
@@ -75,7 +75,7 @@ fun DaysOfWeekGrid(
                     text = dayOfWeek,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if (isSelected) White else MaterialTheme.colorScheme.primary,
+                    color = if (isSelected) White else MaterialTheme.colorScheme.secondary,
                 )
             }
         }

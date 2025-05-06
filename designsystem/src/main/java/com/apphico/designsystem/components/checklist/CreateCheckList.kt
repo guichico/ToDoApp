@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -37,11 +36,8 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.designsystem.components.checkbox.CircleCheckbox
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.textfield.SmallTextField
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.isColorDark
 import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -100,7 +96,7 @@ private fun CheckListItemField(
 
     val nameStyle =
         if (isCheckListItemDone) MaterialTheme.typography.bodyLarge.copy(textDecoration = TextDecoration.LineThrough) else MaterialTheme.typography.bodyLarge
-    val textColor = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black
+    val textColor = MaterialTheme.colorScheme.secondary
     val animatedColor by animateColorAsState(if (!isCheckListItemDone) textColor else textColor.copy(alpha = 0.5f))
 
     SmallTextField(

@@ -391,7 +391,7 @@ private fun MeasurementTypeDialog(
             ToDoAppIcon(
                 icon = ToDoAppIcons.icArrowRight,
                 contentDescription = "arrow",
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
             )
         }
     )
@@ -590,7 +590,7 @@ private fun UnitDialog(
             ToDoAppIcon(
                 icon = ToDoAppIcons.icArrowRight,
                 contentDescription = "arrow",
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
             )
         }
     )
@@ -625,7 +625,7 @@ private fun UnitDialog(
                                 .align(Alignment.CenterVertically),
                             icon = if (measurementUnit.value == unit) ToDoAppIcons.icRadioButtonChecked else ToDoAppIcons.icRadioButtonUnchecked,
                             contentDescription = "select",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             modifier = Modifier
@@ -633,7 +633,7 @@ private fun UnitDialog(
                                 .align(Alignment.CenterVertically),
                             text = stringResource(unit.label),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }

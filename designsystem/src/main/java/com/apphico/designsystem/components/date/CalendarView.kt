@@ -36,6 +36,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.theme.DisabledColor
+import com.apphico.designsystem.theme.LightBlue
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.theme.White
@@ -142,7 +143,7 @@ private fun CalendarDay(
     if (isDateSelected || isToday) {
         textColor = if (isDateSelected) White else Color.Unspecified
 
-        val bgColor = if (isDateSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.tertiary
+        val bgColor = if (isDateSelected) MaterialTheme.colorScheme.secondary else LightBlue
 
         boxModifier = boxModifier
             .shadow(2.dp, shape, true)

@@ -1,10 +1,6 @@
 package com.apphico.designsystem.theme
 
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import com.apphico.core_model.Group
 
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF1B1B1B)
@@ -49,13 +45,3 @@ fun isColorDark(color: Int): Boolean {
         1 - (0.299 * android.graphics.Color.red(color) + 0.587 * android.graphics.Color.green(color) + 0.114 * android.graphics.Color.blue(color)) / 255
     return darkness >= 0.5
 }
-
-@Composable
-fun Group?.getBgColor() = this?.color?.let { Color(it) } ?: MaterialTheme.colorScheme.onPrimary
-
-@Composable
-fun Group?.getTextColor() =
-    this?.color?.let { if (isColorDark(Color(it).toArgb())) White else Black } ?: MaterialTheme.colorScheme.primary
-
-@Composable
-fun Group?.getStrokeColor() = this?.color?.let { Color.Transparent } ?: MaterialTheme.colorScheme.primary

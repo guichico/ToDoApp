@@ -47,11 +47,9 @@ import com.apphico.core_model.fakeData.mockedGroups
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.SmallButton
 import com.apphico.designsystem.components.icons.ToDoAppIcon
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.MediumGray
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -177,7 +175,7 @@ private fun StatusRow(
                     .align(Alignment.CenterVertically),
                 text = stringResource(id = status.title),
                 style = MaterialTheme.typography.titleSmall,
-                color = Black
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -226,7 +224,7 @@ private fun GroupRow(
                     .align(Alignment.CenterVertically),
                 text = group.name,
                 style = MaterialTheme.typography.titleSmall,
-                color = Black
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
