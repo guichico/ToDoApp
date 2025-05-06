@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 import java.text.DateFormatSymbols
 import java.util.Locale
 

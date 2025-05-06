@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +26,6 @@ import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.emptyLambda
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
