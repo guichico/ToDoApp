@@ -71,7 +71,7 @@ fun FilterView(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(
                     vertical = ToDoAppTheme.spacing.small,
                     horizontal = ToDoAppTheme.spacing.large
@@ -84,7 +84,8 @@ fun FilterView(
                 if (showStatusFilter) {
                     Text(
                         text = stringResource(R.string.status),
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
                     FlowRow(
@@ -104,7 +105,8 @@ fun FilterView(
                 }
                 Text(
                     text = stringResource(R.string.groups),
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
                 FlowRow(
@@ -164,7 +166,8 @@ private fun StatusRow(
                     .size(16.dp)
                     .align(Alignment.CenterVertically),
                 icon = ToDoAppIcons.icCheck,
-                contentDescription = "checked"
+                contentDescription = "checked",
+                tint = MaterialTheme.colorScheme.primary
             )
             Text(
                 modifier = Modifier
