@@ -51,11 +51,13 @@ fun MainLazyList(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(ToDoAppTheme.spacing.medium),
+            containerColor = MaterialTheme.colorScheme.background,
             onClick = onAddClicked
         ) {
             ToDoAppIcon(
                 icon = ToDoAppIcons.icAdd,
-                contentDescription = "add"
+                contentDescription = "add",
+                tint = MaterialTheme.colorScheme.primary
             )
         }
     }

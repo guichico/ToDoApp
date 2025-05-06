@@ -12,13 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.apphico.designsystem.theme.MainContainer
 import com.apphico.designsystem.theme.ToDoAppTheme
 
 @Composable
@@ -29,7 +29,7 @@ fun DefaultCard(
     content: @Composable RowScope.() -> Unit
 ) {
     val animatedBackgroundColor by animateColorAsState(
-        if (enabled) MainContainer else MainContainer.copy(alpha = 0.5f)
+        if (enabled) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
     )
     val animatedElevation by animateDpAsState(if (enabled) 8.dp else 0.dp)
 

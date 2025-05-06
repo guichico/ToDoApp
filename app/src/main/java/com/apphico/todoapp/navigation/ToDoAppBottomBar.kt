@@ -42,7 +42,7 @@ fun ToDoAppBottomBar(
             modifier = modifier
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .height(80.dp),
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
@@ -79,7 +79,7 @@ fun ToDoAppBottomBar(
                         selectedTextColor = MaterialTheme.colorScheme.secondary,
                         unselectedIconColor = MaterialTheme.colorScheme.inverseSurface,
                         unselectedTextColor = MaterialTheme.colorScheme.inverseSurface,
-                        indicatorColor = LightBlue
+                        indicatorColor = MaterialTheme.colorScheme.onBackground
                     )
                 )
             }

@@ -82,20 +82,19 @@ fun AchievementCard(
 private fun DatesColumn(
     achievement: Achievement
 ) {
-    achievement.endDate?.let {
-        Text(
-            text = "${stringResource(R.string.until)} ${it.formatShortDate()}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.tertiary
-        )
+    val text = achievement.getDoneDate()?.let {
+        "${stringResource(R.string.completed_in)} ${it.formatShortDate()}"
+    } ?: run {
+        achievement.endDate?.let {
+            "${stringResource(R.string.until)} ${it.formatShortDate()}"
+        } ?: ""
     }
-    achievement.getDoneDate()?.let {
-        Text(
-            text = "${stringResource(R.string.completed_in)} ${it.formatShortDate()}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.tertiary
-        )
-    }
+
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.secondary
+    )
 }
 
 class AchievementCardPreviewProvider : PreviewParameterProvider<Achievement> {

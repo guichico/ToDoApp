@@ -310,6 +310,7 @@ private fun AddTaskScreenContent(
                 modifier = Modifier
                     .padding(vertical = ToDoAppTheme.spacing.extraSmall),
                 text = stringResource(R.string.repeat),
+                color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -345,6 +346,7 @@ private fun AddTaskScreenContent(
                 modifier = Modifier
                     .padding(vertical = ToDoAppTheme.spacing.extraSmall),
                 text = stringResource(R.string.location),
+                color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -538,6 +540,7 @@ private fun CheckList(
         modifier = Modifier
             .padding(vertical = ToDoAppTheme.spacing.extraSmall),
         text = stringResource(R.string.checklist_header_title),
+        color = MaterialTheme.colorScheme.primary,
         style = MaterialTheme.typography.bodyMedium
     )
 
@@ -595,6 +598,7 @@ private fun ReminderField(
         modifier = Modifier
             .padding(vertical = ToDoAppTheme.spacing.extraSmall),
         text = stringResource(R.string.reminder),
+        color = MaterialTheme.colorScheme.primary,
         style = MaterialTheme.typography.bodyMedium
     )
 

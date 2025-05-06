@@ -71,10 +71,7 @@ fun ToDoAppTopBar(
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(
-                White.toArgb()
-                // MaterialTheme.colorScheme.primary.copy(alpha = 0.085f).compositeOver(MaterialTheme.colorScheme.surface.copy()).toArgb()
-            )
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         navigationIcon = if (navigateBack != emptyLambda) {
             {
@@ -131,7 +128,7 @@ private fun HeaderWithSubtitle(
             ),
         text = subTitle,
         style = MaterialTheme.typography.labelLarge.copy(fontSize = 16.sp),
-        color = MaterialTheme.colorScheme.tertiary
+        color = MaterialTheme.colorScheme.secondary
     )
 }
 

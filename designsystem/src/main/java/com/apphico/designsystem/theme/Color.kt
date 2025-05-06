@@ -2,12 +2,18 @@ package com.apphico.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 
+val DarkMain = Color(0XFF111622)
+val DarkSecondary = Color(0XFF090B11)
+
+val LightMain = Color(0xFFFFFFFF)
+
 val White = Color(0xFFFFFFFF)
 val Black = Color(0xFF1B1B1B)
 val LightGray = Color(0XFFF2F2F2)
 val ExtraLightGray = Color(0XFFF8F9FA)
 val MediumGray = Color(0XFFADB5BD)
 val DarkGray = Color(0XFF495057)
+val DarkerGray = Color(0XFF23262A)
 val ChiliRed = Color(0xFFE23D28)
 
 val LightBlue = Color(0XFFF5F7FD)
