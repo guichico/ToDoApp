@@ -391,7 +391,7 @@ private fun MeasurementTypeDialog(
             ToDoAppIcon(
                 icon = ToDoAppIcons.icArrowRight,
                 contentDescription = "arrow",
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
             )
         }
     )
@@ -428,7 +428,8 @@ private fun MeasurementTypeCheckList(
         Text(
             modifier = Modifier,
             text = stringResource(R.string.checklist_header_title),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
         CreateCheckList(
@@ -454,7 +455,8 @@ private fun MeasurementTypePercentage(
             modifier = Modifier
                 .padding(vertical = ToDoAppTheme.spacing.extraSmall),
             text = stringResource(R.string.progress),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
         )
         percentageProgress.value?.progress?.forEach {
             ProgressCard(
@@ -500,7 +502,8 @@ private fun MeasurementTypeValue(
             modifier = Modifier
                 .padding(vertical = ToDoAppTheme.spacing.extraSmall),
             text = stringResource(R.string.goal_value),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
@@ -534,7 +537,8 @@ private fun MeasurementTypeValue(
             modifier = Modifier
                 .padding(vertical = ToDoAppTheme.spacing.extraSmall),
             text = stringResource(R.string.progress),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
         )
 
         valueProgress.value?.let { vp ->
@@ -590,7 +594,7 @@ private fun UnitDialog(
             ToDoAppIcon(
                 icon = ToDoAppIcons.icArrowRight,
                 contentDescription = "arrow",
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
             )
         }
     )
@@ -625,7 +629,7 @@ private fun UnitDialog(
                                 .align(Alignment.CenterVertically),
                             icon = if (measurementUnit.value == unit) ToDoAppIcons.icRadioButtonChecked else ToDoAppIcons.icRadioButtonUnchecked,
                             contentDescription = "select",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             modifier = Modifier
@@ -633,7 +637,7 @@ private fun UnitDialog(
                                 .align(Alignment.CenterVertically),
                             text = stringResource(unit.label),
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }

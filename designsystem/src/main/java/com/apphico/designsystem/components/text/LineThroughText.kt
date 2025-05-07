@@ -15,7 +15,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 fun LineThroughText(
     modifier: Modifier = Modifier,
     text: String,
-    textColor: Color = MaterialTheme.colorScheme.primary,
+    textColor: Color = MaterialTheme.colorScheme.secondary,
     isLineThrough: Boolean
 ) {
     val textStyle = if (isLineThrough) MaterialTheme.typography.titleMedium.copy(textDecoration = TextDecoration.LineThrough)

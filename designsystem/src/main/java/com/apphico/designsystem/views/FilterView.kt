@@ -47,11 +47,9 @@ import com.apphico.core_model.fakeData.mockedGroups
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.SmallButton
 import com.apphico.designsystem.components.icons.ToDoAppIcon
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.MediumGray
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -73,7 +71,7 @@ fun FilterView(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(
                     vertical = ToDoAppTheme.spacing.small,
                     horizontal = ToDoAppTheme.spacing.large
@@ -86,7 +84,8 @@ fun FilterView(
                 if (showStatusFilter) {
                     Text(
                         text = stringResource(R.string.status),
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
                     FlowRow(
@@ -106,7 +105,8 @@ fun FilterView(
                 }
                 Text(
                     text = stringResource(R.string.groups),
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
                 FlowRow(
@@ -166,7 +166,8 @@ private fun StatusRow(
                     .size(16.dp)
                     .align(Alignment.CenterVertically),
                 icon = ToDoAppIcons.icCheck,
-                contentDescription = "checked"
+                contentDescription = "checked",
+                tint = MaterialTheme.colorScheme.primary
             )
             Text(
                 modifier = Modifier
@@ -177,7 +178,7 @@ private fun StatusRow(
                     .align(Alignment.CenterVertically),
                 text = stringResource(id = status.title),
                 style = MaterialTheme.typography.titleSmall,
-                color = Black
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -226,7 +227,7 @@ private fun GroupRow(
                     .align(Alignment.CenterVertically),
                 text = group.name,
                 style = MaterialTheme.typography.titleSmall,
-                color = Black
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }

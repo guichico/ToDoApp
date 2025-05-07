@@ -20,7 +20,10 @@ fun NormalButton(
     Button(
         modifier = modifier,
         onClick = onClick,
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.secondary
+        )
     ) {
         Text(
             text = text,

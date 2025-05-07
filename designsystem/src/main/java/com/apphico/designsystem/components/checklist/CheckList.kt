@@ -93,7 +93,7 @@ private fun TaskCheckListPreview() {
                 )
             ),
             parentDate = getNowDate(),
-            textColor = MaterialTheme.colorScheme.primary,
+            textColor = MaterialTheme.colorScheme.secondary,
             onCheckListItemDoneChanged = { _, _ -> }
         )
     }

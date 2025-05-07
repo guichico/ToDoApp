@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 import java.text.DateFormatSymbols
 import java.util.Locale
 
@@ -44,7 +43,7 @@ fun DaysOfWeekGrid(
     ) {
         daysOfWeek.forEachIndexed { index, dayOfWeek ->
             val isSelected = selectedDaysState.value.contains(index + 1)
-            val backColor = if (isSelected) MaterialTheme.colorScheme.primary else White
+            val backColor = if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.background
             val shape = CircleShape
 
             Box(
@@ -58,7 +57,7 @@ fun DaysOfWeekGrid(
                         shape = shape,
                         border = BorderStroke(
                             width = 1.dp,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     )
                     .clickable {
@@ -75,7 +74,7 @@ fun DaysOfWeekGrid(
                     text = dayOfWeek,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if (isSelected) White else MaterialTheme.colorScheme.primary,
+                    color = if (isSelected) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primary
                 )
             }
         }

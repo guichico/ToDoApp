@@ -93,7 +93,8 @@ fun NumberPicker(
                     text = getItem(index),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }

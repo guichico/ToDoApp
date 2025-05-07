@@ -56,7 +56,7 @@ fun NormalTextField(
                     Text(
                         text = it,
                         style = textStyle,
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
                     )
                 }
             },
@@ -64,16 +64,16 @@ fun NormalTextField(
             leadingIcon = leadingIcon,
             trailingIcon = trailingIcon,
             colors = TextFieldDefaults.colors(
-                focusedTextColor = MaterialTheme.colorScheme.primary,
-                unfocusedTextColor = MaterialTheme.colorScheme.primary,
-                disabledTextColor = MaterialTheme.colorScheme.primary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                unfocusedIndicatorColor = MaterialTheme.colorScheme.primary,
-                disabledIndicatorColor = MaterialTheme.colorScheme.primary,
+                focusedTextColor = MaterialTheme.colorScheme.secondary,
+                unfocusedTextColor = MaterialTheme.colorScheme.secondary,
+                disabledTextColor = MaterialTheme.colorScheme.secondary,
+                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                disabledIndicatorColor = MaterialTheme.colorScheme.secondary,
                 focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
                 unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
                 disabledContainerColor = MaterialTheme.colorScheme.onPrimary,
-                cursorColor = MaterialTheme.colorScheme.primary
+                cursorColor = MaterialTheme.colorScheme.secondary
             ),
             visualTransformation = visualTransformation,
             keyboardOptions = keyboardOptions.copy(capitalization = KeyboardCapitalization.Sentences),

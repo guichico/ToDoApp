@@ -50,7 +50,7 @@ fun TaskCard(
         )
         DateRow(
             task = task,
-            textColor = MaterialTheme.colorScheme.primary
+            textColor = MaterialTheme.colorScheme.secondary
         )
         if (task.checkList.isNotEmpty()) {
             CheckList(
@@ -60,7 +60,7 @@ fun TaskCard(
                     .padding(top = ToDoAppTheme.spacing.extraSmall),
                 checkList = task.checkList,
                 parentDate = task.startDate,
-                textColor = MaterialTheme.colorScheme.primary,
+                textColor = MaterialTheme.colorScheme.secondary,
                 onCheckListItemDoneChanged = onCheckListItemDoneChanged
             )
         }
@@ -74,7 +74,7 @@ private fun Header(
 ) {
     val isTaskDone = task.isDone()
     val animatedColor by animateColorAsState(
-        if (!isTaskDone) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+        if (!isTaskDone) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
     )
 
     Row(
@@ -158,14 +158,14 @@ private fun DateRow(
                         .align(Alignment.CenterVertically),
                     icon = ToDoAppIcons.icReminder,
                     contentDescription = "reminder",
-                    tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                    tint = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
                 )
                 Text(
                     modifier = Modifier
                         .padding(start = ToDoAppTheme.spacing.extraSmall),
                     text = task.reminderDateTime()?.formatShortTime()!!,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.7f)
                 )
             }
         }

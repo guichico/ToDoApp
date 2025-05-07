@@ -5,7 +5,6 @@ import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RippleConfiguration
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -14,32 +13,47 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = MainText,
+    primary = White,
+    onPrimary = DarkerGray,
+    primaryContainer = DarkSecondary,
+    inversePrimary = Black,
 
-    secondary = SecondaryText,
-    tertiary = LightBlue,
+    secondary = LightBlue,
+    secondaryContainer = DarkerGray,
 
-    background = White,
-    surface = White
+    tertiary = DarkerGray,
+    tertiaryContainer = DarkerGray,
+
+    background = DarkMain,
+    onBackground = DarkGray,
+
+    surface = DarkMain,
+    inverseSurface = LightGray,
+    surfaceVariant = DarkMain,
+    surfaceTint = DarkMain
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = MainText,
-
-    secondary = SecondaryText,
-    tertiary = LightBlue,
-
+    primary = Black,
+    onPrimary = White,
     primaryContainer = White,
-    secondaryContainer = LightBlue,
+    inversePrimary = White,
+
+    secondary = MainText,
+    secondaryContainer = MainContainer,
+
+    tertiary = SecondaryText,
     tertiaryContainer = MediumBlue,
+
     background = White,
+    onBackground = LightBlue,
+
     surface = White,
     inverseSurface = DarkGray,
     surfaceVariant = White,
@@ -52,9 +66,6 @@ object ToDoAppTheme {
         @ReadOnlyComposable
         get() = LocalSpacing.current
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-internal fun toDoAppRippleTheme(color: Color) = RippleConfiguration(color = color)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,20 +89,20 @@ fun ToDoAppTheme(
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
         val view = LocalView.current
 
+        val statusBarColor = MaterialTheme.colorScheme.inversePrimary.toArgb()
+        val navigationBarColor = MaterialTheme.colorScheme.inversePrimary.toArgb()
+
         if (!view.isInEditMode) {
             SideEffect {
                 val window = (view.context as Activity).window
-
-                val statusBarColor = (if (darkTheme) Black else White).toArgb()
-                val navigationBarColor = (if (darkTheme) Black else White).toArgb()
 
                 window.statusBarColor = statusBarColor
                 window.navigationBarColor = navigationBarColor
 
                 WindowCompat.getInsetsController(window, view)
                     .apply {
-                        isAppearanceLightStatusBars = !isColorDark(statusBarColor)
-                        isAppearanceLightNavigationBars = !isColorDark(navigationBarColor)
+                        isAppearanceLightStatusBars = !darkTheme
+                        isAppearanceLightNavigationBars = !darkTheme
                     }
             }
         }

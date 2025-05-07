@@ -153,14 +153,14 @@ fun GroupRow(
                     ),
                 text = group.name,
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.secondary
             )
             ToDoAppIconButton(
                 modifier = Modifier
                     .padding(end = ToDoAppTheme.spacing.extraSmall)
                     .align(Alignment.CenterVertically),
                 icon = ToDoAppIcons.icEdit,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.secondary,
                 onClick = { navigateToAddEditGroup(group) }
             )
         }

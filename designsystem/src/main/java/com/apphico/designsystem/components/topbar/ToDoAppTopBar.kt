@@ -1,7 +1,6 @@
 package com.apphico.designsystem.components.topbar
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,17 +18,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.emptyLambda
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,8 +38,6 @@ fun ToDoAppTopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
-    val textColor = if (isSystemInDarkTheme()) White else Black
-
     TopAppBar(
         modifier = modifier,
         title = {
@@ -60,7 +54,7 @@ fun ToDoAppTopBar(
                         HeaderWithSubtitle(
                             title = title,
                             subTitle = subTitle,
-                            textColor = textColor
+                            textColor = MaterialTheme.colorScheme.primary
                         )
                     } ?: run {
                         Text(
@@ -68,17 +62,14 @@ fun ToDoAppTopBar(
                                 .padding(top = 4.dp, end = 4.dp, bottom = 4.dp),
                             text = title,
                             style = MaterialTheme.typography.titleLarge,
-                            color = textColor
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(
-                White.toArgb()
-                // MaterialTheme.colorScheme.primary.copy(alpha = 0.085f).compositeOver(MaterialTheme.colorScheme.surface.copy()).toArgb()
-            )
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         navigationIcon = if (navigateBack != emptyLambda) {
             {
@@ -88,7 +79,7 @@ fun ToDoAppTopBar(
                 ) {
                     ToDoAppIconButton(
                         icon = ToDoAppIcons.icBack,
-                        tint = textColor,
+                        tint = MaterialTheme.colorScheme.primary,
                         onClick = navigateBack
                     )
                 }

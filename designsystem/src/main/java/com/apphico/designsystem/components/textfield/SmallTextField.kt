@@ -18,17 +18,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.emptyLambda
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.isColorDark
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,7 +35,7 @@ fun SmallTextField(
     onValueChange: (String) -> Unit = {},
     onClick: () -> Unit = emptyLambda,
     textStyle: TextStyle = MaterialTheme.typography.bodyLarge,
-    textColor: Color = if (isColorDark(MaterialTheme.colorScheme.primaryContainer.toArgb())) White else Black,
+    textColor: Color = MaterialTheme.colorScheme.primary,
     leadingIcon: @Composable (() -> Unit)? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,

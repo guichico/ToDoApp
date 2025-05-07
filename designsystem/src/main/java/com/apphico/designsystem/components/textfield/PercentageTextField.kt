@@ -50,7 +50,7 @@ fun PercentageTextField(
             ToDoAppIcon(
                 icon = ToDoAppIcons.icPercent,
                 contentDescription = "percent",
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+                tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
             )
         },
         visualTransformation = DecimalVisualTransformation(),

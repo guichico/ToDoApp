@@ -31,7 +31,7 @@ fun DefaultSurface(
         shape = CardDefaults.shape,
         border = BorderStroke(
             width = 1.dp,
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.secondary,
         ),
         content = content
     )

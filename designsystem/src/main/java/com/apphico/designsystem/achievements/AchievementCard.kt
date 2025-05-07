@@ -24,7 +24,7 @@ import com.apphico.designsystem.components.card.MainCard
 import com.apphico.designsystem.components.checklist.CheckList
 import com.apphico.designsystem.components.text.LineThroughText
 import com.apphico.designsystem.theme.LightBlue
-import com.apphico.designsystem.theme.MediumBlue
+import com.apphico.designsystem.theme.LightProgressBlue
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatShortDate
 import java.time.LocalDate
@@ -57,7 +57,7 @@ fun AchievementCard(
                     .padding(top = ToDoAppTheme.spacing.extraSmall),
                 checkList = achievement.getCheckList(),
                 parentDate = achievement.endDate,
-                textColor = MaterialTheme.colorScheme.primary,
+                textColor = MaterialTheme.colorScheme.secondary,
                 onCheckListItemDoneChanged = { checkListItem, isDone ->
                     onCheckListItemDoneChanged(checkListItem, achievement.endDate, isDone)
                 }
@@ -69,7 +69,7 @@ fun AchievementCard(
                 .height(14.dp)
                 .padding(top = ToDoAppTheme.spacing.small),
             progress = { achievement.getProgress() },
-            color = MediumBlue,
+            color = LightProgressBlue,
             trackColor = LightBlue,
             strokeCap = StrokeCap.Round,
             gapSize = (-15).dp,
@@ -82,20 +82,19 @@ fun AchievementCard(
 private fun DatesColumn(
     achievement: Achievement
 ) {
-    achievement.endDate?.let {
-        Text(
-            text = "${stringResource(R.string.until)} ${it.formatShortDate()}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.secondary
-        )
+    val text = achievement.getDoneDate()?.let {
+        "${stringResource(R.string.completed_in)} ${it.formatShortDate()}"
+    } ?: run {
+        achievement.endDate?.let {
+            "${stringResource(R.string.until)} ${it.formatShortDate()}"
+        } ?: ""
     }
-    achievement.getDoneDate()?.let {
-        Text(
-            text = "${stringResource(R.string.completed_in)} ${it.formatShortDate()}",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.secondary
-        )
-    }
+
+    Text(
+        text = text,
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.secondary
+    )
 }
 
 class AchievementCardPreviewProvider : PreviewParameterProvider<Achievement> {

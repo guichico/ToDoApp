@@ -48,13 +48,15 @@ fun ProgressCard(
                     progressText?.let {
                         Text(
                             text = it,
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                     if (date != null || time != null) {
                         Text(
                             text = "${date?.formatLongDate() ?: ""} ${time?.formatShortTime() ?: ""}",
-                            style = dateStyle
+                            style = dateStyle,
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                     description?.let { description ->
@@ -65,7 +67,8 @@ fun ProgressCard(
                                     end = ToDoAppTheme.spacing.large
                                 ),
                             text = description,
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }

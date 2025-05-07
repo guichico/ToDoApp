@@ -9,7 +9,6 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 
 @Composable
 fun ToDoAppSwitch(
@@ -22,12 +21,12 @@ fun ToDoAppSwitch(
         checked = checked,
         onCheckedChange = onCheckedChange,
         colors = SwitchDefaults.colors(
-            checkedThumbColor = White,
-            checkedTrackColor = MaterialTheme.colorScheme.primary,
-            checkedBorderColor = MaterialTheme.colorScheme.primary,
-            uncheckedThumbColor = MaterialTheme.colorScheme.primary,
-            uncheckedTrackColor = White,
-            uncheckedBorderColor = MaterialTheme.colorScheme.primary,
+            checkedThumbColor = MaterialTheme.colorScheme.inversePrimary,
+            checkedTrackColor = MaterialTheme.colorScheme.secondary,
+            checkedBorderColor = MaterialTheme.colorScheme.secondary,
+            uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
+            uncheckedTrackColor = MaterialTheme.colorScheme.inversePrimary,
+            uncheckedBorderColor = MaterialTheme.colorScheme.secondary,
         )
     )
 }

@@ -19,7 +19,7 @@ fun CircleCheckbox(
     modifier: Modifier = Modifier,
     checked: Boolean,
     onCheckedChanged: (Boolean) -> Unit,
-    tint: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.8f)
+    tint: Color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.8f)
 ) {
     Crossfade(
         modifier = modifier,
