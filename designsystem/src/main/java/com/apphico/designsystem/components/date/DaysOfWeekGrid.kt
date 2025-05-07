@@ -43,7 +43,7 @@ fun DaysOfWeekGrid(
     ) {
         daysOfWeek.forEachIndexed { index, dayOfWeek ->
             val isSelected = selectedDaysState.value.contains(index + 1)
-            val backColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+            val backColor = if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.background
             val shape = CircleShape
 
             Box(

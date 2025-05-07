@@ -24,7 +24,7 @@ import com.apphico.designsystem.components.card.MainCard
 import com.apphico.designsystem.components.checklist.CheckList
 import com.apphico.designsystem.components.text.LineThroughText
 import com.apphico.designsystem.theme.LightBlue
-import com.apphico.designsystem.theme.MediumBlue
+import com.apphico.designsystem.theme.LightProgressBlue
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.formatShortDate
 import java.time.LocalDate
@@ -69,7 +69,7 @@ fun AchievementCard(
                 .height(14.dp)
                 .padding(top = ToDoAppTheme.spacing.small),
             progress = { achievement.getProgress() },
-            color = MediumBlue,
+            color = LightProgressBlue,
             trackColor = LightBlue,
             strokeCap = StrokeCap.Round,
             gapSize = (-15).dp,

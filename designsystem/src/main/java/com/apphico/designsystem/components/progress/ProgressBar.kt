@@ -1,5 +1,6 @@
 package com.apphico.designsystem.components.progress
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,8 +36,8 @@ fun ProgressBar(
                 .fillMaxWidth()
                 .height(18.dp),
             progress = progress,
-            color = ProgressBlue,
-            trackColor = ProgressBlue.copy(alpha = 0.5f),
+            color = if (isSystemInDarkTheme()) ProgressBlue.copy(alpha = 0.5f) else ProgressBlue,
+            trackColor = if (isSystemInDarkTheme()) ProgressBlue else ProgressBlue.copy(alpha = 0.5f),
             strokeCap = StrokeCap.Butt,
             gapSize = 0.dp,
             drawStopIndicator = {}

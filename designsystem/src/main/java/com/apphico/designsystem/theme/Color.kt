@@ -23,6 +23,7 @@ val SecondaryText = Color(0XFF556CAA)
 
 val DisabledColor = Color(0xFFC0C0C0)
 
+val LightProgressBlue = Color(0XFF66ADFF)
 val ProgressBlue = Color(0xFF0070BB)
 
 val GroupLightGray = Color(0XFF99A6B2)

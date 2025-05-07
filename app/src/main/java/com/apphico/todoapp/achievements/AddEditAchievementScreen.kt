@@ -428,7 +428,8 @@ private fun MeasurementTypeCheckList(
         Text(
             modifier = Modifier,
             text = stringResource(R.string.checklist_header_title),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
         CreateCheckList(
@@ -454,7 +455,8 @@ private fun MeasurementTypePercentage(
             modifier = Modifier
                 .padding(vertical = ToDoAppTheme.spacing.extraSmall),
             text = stringResource(R.string.progress),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
         )
         percentageProgress.value?.progress?.forEach {
             ProgressCard(
@@ -500,7 +502,8 @@ private fun MeasurementTypeValue(
             modifier = Modifier
                 .padding(vertical = ToDoAppTheme.spacing.extraSmall),
             text = stringResource(R.string.goal_value),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
         )
 
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
@@ -534,7 +537,8 @@ private fun MeasurementTypeValue(
             modifier = Modifier
                 .padding(vertical = ToDoAppTheme.spacing.extraSmall),
             text = stringResource(R.string.progress),
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
         )
 
         valueProgress.value?.let { vp ->
