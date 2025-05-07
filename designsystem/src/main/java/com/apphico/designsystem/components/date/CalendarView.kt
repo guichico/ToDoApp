@@ -85,7 +85,7 @@ fun CalendarView(
 
         HorizontalCalendar(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(
                     start = ToDoAppTheme.spacing.small,
                     end = ToDoAppTheme.spacing.small,
