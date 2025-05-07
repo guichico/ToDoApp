@@ -39,7 +39,6 @@ import com.apphico.designsystem.theme.DisabledColor
 import com.apphico.designsystem.theme.LightBlue
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 import com.apphico.extensions.formatLong
 import com.apphico.extensions.formatLongYear
 import com.apphico.extensions.getNowDate
@@ -134,14 +133,14 @@ private fun CalendarDay(
         .aspectRatio(1f)
 
     val shape = CircleShape
-    var textColor = Color.Unspecified
+    var textColor = MaterialTheme.colorScheme.primary
 
     val isDateSelected = selectedDate.value.isEqual(calendarDay.date)
     val isToday = getNowDate().isEqual(calendarDay.date)
     val isSameMonth = calendarDay.position == DayPosition.MonthDate
 
     if (isDateSelected || isToday) {
-        textColor = if (isDateSelected) White else Color.Unspecified
+        textColor = if (isDateSelected) MaterialTheme.colorScheme.inversePrimary else Color.Unspecified
 
         val bgColor = if (isDateSelected) MaterialTheme.colorScheme.secondary else LightBlue
 
@@ -192,7 +191,8 @@ private fun CalendarMonth(
         ) {
             ToDoAppIconButton(
                 icon = ToDoAppIcons.icArrowLeft,
-                onClick = onPreviousMonthClicked
+                onClick = onPreviousMonthClicked,
+                tint = MaterialTheme.colorScheme.primary
             )
             Text(
                 modifier = Modifier
@@ -200,11 +200,13 @@ private fun CalendarMonth(
                     .align(Alignment.CenterVertically),
                 textAlign = TextAlign.Center,
                 text = if (month.yearMonth.year == getNowDate().yearMonth.year) month.yearMonth.formatLong() else month.yearMonth.formatLongYear(),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.primary
             )
             ToDoAppIconButton(
                 icon = ToDoAppIcons.icArrowRight,
-                onClick = onNextMonthClicked
+                onClick = onNextMonthClicked,
+                tint = MaterialTheme.colorScheme.primary
             )
         }
         Row(
@@ -217,7 +219,8 @@ private fun CalendarMonth(
                         .padding(vertical = ToDoAppTheme.spacing.small),
                     textAlign = TextAlign.Center,
                     text = dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
