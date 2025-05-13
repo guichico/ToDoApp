@@ -18,53 +18,80 @@ class AlarmHelperImpl(
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    override fun setAlarm(task: Task) {
+    override fun setAlarm(task: Task): List<Long> {
         val reminderDateTime = task.reminderDateTime()
 
-        if (reminderDateTime != null && !context.hasAlarm(task.reminderId)) {
+        val reminderIds = mutableListOf<Long>()
+
+        if (reminderDateTime != null) {
             if (task.isRepeatable()) {
-                // TODO Fix it
                 when (task.daysOfWeek.size) {
                     // DAILY
                     0, 7 -> {
-                        alarmManager.setRepeating(
-                            AlarmManager.RTC_WAKEUP,
-                            reminderDateTime.toMillis(),
-                            AlarmManager.INTERVAL_DAY,
-                            context.createAlarmIntentWithExtras(task)!!
-                        )
+                        val alarmId = task.key()
+
+                        if (!context.hasAlarm(alarmId)) {
+                            alarmManager.setRepeating(
+                                AlarmManager.RTC_WAKEUP,
+                                reminderDateTime.toMillis(),
+                                AlarmManager.INTERVAL_DAY,
+                                context.createAlarmIntentWithExtras(alarmId, task)!!
+                            )
+
+                            reminderIds.add(alarmId)
+                        }
                     }
 
                     // WEEKLY
                     1 -> {
-                        alarmManager.setRepeating(
-                            AlarmManager.RTC_WAKEUP,
-                            reminderDateTime.toMillis(),
-                            (AlarmManager.INTERVAL_DAY * 7),
-                            context.createAlarmIntentWithExtras(task)!!
-                        )
+                        val alarmId = task.key()
+
+                        if (!context.hasAlarm(alarmId)) {
+                            alarmManager.setRepeating(
+                                AlarmManager.RTC_WAKEUP,
+                                reminderDateTime.toMillis(),
+                                (AlarmManager.INTERVAL_DAY * 7),
+                                context.createAlarmIntentWithExtras(alarmId, task)!!
+                            )
+
+                            reminderIds.add(alarmId)
+                        }
                     }
 
                     // DOESN'T HAVE A TIME INTERVAL PATTERN SO SET ONE FOR EACH DAY
                     else -> {
                         task.daysOfWeek.forEach { dayOfWeek ->
-                            alarmManager.setRepeating(
-                                AlarmManager.RTC_WAKEUP,
-                                reminderDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.of(dayOfWeek))).toMillis(),
-                                (AlarmManager.INTERVAL_DAY * 7),
-                                context.createAlarmIntentWithExtras(task)!!
-                            )
+                            val alarmId = task.key() + dayOfWeek
+
+                            if (!context.hasAlarm(alarmId)) {
+                                alarmManager.setRepeating(
+                                    AlarmManager.RTC_WAKEUP,
+                                    reminderDateTime.with(TemporalAdjusters.nextOrSame(DayOfWeek.of(dayOfWeek))).toMillis(),
+                                    (AlarmManager.INTERVAL_DAY * 7),
+                                    context.createAlarmIntentWithExtras(alarmId, task)!!
+                                )
+
+                                reminderIds.add(alarmId)
+                            }
                         }
                     }
                 }
             } else if (reminderDateTime >= getNowDateTime()) {
-                alarmManager.setExactAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    reminderDateTime.toMillis(),
-                    context.createAlarmIntentWithExtras(task)!!
-                )
+                val alarmId = task.key()
+
+                if (!context.hasAlarm(alarmId)) {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        reminderDateTime.toMillis(),
+                        context.createAlarmIntentWithExtras(alarmId, task)!!
+                    )
+
+                    reminderIds.add(alarmId)
+                }
             }
         }
+
+        return reminderIds
     }
 
     override fun cancelAlarm(reminderId: Long) {

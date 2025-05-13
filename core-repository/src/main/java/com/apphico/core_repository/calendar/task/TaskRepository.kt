@@ -8,8 +8,10 @@ import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
+import com.apphico.core_repository.calendar.room.dao.ReminderIdDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
+import com.apphico.core_repository.calendar.room.entities.ReminderIdDB
 import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
 import com.apphico.core_repository.calendar.room.entities.toCheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.toLocationDB
@@ -27,11 +29,12 @@ interface TaskRepository {
 
 class TaskRepositoryImpl(
     private val appDatabase: AppDatabase,
-    private val alarmHelper: AlarmHelper,
     private val taskDao: TaskDao,
     private val taskDeletedDao: TaskDeletedDao,
     private val locationDao: LocationDao,
-    private val checkListItemDao: CheckListItemDao
+    private val checkListItemDao: CheckListItemDao,
+    private val reminderIdDao: ReminderIdDao,
+    private val alarmHelper: AlarmHelper
 ) : TaskRepository {
 
     override suspend fun getTask(taskId: Long) = taskDao.getTask(taskId).toTask()
@@ -39,9 +42,7 @@ class TaskRepositoryImpl(
     override suspend fun insertTask(task: Task): Boolean {
         return try {
             appDatabase.withTransaction {
-                val taskDB = (task.reminder?.let { task.copy(reminderId = task.key()) } ?: task).toTaskDB()
-
-                val taskId = taskDao.insert(taskDB)
+                val taskId = taskDao.insert(task.toTaskDB())
 
                 task.location?.let {
                     locationDao.insert(it.toLocationDB(taskId))
@@ -50,7 +51,8 @@ class TaskRepositoryImpl(
                 checkListItemDao
                     .insertAll(task.checkList.map { it.toCheckListItemDB(taskId = taskId) })
 
-                alarmHelper.setAlarm(task.copy(id = taskId))
+                val alarmIds = alarmHelper.setAlarm(task.copy(id = taskId))
+                reminderIdDao.insertAll(alarmIds.map { ReminderIdDB(reminderId = it, reminderTaskId = taskId) })
             }
 
             return true
@@ -66,9 +68,9 @@ class TaskRepositoryImpl(
         initialStartDate: LocalDate?
     ): Boolean {
         return try {
-            alarmHelper.cancelAlarm(task.reminderId)
+            task.reminderIds.forEach { alarmHelper.cancelAlarm(it) }
 
-            val task = (task.reminder?.let { task.copy(reminderId = task.key()) } ?: task.copy(reminderId = 0))
+            //val task = (task.reminder?.let { task.copy(reminderId = task.key()) } ?: task.copy(reminderId = 0))
 
             appDatabase.withTransaction {
                 if (task.isRepeatable()) {
@@ -118,7 +120,7 @@ class TaskRepositoryImpl(
 
     override suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean {
         return try {
-            alarmHelper.cancelAlarm(task.reminderId)
+            task.reminderIds.forEach { alarmHelper.cancelAlarm(it) }
 
             if (task.isRepeatable()) {
                 when (recurringTask) {

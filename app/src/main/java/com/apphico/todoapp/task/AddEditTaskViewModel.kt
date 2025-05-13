@@ -65,8 +65,6 @@ class AddEditTaskViewModel @Inject constructor(
         if (addEditTaskParameters.isFromIntent) {
             viewModelScope.launch(Dispatchers.IO) {
                 val dbTask = taskRepository.getTask(task!!.id)
-                    .copy(startDate = task?.startDate, startTime = task?.startTime)
-
                 task = dbTask
                 editingTask.value = dbTask
                 editingCheckList.value = dbTask.checkList

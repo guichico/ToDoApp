@@ -12,6 +12,7 @@ import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
+import com.apphico.core_repository.calendar.room.dao.ReminderIdDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
@@ -34,6 +35,7 @@ class CalendarRepositoryTest {
     private lateinit var taskDeletedDao: TaskDeletedDao
     private lateinit var checkListItemDao: CheckListItemDao
     private lateinit var locationDao: LocationDao
+    private lateinit var reminderIdDao: ReminderIdDao
 
     private lateinit var calendarRepository: CalendarRepository
     private lateinit var taskRepository: TaskRepository
@@ -49,6 +51,7 @@ class CalendarRepositoryTest {
         taskDeletedDao = db.taskDeletedDao()
         checkListItemDao = db.checkListItemDao()
         locationDao = db.locationDao()
+        reminderIdDao = db.reminderIdDao()
 
         calendarRepository = CalendarRepositoryImpl(
             taskDao = taskDao,
@@ -57,11 +60,12 @@ class CalendarRepositoryTest {
 
         taskRepository = TaskRepositoryImpl(
             appDatabase = db,
-            alarmHelper = mock<AlarmHelper> {},
             taskDao = taskDao,
             taskDeletedDao = taskDeletedDao,
             locationDao = locationDao,
-            checkListItemDao = checkListItemDao
+            checkListItemDao = checkListItemDao,
+            reminderIdDao = reminderIdDao,
+            alarmHelper = mock<AlarmHelper> {},
         )
 
         runBlocking {

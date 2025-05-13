@@ -36,7 +36,7 @@ data class Task(
     @Serializable(with = LocalDateSerializer::class) val endDate: LocalDate? = null,
     @Serializable(with = LocalTimeSerializer::class) val endTime: LocalTime? = null,
     val daysOfWeek: List<Int> = emptyList(),
-    val reminderId: Long = 0,
+    val reminderIds: List<Long> = emptyList(),
     val reminder: Reminder? = null,
     val location: Location? = null,
     val hasDone: Boolean? = null,

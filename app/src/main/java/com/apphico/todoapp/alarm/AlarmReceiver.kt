@@ -16,8 +16,8 @@ import com.apphico.extensions.hasNotificationPermission
 import com.apphico.todoapp.R
 import com.apphico.todoapp.utils.createActionStopAlarmIntent
 import com.apphico.todoapp.utils.createOpenTaskIntent
+import com.apphico.todoapp.utils.getAlarmId
 import com.apphico.todoapp.utils.getTask
-import com.apphico.todoapp.utils.getTaskKey
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -44,26 +44,22 @@ class AlarmReceiver : BroadcastReceiver() {
                     val task = intent.getTask()
 
                     @SuppressLint("MissingPermission")
-                    context.createNotification(task)
+                    context.createNotification(intent.getAlarmId(), task)
 
                     if (task.reminder?.soundAlarm == true) mediaPlayerHelper.start()
                 }
             }
 
             AlarmHelper.STOP_ALARM_ACTION -> {
-                val taskKey = intent.getTaskKey()
-
-                alarmHelper.cancelAlarm(taskKey)
-
                 mediaPlayerHelper.stop()
 
-                NotificationManagerCompat.from(context).cancel(taskKey.toInt())
+                NotificationManagerCompat.from(context).cancel(intent.getAlarmId().toInt())
             }
         }
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private fun Context.createNotification(task: Task) {
+    private fun Context.createNotification(alarmId: Long, task: Task) {
         val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         notificationManager.createNotificationChannel(
@@ -80,7 +76,7 @@ class AlarmReceiver : BroadcastReceiver() {
             notificationBuilder.addAction(
                 R.drawable.ic_notification,
                 getString(com.apphico.designsystem.R.string.stop_alarm),
-                createActionStopAlarmIntent(task.reminderId)
+                createActionStopAlarmIntent(alarmId)
             )
         } else {
             notificationBuilder.setAutoCancel(true)
@@ -88,6 +84,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
         NotificationManagerCompat
             .from(this)
-            .notify(task.reminderId.toInt(), notificationBuilder.build())
+            .notify(alarmId.toInt(), notificationBuilder.build())
     }
 }

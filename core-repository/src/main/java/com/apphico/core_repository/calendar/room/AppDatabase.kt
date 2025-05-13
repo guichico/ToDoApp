@@ -11,6 +11,7 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.ProgressDao
+import com.apphico.core_repository.calendar.room.dao.ReminderIdDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
@@ -21,6 +22,7 @@ import com.apphico.core_repository.calendar.room.entities.CheckListWithDone
 import com.apphico.core_repository.calendar.room.entities.GroupDB
 import com.apphico.core_repository.calendar.room.entities.LocationDB
 import com.apphico.core_repository.calendar.room.entities.ProgressDB
+import com.apphico.core_repository.calendar.room.entities.ReminderIdDB
 import com.apphico.core_repository.calendar.room.entities.TaskComplete
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskDeletedDB
@@ -38,7 +40,8 @@ import com.apphico.core_repository.calendar.room.entities.TaskDoneDB
         ProgressDB::class,
         CheckListItemDB::class,
         CheckListItemDoneDB::class,
-        LocationDB::class
+        LocationDB::class,
+        ReminderIdDB::class
     ],
     views = [TaskComplete::class, CheckListWithDone::class]
 )
@@ -53,4 +56,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun checkListItemDao(): CheckListItemDao
     abstract fun checkListItemDoneDao(): CheckListItemDoneDao
     abstract fun locationDao(): LocationDao
+    abstract fun reminderIdDao(): ReminderIdDao
 }

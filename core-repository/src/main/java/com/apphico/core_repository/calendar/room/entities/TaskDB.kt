@@ -30,7 +30,6 @@ data class TaskDB(
     val endDate: LocalDate?,
     val endTime: LocalTime?,
     val daysOfWeek: List<Int>?,
-    val reminderId: Long = 0,
     @Embedded val reminder: ReminderDB?
 )
 
@@ -106,4 +105,5 @@ data class TaskWithRelations(
     @Relation(parentColumn = "taskGroupId", entityColumn = "groupId") val groupDB: GroupDB?,
     @Relation(parentColumn = "taskId", entityColumn = "checkListTaskId") val checkList: List<CheckListWithDone>?,
     @Relation(parentColumn = "taskId", entityColumn = "locationTaskId") val locationDB: LocationDB?,
+    @Relation(parentColumn = "taskId", entityColumn = "reminderTaskId") val reminderIdDB: List<ReminderIdDB>?,
 )

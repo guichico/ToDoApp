@@ -12,6 +12,7 @@ import com.apphico.core_repository.calendar.room.dao.CheckListItemDoneDao
 import com.apphico.core_repository.calendar.room.dao.GroupDao
 import com.apphico.core_repository.calendar.room.dao.LocationDao
 import com.apphico.core_repository.calendar.room.dao.ProgressDao
+import com.apphico.core_repository.calendar.room.dao.ReminderIdDao
 import com.apphico.core_repository.calendar.room.dao.TaskDao
 import com.apphico.core_repository.calendar.room.dao.TaskDeletedDao
 import com.apphico.core_repository.calendar.room.dao.TaskDoneDao
@@ -63,6 +64,10 @@ class DatabaseModule() {
     @Provides
     @Singleton
     fun provideCheckListItemDoneDao(appDatabase: AppDatabase): CheckListItemDoneDao = appDatabase.checkListItemDoneDao()
+
+    @Provides
+    @Singleton
+    fun provideReminderIdDao(appDatabase: AppDatabase): ReminderIdDao = appDatabase.reminderIdDao()
 
     @Provides
     @Singleton
