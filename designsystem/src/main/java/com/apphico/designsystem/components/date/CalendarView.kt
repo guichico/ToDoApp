@@ -35,10 +35,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
+import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.DisabledColor
 import com.apphico.designsystem.theme.LightBlue
+import com.apphico.designsystem.theme.MainText
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.designsystem.theme.White
 import com.apphico.extensions.formatLong
 import com.apphico.extensions.formatLongYear
 import com.apphico.extensions.getNowDate
@@ -140,9 +143,8 @@ private fun CalendarDay(
     val isSameMonth = calendarDay.position == DayPosition.MonthDate
 
     if (isDateSelected || isToday) {
-        textColor = if (isDateSelected) MaterialTheme.colorScheme.inversePrimary else Color.Unspecified
-
-        val bgColor = if (isDateSelected) MaterialTheme.colorScheme.secondary else LightBlue
+        textColor = if (isDateSelected) White else Black
+        val bgColor = if (isDateSelected) MainText else LightBlue
 
         boxModifier = boxModifier
             .shadow(2.dp, shape, true)
@@ -233,7 +235,7 @@ private fun CalendarViewPreview() {
     ToDoAppTheme {
         CalendarView(
             isCalendarExpanded = remember { mutableStateOf(true) },
-            selectedDate = remember { mutableStateOf(getNowDate()) },
+            selectedDate = remember { mutableStateOf(getNowDate().plusDays(1)) },
             onSelectedDateChanged = {}
         )
     }
