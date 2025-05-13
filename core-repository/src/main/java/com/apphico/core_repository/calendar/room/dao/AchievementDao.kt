@@ -20,7 +20,8 @@ interface AchievementDao : BaseDao<AchievementDB> {
                 "WHERE (:nullableGroupIdsFlag OR achievementGroupId IN (:groupIds)) " +
                 "  AND (:statusAllFlag " +
                 "   OR (:statusDoneFlag AND doneDate IS NOT NULL) " +
-                "   OR (:statusUndoneFlag AND doneDate IS NULL))"
+                "   OR (:statusUndoneFlag AND doneDate IS NULL)) " +
+                "ORDER BY endDate"
     )
     fun getAll(
         statusAllFlag: Boolean,
