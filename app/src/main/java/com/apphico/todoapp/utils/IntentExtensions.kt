@@ -16,7 +16,7 @@ import com.apphico.todoapp.alarm.AlarmReceiver.Companion.STOP_ALARM_REQUEST_CODE
 import java.time.LocalDate
 import java.time.LocalTime
 
-fun Intent.getTaskKey() = this.getLongExtra(AlarmHelper.TASK_KEY, 0L)
+fun Intent.getAlarmId() = this.getLongExtra(AlarmHelper.ALARM_ID, 0L)
 
 fun Intent.getTask() =
     Task(
@@ -41,35 +41,35 @@ fun Context.hasAlarm(taskKey: Long) =
     createAlarmIntent(taskKey, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE) != null
 
 fun Context.createAlarmIntent(
-    taskKey: Long,
+    alarmId: Long,
     flags: Int = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
     extras: Bundle? = null
 ): PendingIntent? =
     PendingIntent.getBroadcast(
         this,
-        taskKey.toInt(),
+        alarmId.toInt(),
         Intent(this, AlarmReceiver::class.java).apply {
             action = AlarmHelper.ALARM_ACTION
-            putExtra(AlarmHelper.TASK_KEY, taskKey)
+            putExtra(AlarmHelper.ALARM_ID, alarmId)
             extras?.let { putExtras(it) }
         },
         flags
     )
 
-fun Context.createAlarmIntentWithExtras(task: Task) =
+fun Context.createAlarmIntentWithExtras(alarmId: Long, task: Task) =
     createAlarmIntent(
-        taskKey = task.key(),
+        alarmId = alarmId,
         flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         extras = task.getTaskBundle()
     )
 
-fun Context.createActionStopAlarmIntent(reminderId: Long): PendingIntent =
+fun Context.createActionStopAlarmIntent(alarmId: Long): PendingIntent =
     PendingIntent.getBroadcast(
         this,
         STOP_ALARM_REQUEST_CODE,
         Intent(this, AlarmReceiver::class.java).apply {
             action = AlarmHelper.STOP_ALARM_ACTION
-            putExtra(AlarmHelper.TASK_KEY, reminderId)
+            putExtra(AlarmHelper.ALARM_ID, alarmId)
         },
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
     )

@@ -48,9 +48,21 @@ data class Task(
     fun isRepeatable() = (startDate != null && endDate != null && startDate > endDate) || daysOfWeek.isNotEmpty()
     fun isDone(): Boolean = doneDates?.contains(startDate.toString()) == true || (startDate == null && hasDone == true)
     fun isDeleted(): Boolean = deletedDates?.contains(startDate.toString()) == true || (startDate == null && hasDeleted == true)
+
     fun reminderDateTime(): LocalDateTime? {
         if (this.startDate != null && this.startTime != null && reminder != null) {
             return LocalDateTime.of(this.startDate, this.startTime)
+                .minusDays(reminder.days.toLong())
+                .minusHours(reminder.hours.toLong())
+                .minusMinutes(reminder.minutes.toLong())
+        }
+
+        return null
+    }
+
+    fun reminderDateTime(date: LocalDate?): LocalDateTime? {
+        if (date != null && this.startTime != null && reminder != null) {
+            return LocalDateTime.of(date, this.startTime)
                 .minusDays(reminder.days.toLong())
                 .minusHours(reminder.hours.toLong())
                 .minusMinutes(reminder.minutes.toLong())

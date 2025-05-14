@@ -12,13 +12,17 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
+import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.extensions.hasNotificationPermission
 import com.apphico.todoapp.R
 import com.apphico.todoapp.utils.createActionStopAlarmIntent
 import com.apphico.todoapp.utils.createOpenTaskIntent
+import com.apphico.todoapp.utils.getAlarmId
 import com.apphico.todoapp.utils.getTask
-import com.apphico.todoapp.utils.getTaskKey
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,6 +33,9 @@ class AlarmReceiver : BroadcastReceiver() {
 
     @Inject
     lateinit var mediaPlayerHelper: MediaPlayerHelper
+
+    @Inject
+    lateinit var taskRepository: TaskRepository
 
     companion object {
         const val ALARM_CHANNEL_ID = "task_alarm_channel"
@@ -47,17 +54,21 @@ class AlarmReceiver : BroadcastReceiver() {
                     context.createNotification(task)
 
                     if (task.reminder?.soundAlarm == true) mediaPlayerHelper.start()
+
+                    CoroutineScope(Dispatchers.IO).launch {
+                        taskRepository.setNextAlarm(task.id)
+                    }
                 }
             }
 
             AlarmHelper.STOP_ALARM_ACTION -> {
-                val taskKey = intent.getTaskKey()
+                val alarmId = intent.getAlarmId()
 
-                alarmHelper.cancelAlarm(taskKey)
+                alarmHelper.cancelAlarm(alarmId)
 
                 mediaPlayerHelper.stop()
 
-                NotificationManagerCompat.from(context).cancel(taskKey.toInt())
+                NotificationManagerCompat.from(context).cancel(alarmId.toInt())
             }
         }
     }

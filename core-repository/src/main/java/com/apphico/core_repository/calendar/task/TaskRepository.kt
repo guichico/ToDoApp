@@ -15,14 +15,19 @@ import com.apphico.core_repository.calendar.room.entities.toCheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.toLocationDB
 import com.apphico.core_repository.calendar.room.entities.toTask
 import com.apphico.core_repository.calendar.room.entities.toTaskDB
+import com.apphico.extensions.getInt
 import com.apphico.extensions.getNowDate
+import com.apphico.extensions.getNowDateTime
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 interface TaskRepository {
     suspend fun getTask(taskId: Long): Task
     suspend fun insertTask(task: Task): Boolean
     suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean
     suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean
+    suspend fun setAlarm(taskId: Long): Long
+    suspend fun setNextAlarm(taskId: Long): Long
 }
 
 class TaskRepositoryImpl(
@@ -39,9 +44,7 @@ class TaskRepositoryImpl(
     override suspend fun insertTask(task: Task): Boolean {
         return try {
             appDatabase.withTransaction {
-                val taskDB = (task.reminder?.let { task.copy(reminderId = task.key()) } ?: task).toTaskDB()
-
-                val taskId = taskDao.insert(taskDB)
+                val taskId = taskDao.insert(task.toTaskDB())
 
                 task.location?.let {
                     locationDao.insert(it.toLocationDB(taskId))
@@ -50,7 +53,7 @@ class TaskRepositoryImpl(
                 checkListItemDao
                     .insertAll(task.checkList.map { it.toCheckListItemDB(taskId = taskId) })
 
-                alarmHelper.setAlarm(task.copy(id = taskId))
+                setAlarm(taskId)
             }
 
             return true
@@ -66,10 +69,6 @@ class TaskRepositoryImpl(
         initialStartDate: LocalDate?
     ): Boolean {
         return try {
-            alarmHelper.cancelAlarm(task.reminderId)
-
-            val task = (task.reminder?.let { task.copy(reminderId = task.key()) } ?: task.copy(reminderId = 0))
-
             appDatabase.withTransaction {
                 if (task.isRepeatable()) {
                     when (recurringTask) {
@@ -91,9 +90,10 @@ class TaskRepositoryImpl(
                 } else {
                     task.updateTask()
                 }
-            }
 
-            alarmHelper.setAlarm(task)
+                alarmHelper.cancelAlarm(task.reminderId)
+                setAlarm(task.id)
+            }
 
             return true
         } catch (ex: Exception) {
@@ -142,6 +142,10 @@ class TaskRepositoryImpl(
         }
     }
 
+    override suspend fun setAlarm(taskId: Long): Long = setAlarm(0, taskId)
+
+    override suspend fun setNextAlarm(taskId: Long): Long = setAlarm(1, taskId)
+
     private suspend fun Task.insertTaskDeleted() {
         taskDeletedDao.insert(
             TaskDeletedDB(
@@ -150,5 +154,45 @@ class TaskRepositoryImpl(
                 taskDate = this.startDate
             )
         )
+    }
+
+    private suspend fun setAlarm(startDay: Int, taskId: Long): Long {
+        val task = getTask(taskId)
+        var alarmId = 0L
+
+        if (task.isRepeatable()) {
+            var nextAlarmDate: LocalDate? = null
+
+            for (days in startDay..7) {
+                val nextDate = getNowDate().plusDays(days.toLong())
+                val nextDayOfWeek = nextDate.dayOfWeek.getInt()
+
+                if (task.daysOfWeek.contains(nextDayOfWeek)) {
+                    alarmId = task.key() + nextDayOfWeek
+                    nextAlarmDate = nextDate
+                    break
+                }
+            }
+
+            val endDate = task.endDate ?: nextAlarmDate
+            if (nextAlarmDate != null && nextAlarmDate <= endDate) {
+                task.reminderDateTime(nextAlarmDate).setAlarm(alarmId, task)
+            }
+        } else {
+            task.reminderDateTime().setAlarm(alarmId, task)
+        }
+
+        return alarmId
+    }
+
+    private suspend fun LocalDateTime?.setAlarm(alarmId: Long, task: Task) {
+        this?.let { reminderDateTime ->
+            if (reminderDateTime >= getNowDateTime()) {
+                alarmHelper.setAlarm(alarmId, reminderDateTime, task.copy(startDate = reminderDateTime.toLocalDate()))
+                taskDao.update(task.copy(reminderId = alarmId).toTaskDB())
+            }
+        } ?: run {
+            taskDao.update(task.copy(reminderId = 0L).toTaskDB())
+        }
     }
 }
