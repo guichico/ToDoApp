@@ -3,7 +3,6 @@ package com.apphico.todoapp
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,14 +11,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.util.Consumer
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
 import com.apphico.todoapp.task.navigateToAddEditTask
 import com.apphico.todoapp.utils.getTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,12 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         installSplashScreen()
-
-        // TODO Create dark theme
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(White.toArgb(), White.toArgb()),
-            navigationBarStyle = SystemBarStyle.auto(White.toArgb(), White.toArgb()),
-        )
+        enableEdgeToEdge()
 
         setContent {
             ToDoAppTheme {
