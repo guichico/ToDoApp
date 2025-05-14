@@ -80,12 +80,11 @@ fun Pair<LocalDate?, LocalTime?>.addMinutesBetween(
 
     val minutesBetween = startTime?.until(endTime, ChronoUnit.MINUTES) ?: 0
 
-    if (startDate != null && date != null) {
-        // TODO Fix it
+    return if (startDate != null && date != null) {
         val endDateTime = LocalDateTime.of(date, time ?: LocalTime.of(0, 0)).plusMinutes(minutesBetween)
-        return Pair(endDateTime.toLocalDate(), endDateTime.toLocalTime())
+        Pair(endDateTime.toLocalDate(), endDateTime.toLocalTime().takeIf { time != null })
     } else {
-        return Pair(null, time?.plusMinutes(minutesBetween))
+        Pair(null, time?.plusMinutes(minutesBetween))
     }
 }
 
