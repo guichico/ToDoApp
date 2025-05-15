@@ -107,6 +107,12 @@ class AddEditTaskViewModel @Inject constructor(
         }
     }
 
+    fun canSaveAll(): Boolean {
+        val editingTask = editingTask.value
+        val hasChanges = editingTask.startDate != task?.startDate || editingTask.endDate != task?.endDate
+        return !(!editingTask.isSaved && hasChanges)
+    }
+
     fun onNameChanged(text: String) {
         editingTask.value = editingTask.value.copy(name = text)
         nameError.value = null
@@ -267,14 +273,8 @@ class AddEditTaskViewModel @Inject constructor(
 
     fun copy(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val task = editingTask.value
-            val copiedTask = task.copy(
-                id = 0,
-                checkList = editingCheckList.value.map { it.copy(id = 0) },
-                location = task.location?.copy(id = 0)
-            )
-
-            onResult(taskRepository.insertTask(copiedTask))
+            val task = editingTask.value.copy(checkList = editingCheckList.value)
+            onResult(taskRepository.copyTask(task))
         }
     }
 }

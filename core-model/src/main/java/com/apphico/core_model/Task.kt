@@ -45,7 +45,7 @@ data class Task(
     val deletedDates: String? = ""
 ) : Parcelable {
     fun key() = this.id + (this.reminderDateTime()?.toMillis() ?: ((this.startDate?.toMillis() ?: 0L) + (this.startTime?.toNanoOfDay() ?: 0L)))
-    fun isRepeatable() = (startDate != null && endDate != null && startDate > endDate) || daysOfWeek.isNotEmpty()
+    fun isRepeatable() = daysOfWeek.isNotEmpty() && (endDate == null || endDate.isAfter(startDate) == true)
     fun isDone(): Boolean = doneDates?.contains(startDate.toString()) == true || (startDate == null && hasDone == true)
     fun isDeleted(): Boolean = deletedDates?.contains(startDate.toString()) == true || (startDate == null && hasDeleted == true)
 

@@ -124,14 +124,16 @@ fun AddEditTaskScreen(
         }
     }
 
+    val recurringTask = listOfNotNull(
+        RecurringTask.ThisTask,
+        RecurringTask.Future,
+        if (addEditTaskViewModel.canSaveAll()) RecurringTask.All else null
+    )
+
     if (isSaveDialogOpen) {
         CheckBoxDialog(
             title = stringResource(R.string.save_recurring_task),
-            values = listOf(
-                RecurringTask.ThisTask,
-                RecurringTask.Future,
-                RecurringTask.All
-            ),
+            values = recurringTask,
             selectedItem = saveMethod,
             onItemSelected = {
                 saveMethod = it as RecurringTask

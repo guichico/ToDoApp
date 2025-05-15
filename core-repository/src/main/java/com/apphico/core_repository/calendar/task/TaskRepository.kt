@@ -24,6 +24,7 @@ import java.time.LocalDateTime
 interface TaskRepository {
     suspend fun getTask(taskId: Long): Task
     suspend fun insertTask(task: Task): Boolean
+    suspend fun copyTask(task: Task): Boolean
     suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean
     suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean
     suspend fun setAlarm(taskId: Long): Long
@@ -44,14 +45,21 @@ class TaskRepositoryImpl(
     override suspend fun insertTask(task: Task): Boolean {
         return try {
             appDatabase.withTransaction {
-                val taskId = taskDao.insert(task.toTaskDB())
+                var toBeSavedTask = task
+                if (task.daysOfWeek.isEmpty() &&
+                    ((task.endDate == null && task.startDate != null) || (task.endDate != null && task.endDate?.isAfter(task.startDate) == true))
+                ) {
+                    toBeSavedTask = task.copy(daysOfWeek = listOf(1, 2, 3, 4, 5, 6, 7))
+                }
 
-                task.location?.let {
+                val taskId = taskDao.insert(toBeSavedTask.toTaskDB())
+
+                toBeSavedTask.location?.let {
                     locationDao.insert(it.toLocationDB(taskId))
                 }
 
                 checkListItemDao
-                    .insertAll(task.checkList.map { it.toCheckListItemDB(taskId = taskId) })
+                    .insertAll(toBeSavedTask.checkList.map { it.toCheckListItemDB(taskId = taskId) })
 
                 setAlarm(taskId)
             }
@@ -63,6 +71,16 @@ class TaskRepositoryImpl(
         }
     }
 
+    override suspend fun copyTask(task: Task): Boolean {
+        val copiedTask = task.copy(
+            id = 0,
+            checkList = task.checkList.map { it.copy(id = 0) },
+            location = task.location?.copy(id = 0)
+        )
+
+        return insertTask(copiedTask)
+    }
+
     override suspend fun updateTask(
         task: Task,
         recurringTask: RecurringTask,
@@ -70,29 +88,39 @@ class TaskRepositoryImpl(
     ): Boolean {
         return try {
             appDatabase.withTransaction {
-                if (task.isRepeatable()) {
+                var toBeSavedTask = task
+                if (task.daysOfWeek.isEmpty() &&
+                    ((task.endDate == null && task.startDate != null) || (task.endDate != null && task.endDate?.isAfter(task.startDate) == true))
+                ) {
+                    toBeSavedTask = task.copy(daysOfWeek = listOf(1, 2, 3, 4, 5, 6, 7))
+                }
+
+                if (toBeSavedTask.isRepeatable()) {
                     when (recurringTask) {
-                        RecurringTask.All -> task.updateTask()
+                        RecurringTask.All -> {
+                            val startDate = getTask(toBeSavedTask.id).startDate
+                            toBeSavedTask.copy(startDate = startDate).updateTask()
+                        }
 
                         RecurringTask.Future -> {
-                            taskDao.updateEndDate(task.id, task.startDate?.minusDays(1))
-                            insertTask(task.copy(id = 0))
+                            taskDao.updateEndDate(toBeSavedTask.id, toBeSavedTask.startDate?.minusDays(1))
+                            copyTask(toBeSavedTask)
                         }
 
                         RecurringTask.ThisTask -> {
-                            Task(id = task.id, startDate = initialStartDate)
+                            Task(id = toBeSavedTask.id, startDate = initialStartDate)
                                 .insertTaskDeleted()
 
-                            val endDate = task.endDate ?: task.startDate
-                            insertTask(task.copy(id = 0, endDate = endDate))
+                            val endDate = toBeSavedTask.endDate ?: toBeSavedTask.startDate
+                            copyTask(toBeSavedTask.copy(endDate = endDate, daysOfWeek = emptyList()))
                         }
                     }
                 } else {
-                    task.updateTask()
+                    toBeSavedTask.updateTask()
                 }
 
-                alarmHelper.cancelAlarm(task.reminderId)
-                setAlarm(task.id)
+                alarmHelper.cancelAlarm(toBeSavedTask.reminderId)
+                setAlarm(toBeSavedTask.id)
             }
 
             return true
