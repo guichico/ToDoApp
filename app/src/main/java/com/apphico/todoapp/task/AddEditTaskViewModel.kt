@@ -267,9 +267,11 @@ class AddEditTaskViewModel @Inject constructor(
 
     fun copy(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
-            val copiedTask = editingTask.value.copy(
+            val task = editingTask.value
+            val copiedTask = task.copy(
                 id = 0,
-                checkList = editingCheckList.value.map { it.copy(id = 0) }
+                checkList = editingCheckList.value.map { it.copy(id = 0) },
+                location = task.location?.copy(id = 0)
             )
 
             onResult(taskRepository.insertTask(copiedTask))
