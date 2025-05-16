@@ -137,6 +137,12 @@ fun AddEditAchievementScreen(
                 if (isSuccess) navigateBack()
             }
         },
+        onCopyClicked = {
+            addEditAchievementViewModel.copy { isSuccess ->
+                snackBar(if (isSuccess) achievementSaveSuccess else achievementSaveError)
+                if (isSuccess) navigateBack()
+            }
+        },
         navigateBack = {
             showDiscardChangesDialogOnBackIfNeed()
         }

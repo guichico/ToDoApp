@@ -23,6 +23,7 @@ interface AchievementRepository {
     fun getAll(status: Status, groups: List<Group>): Flow<List<Achievement>>
     suspend fun setDone(achievement: Achievement): Boolean
     suspend fun insertAchievement(achievement: Achievement): Boolean
+    suspend fun copyAchievement(achievement: Achievement): Boolean
     suspend fun updateAchievement(achievement: Achievement): Boolean
     suspend fun deleteAchievement(achievement: Achievement): Boolean
 }
@@ -88,6 +89,31 @@ class AchievementRepositoryImpl(
             Log.d(AchievementRepository::class.simpleName, ex.stackTrace.toString())
             return false
         }
+    }
+
+    override suspend fun copyAchievement(achievement: Achievement): Boolean {
+        val copiedAchievement = achievement.copy(
+            id = 0,
+            doneDate = null,
+            measurementType = when (achievement.measurementType) {
+                is MeasurementType.TaskDone -> {
+                    (achievement.measurementType as MeasurementType.TaskDone)
+                        .copy(checkList = achievement.getCheckList().map { it.copy(id = 0) })
+                }
+
+                is MeasurementType.Percentage -> {
+                    (achievement.measurementType as MeasurementType.Percentage).copy(progress = emptyList())
+                }
+
+                is MeasurementType.Value -> {
+                    (achievement.measurementType as MeasurementType.Value).copy(trackedValues = emptyList())
+                }
+
+                else -> achievement.measurementType
+            }
+        )
+
+        return insertAchievement(copiedAchievement)
     }
 
     override suspend fun updateAchievement(achievement: Achievement): Boolean {

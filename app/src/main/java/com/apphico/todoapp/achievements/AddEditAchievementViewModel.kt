@@ -199,24 +199,7 @@ class AddEditAchievementViewModel @Inject constructor(
         }
 
         if (!hasError) {
-            when (achievement.measurementType) {
-                is MeasurementType.TaskDone -> {
-                    achievement = achievement.copy(
-                        measurementType = (achievement.measurementType as MeasurementType.TaskDone).copy(checkList = editingCheckList.value)
-                    )
-                }
-
-                is MeasurementType.Percentage -> {
-                    achievement = achievement.copy(measurementType = editingPercentageProgress.value)
-                }
-
-                is MeasurementType.Value -> {
-                    achievement = achievement.copy(measurementType = editingValueProgress.value)
-                }
-
-                else -> {
-                }
-            }
+            achievement = setAchievementValues()
 
             viewModelScope.launch {
                 onResult(
@@ -228,12 +211,6 @@ class AddEditAchievementViewModel @Inject constructor(
                 )
             }
         }
-
-        editingAchievement.value.let { achievement ->
-            if (achievement.name.isEmpty()) {
-                return
-            }
-        }
     }
 
     fun delete(onResult: (Boolean) -> Unit) {
@@ -241,6 +218,35 @@ class AddEditAchievementViewModel @Inject constructor(
 
         viewModelScope.launch {
             onResult(achievementRepository.deleteAchievement(achievement))
+        }
+    }
+
+    fun copy(onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val achievement = setAchievementValues()
+            onResult(achievementRepository.copyAchievement(achievement))
+        }
+    }
+
+    private fun setAchievementValues(): Achievement {
+        val achievement = editingAchievement.value
+
+        return when (achievement.measurementType) {
+            is MeasurementType.TaskDone -> {
+                achievement.copy(
+                    measurementType = (achievement.measurementType as MeasurementType.TaskDone).copy(checkList = editingCheckList.value)
+                )
+            }
+
+            is MeasurementType.Percentage -> {
+                achievement.copy(measurementType = editingPercentageProgress.value)
+            }
+
+            is MeasurementType.Value -> {
+                achievement.copy(measurementType = editingValueProgress.value)
+            }
+
+            else -> achievement
         }
     }
 }
