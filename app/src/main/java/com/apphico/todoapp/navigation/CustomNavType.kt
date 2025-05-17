@@ -6,6 +6,9 @@ import android.os.Parcelable
 import androidx.navigation.NavType
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import java.net.URLDecoder
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class CustomNavType<T : Parcelable>(
     private val clazz: Class<T>,
@@ -24,7 +27,15 @@ class CustomNavType<T : Parcelable>(
 
     override fun put(bundle: Bundle, key: String, value: T) = bundle.putParcelable(key, value)
 
-    override fun parseValue(value: String): T = Json.decodeFromString(serializer, value)
+    override fun parseValue(value: String): T {
+        val decoded = URLDecoder.decode(value, StandardCharsets.UTF_8.toString())
+        val json = Json.decodeFromString(serializer, decoded)
+        return json
+    }
 
-    override fun serializeAsValue(value: T): String = Json.encodeToString(serializer, value)
+    override fun serializeAsValue(value: T): String {
+        val json = Json.encodeToString(serializer, value)
+        val encoded = URLEncoder.encode(json, StandardCharsets.UTF_8.toString())
+        return encoded
+    }
 }
