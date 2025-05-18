@@ -50,7 +50,7 @@ class CalendarViewModel @Inject constructor(
 
     override val selectedStatus = userSettingsRepository.getTaskStatus()
         .flowOn(Dispatchers.IO)
-        .stateIn(viewModelScope, SharingStarted.Lazily, Status.ALL)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Status.ALL)
 
     override val searchClicked = MutableSharedFlow<Boolean>()
 
