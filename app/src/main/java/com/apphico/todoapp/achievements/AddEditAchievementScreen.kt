@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -64,8 +65,10 @@ import com.apphico.designsystem.components.textfield.IntTextField
 import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.textfield.SmallTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
+import com.apphico.designsystem.theme.MainText
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.designsystem.theme.White
 import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowGMTMillis
@@ -753,14 +756,17 @@ private fun DoneButton(
             modifier = Modifier
                 .fillMaxWidth(),
             shape = RectangleShape,
-            onClick = onDoneClicked
+            onClick = onDoneClicked,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MainText
+            )
         ) {
             Text(
                 modifier = Modifier
                     .padding(ToDoAppTheme.spacing.small),
                 text = stringResource(R.string.complete_achievement),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimary
+                color = White
             )
         }
     }
