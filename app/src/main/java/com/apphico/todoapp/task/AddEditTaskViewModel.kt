@@ -127,7 +127,9 @@ class AddEditTaskViewModel @Inject constructor(
     }
 
     fun onStartDateChanged(date: LocalDate?) {
-        val newEndDate = editingTask.value.endDate?.addDaysBetween(editingTask.value.startDate, date)
+        val newEndDate = date?.let {
+            editingTask.value.endDate?.addDaysBetween(editingTask.value.startDate, date)
+        }
 
         editingTask.value = editingTask.value.copy(startDate = date)
         editingTask.value = editingTask.value.copy(endDate = newEndDate)
