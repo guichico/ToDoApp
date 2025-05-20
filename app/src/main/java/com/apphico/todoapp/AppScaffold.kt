@@ -1,8 +1,13 @@
 package com.apphico.todoapp
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -19,9 +24,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -36,6 +43,7 @@ import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.snackbar.SnackBar
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
+import com.apphico.designsystem.theme.MainText
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.designsystem.views.FilterView
@@ -72,6 +80,7 @@ fun AppScaffold(
     val coroutine = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
 
+    val navigationBarViewModel: NavigationBarViewModel = hiltViewModel()
     val calendarViewModel: CalendarViewModel = hiltViewModel()
     val achievementsViewModel: AchievementsViewModel = hiltViewModel()
 
@@ -114,22 +123,38 @@ fun AppScaffold(
             }
         }
     ) { padding ->
-        NavHost(
-            modifier = Modifier
-                .padding(padding),
-            navController = navController,
-            startDestination = CalendarRoute
-        ) {
-            mainGraph(
+        Box {
+            val shouldShowBlueNavBar by navigationBarViewModel.shouldShowBlueNavBar.collectAsState()
+
+            if (shouldShowBlueNavBar) {
+                val navBarHeight = WindowInsets.navigationBars.getBottom(LocalDensity.current)
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(navBarHeight.dp)
+                        .align(Alignment.BottomCenter)
+                        .background(MainText)
+                )
+            }
+            NavHost(
+                modifier = Modifier
+                    .padding(padding),
                 navController = navController,
-                snackBar = {
-                    coroutine.launch {
-                        snackBarHostState.showSnackbar(it)
-                    }
-                },
-                calendarViewModel = calendarViewModel,
-                achievementsViewModel = achievementsViewModel
-            )
+                startDestination = CalendarRoute
+            ) {
+                mainGraph(
+                    navController = navController,
+                    snackBar = {
+                        coroutine.launch {
+                            snackBarHostState.showSnackbar(it)
+                        }
+                    },
+                    navigationBarViewModel = navigationBarViewModel,
+                    calendarViewModel = calendarViewModel,
+                    achievementsViewModel = achievementsViewModel
+                )
+            }
         }
     }
 }

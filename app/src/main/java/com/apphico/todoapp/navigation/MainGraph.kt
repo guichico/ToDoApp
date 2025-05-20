@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import com.apphico.todoapp.NavigationBarViewModel
 import com.apphico.todoapp.achievements.AchievementsViewModel
 import com.apphico.todoapp.achievements.achievementScreen
 import com.apphico.todoapp.achievements.addEditAchievementScreen
@@ -42,6 +43,7 @@ import kotlin.reflect.KType
 fun NavGraphBuilder.mainGraph(
     navController: NavController,
     snackBar: (String) -> Unit,
+    navigationBarViewModel: NavigationBarViewModel,
     calendarViewModel: CalendarViewModel,
     achievementsViewModel: AchievementsViewModel
 ) {
@@ -90,6 +92,7 @@ fun NavGraphBuilder.mainGraph(
         onBackClicked = navController::navigateBack
     )
     addEditAchievementScreen(
+        navigationBarViewModel = navigationBarViewModel,
         snackBar = snackBar,
         onBackClicked = navController::navigateBack,
         onSelectGroupClicked = { navController.navigateToSelectGroup(SelectGroupRouteFromAchievement) },

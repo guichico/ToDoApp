@@ -43,12 +43,14 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
 import com.apphico.core_model.Progress
 import com.apphico.core_model.fakeData.mockedAchievements
+import com.apphico.designsystem.ComposableLifecycle
 import com.apphico.designsystem.R
 import com.apphico.designsystem.animatedElevation
 import com.apphico.designsystem.components.card.AddEditHeader
@@ -72,6 +74,7 @@ import com.apphico.designsystem.theme.White
 import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowGMTMillis
+import com.apphico.todoapp.NavigationBarViewModel
 import java.time.LocalDate
 
 private val MeasurementValueUnit.label: Int
@@ -83,6 +86,7 @@ private val MeasurementValueUnit.label: Int
 
 @Composable
 fun AddEditAchievementScreen(
+    navigationBarViewModel: NavigationBarViewModel,
     addEditAchievementViewModel: AddEditAchievementViewModel = hiltViewModel(),
     snackBar: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
@@ -174,6 +178,7 @@ fun AddEditAchievementScreen(
             onStartingValueChanged = addEditAchievementViewModel::ondStartingValueChanged,
             onGoalValueChanged = addEditAchievementViewModel::ondGoalValueChanged,
             navigateToAddEditProgress = navigateToAddEditProgress,
+            setNavBarBlue = { navigationBarViewModel.setShouldShowBlueNavBar(it) },
             onDoneClicked = {
                 addEditAchievementViewModel.setDone { isSuccess ->
                     snackBar(if (isSuccess) achievementSetDoneSuccess else achievementSetDoneError)
@@ -209,6 +214,7 @@ private fun AddEditAchievementScreenContent(
     onStartingValueChanged: (Float) -> Unit,
     onGoalValueChanged: (Float) -> Unit,
     navigateToAddEditProgress: (Int, MeasurementValueUnit?, Progress?) -> Unit,
+    setNavBarBlue: (Boolean) -> Unit,
     onDoneClicked: () -> Unit
 ) {
     Column(
@@ -271,12 +277,32 @@ private fun AddEditAchievementScreenContent(
                 )
             }
         }
-        DoneButton(
-            isEditing = isEditing,
-            progress = remember { derivedStateOf { achievement.value.getProgress() } },
-            measurementType = remember { derivedStateOf { achievement.value.measurementType } },
-            onDoneClicked = onDoneClicked
-        )
+
+        val shouldShowDoneButton by remember {
+            derivedStateOf {
+                achievement.value.getProgress() < 1f && achievement.value.measurementType == MeasurementType.None
+            }
+        }
+
+        ComposableLifecycle { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> {
+                    setNavBarBlue(shouldShowDoneButton)
+                }
+
+                Lifecycle.Event.ON_STOP -> {
+                    setNavBarBlue(false)
+                }
+
+                else -> {}
+            }
+        }
+
+        if (shouldShowDoneButton) {
+            DoneButton(
+                onDoneClicked = onDoneClicked
+            )
+        }
     }
 }
 
@@ -746,29 +772,24 @@ private fun GoalValueField(
 
 @Composable
 private fun DoneButton(
-    isEditing: Boolean,
-    progress: State<Float>,
-    measurementType: State<MeasurementType?>,
     onDoneClicked: () -> Unit
 ) {
-    if (isEditing && progress.value < 1f && measurementType.value == MeasurementType.None) {
-        Button(
+    Button(
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RectangleShape,
+        onClick = onDoneClicked,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MainText
+        )
+    ) {
+        Text(
             modifier = Modifier
-                .fillMaxWidth(),
-            shape = RectangleShape,
-            onClick = onDoneClicked,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MainText
-            )
-        ) {
-            Text(
-                modifier = Modifier
-                    .padding(ToDoAppTheme.spacing.small),
-                text = stringResource(R.string.complete_achievement),
-                style = MaterialTheme.typography.titleMedium,
-                color = White
-            )
-        }
+                .padding(ToDoAppTheme.spacing.small),
+            text = stringResource(R.string.complete_achievement),
+            style = MaterialTheme.typography.titleMedium,
+            color = White
+        )
     }
 }
 
@@ -810,6 +831,7 @@ private fun AddEditAchievementScreenPreview(
             onStartingValueChanged = {},
             onGoalValueChanged = {},
             navigateToAddEditProgress = { _, _, _ -> },
+            setNavBarBlue = {},
             onDoneClicked = {}
         )
     }
