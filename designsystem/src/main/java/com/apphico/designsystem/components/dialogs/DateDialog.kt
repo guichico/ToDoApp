@@ -38,9 +38,10 @@ fun DateDialog(
         dismissButton = {
             NormalButton(
                 onClick = {
+                    onDateChanged(null)
                     isDatePickerDialogOpen.value = false
                 },
-                text = stringResource(R.string.cancel)
+                text = stringResource(R.string.remove)
             )
         },
         confirmButton = {
