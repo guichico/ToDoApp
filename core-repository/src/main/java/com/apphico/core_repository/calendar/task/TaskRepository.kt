@@ -18,6 +18,7 @@ import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.extensions.getInt
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowDateTime
+import com.apphico.extensions.isAfterRightNotNull
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -45,12 +46,7 @@ class TaskRepositoryImpl(
     override suspend fun insertTask(task: Task): Boolean {
         return try {
             appDatabase.withTransaction {
-                var toBeSavedTask = task
-                if (task.daysOfWeek.isEmpty() &&
-                    ((task.endDate == null && task.startDate != null) || (task.endDate != null && task.endDate?.isAfter(task.startDate) == true))
-                ) {
-                    toBeSavedTask = task.copy(daysOfWeek = listOf(1, 2, 3, 4, 5, 6, 7))
-                }
+                val toBeSavedTask = task.checkDaysOfWeek()
 
                 val taskId = taskDao.insert(toBeSavedTask.toTaskDB())
 
@@ -88,12 +84,7 @@ class TaskRepositoryImpl(
     ): Boolean {
         return try {
             appDatabase.withTransaction {
-                var toBeSavedTask = task
-                if (task.daysOfWeek.isEmpty() &&
-                    ((task.endDate == null && task.startDate != null) || (task.endDate != null && task.endDate?.isAfter(task.startDate) == true))
-                ) {
-                    toBeSavedTask = task.copy(daysOfWeek = listOf(1, 2, 3, 4, 5, 6, 7))
-                }
+                val toBeSavedTask = task.checkDaysOfWeek()
 
                 if (toBeSavedTask.isRepeatable()) {
                     when (recurringTask) {
@@ -130,20 +121,6 @@ class TaskRepositoryImpl(
         }
     }
 
-    private suspend fun Task.updateTask() {
-        appDatabase.withTransaction {
-            taskDao.update(this.toTaskDB())
-
-            this.location?.let {
-                locationDao.insertOrUpdate(it.toLocationDB(this.id))
-            } ?: locationDao.delete(this.id)
-
-            checkListItemDao.deleteAll(taskId = this.id, checkListItemIds = this.checkList.map { it.id })
-            checkListItemDao.insertAll(this.checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(taskId = this.id) })
-            checkListItemDao.updateAll(this.checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(taskId = this.id) })
-        }
-    }
-
     override suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean {
         return try {
             alarmHelper.cancelAlarm(task.reminderId)
@@ -173,6 +150,30 @@ class TaskRepositoryImpl(
     override suspend fun setAlarm(taskId: Long): Long = setAlarm(0, taskId)
 
     override suspend fun setNextAlarm(taskId: Long): Long = setAlarm(1, taskId)
+
+    private fun Task.checkDaysOfWeek(): Task {
+        if (this.daysOfWeek.isEmpty() &&
+            ((this.endDate == null && this.startDate != null) || (this.endDate != null && this.endDate.isAfterRightNotNull(this.startDate)))
+        ) {
+            return this.copy(daysOfWeek = listOf(1, 2, 3, 4, 5, 6, 7))
+        }
+
+        return this
+    }
+
+    private suspend fun Task.updateTask() {
+        appDatabase.withTransaction {
+            taskDao.update(this.toTaskDB())
+
+            this.location?.let {
+                locationDao.insertOrUpdate(it.toLocationDB(this.id))
+            } ?: locationDao.delete(this.id)
+
+            checkListItemDao.deleteAll(taskId = this.id, checkListItemIds = this.checkList.map { it.id })
+            checkListItemDao.insertAll(this.checkList.filter { it.id == 0L }.map { it.toCheckListItemDB(taskId = this.id) })
+            checkListItemDao.updateAll(this.checkList.filter { it.id != 0L }.map { it.toCheckListItemDB(taskId = this.id) })
+        }
+    }
 
     private suspend fun Task.insertTaskDeleted() {
         taskDeletedDao.insert(

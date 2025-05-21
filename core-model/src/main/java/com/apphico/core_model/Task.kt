@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import com.apphico.core_model.serializers.LocalDateSerializer
 import com.apphico.core_model.serializers.LocalTimeSerializer
+import com.apphico.extensions.isAfterRightNotNull
 import com.apphico.extensions.toMillis
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
@@ -45,7 +46,7 @@ data class Task(
     val deletedDates: String? = ""
 ) : Parcelable {
     fun key() = this.id + (this.reminderDateTime()?.toMillis() ?: ((this.startDate?.toMillis() ?: 0L) + (this.startTime?.toNanoOfDay() ?: 0L)))
-    fun isRepeatable() = daysOfWeek.isNotEmpty() && (endDate == null || endDate.isAfter(startDate) == true)
+    fun isRepeatable() = daysOfWeek.isNotEmpty() && (endDate == null || endDate.isAfterRightNotNull(startDate))
     fun isDone(): Boolean = doneDates?.contains(startDate.toString()) == true || (startDate == null && hasDone == true)
     fun isDeleted(): Boolean = deletedDates?.contains(startDate.toString()) == true || (startDate == null && hasDeleted == true)
 

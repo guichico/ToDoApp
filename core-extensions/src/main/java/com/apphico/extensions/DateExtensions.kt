@@ -92,3 +92,8 @@ fun LocalDate.addDaysBetween(startDate: LocalDate?, endDate: LocalDate?): LocalD
     val daysBetween = startDate?.until(endDate)?.days?.toLong() ?: 0
     return this.plusDays(daysBetween)
 }
+
+fun LocalDate?.isAfterRightNotNull(other: LocalDate?): Boolean {
+    if (other == null) return false
+    return this?.isAfter(other) == true
+}
