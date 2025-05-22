@@ -251,9 +251,9 @@ private fun AddTaskScreenContent(
     onGroupRemoved: () -> Unit,
     startDateError: State<Int?>,
     onStartDateChanged: (LocalDate?) -> Unit,
-    onStartTimeChanged: (LocalTime) -> Unit,
+    onStartTimeChanged: (LocalTime?) -> Unit,
     onEndDateChanged: (LocalDate?) -> Unit,
-    onEndTimeChanged: (LocalTime) -> Unit,
+    onEndTimeChanged: (LocalTime?) -> Unit,
     onDaysOfWeekChanged: (List<Int>) -> Unit,
     checkList: State<List<CheckListItem>>,
     onCheckListItemChanged: (CheckListItem, CheckListItem) -> Unit,
@@ -369,11 +369,11 @@ private fun Dates(
     onStartDateChanged: (LocalDate?) -> Unit,
     startDateError: State<Int?>,
     startTime: State<LocalTime?>,
-    onStartTimeChanged: (LocalTime) -> Unit,
+    onStartTimeChanged: (LocalTime?) -> Unit,
     endDate: State<LocalDate?>,
     onEndDateChanged: (LocalDate?) -> Unit,
     endTime: State<LocalTime?>,
-    onEndTimeChanged: (LocalTime) -> Unit
+    onEndTimeChanged: (LocalTime?) -> Unit
 ) {
     Column {
         StarDateRow(
@@ -400,7 +400,7 @@ private fun StarDateRow(
     startDateError: State<Int?>,
     onStartDateChanged: (LocalDate?) -> Unit,
     startTime: State<LocalTime?>,
-    onStartTimeChanged: (LocalTime) -> Unit
+    onStartTimeChanged: (LocalTime?) -> Unit
 ) {
     val startDatePickerState = rememberDatePickerState(
         initialSelectedDateMillis = startDate.value?.toMillis() ?: getNowGMTMillis()
@@ -428,7 +428,7 @@ private fun EndDateRow(
     endDate: State<LocalDate?>,
     onEndDateChanged: (LocalDate?) -> Unit,
     endTime: State<LocalTime?>,
-    onEndTimeChanged: (LocalTime) -> Unit
+    onEndTimeChanged: (LocalTime?) -> Unit
 ) {
     var initialEndHour = endTime.value?.hour ?: getNowTime().hour.plus(1)
     var initialEndDate = endDate.value ?: getNowDate()
@@ -473,7 +473,7 @@ private fun DateRow(
     dateError: State<Int?>,
     time: State<LocalTime?>,
     timePickerState: TimePickerState,
-    onTimeChanged: (LocalTime) -> Unit,
+    onTimeChanged: (LocalTime?) -> Unit,
 ) {
     val isDatePickerDialogOpen = remember { mutableStateOf(false) }
     val isTimePickerDialogOpen = remember { mutableStateOf(false) }

@@ -36,7 +36,7 @@ import java.time.LocalTime
 fun TimeDialog(
     isTimePickerDialogOpen: MutableState<Boolean>,
     timePickerState: TimePickerState,
-    onTimeChanged: (LocalTime) -> Unit
+    onTimeChanged: (LocalTime?) -> Unit
 ) {
     var isKeyboardMode by remember { mutableStateOf(false) }
 
@@ -75,9 +75,10 @@ fun TimeDialog(
                             modifier = Modifier
                                 .padding(end = ToDoAppTheme.spacing.small),
                             onClick = {
+                                onTimeChanged(null)
                                 isTimePickerDialogOpen.value = false
                             },
-                            text = stringResource(R.string.cancel)
+                            text = stringResource(R.string.remove)
                         )
                         NormalButton(
                             modifier = Modifier

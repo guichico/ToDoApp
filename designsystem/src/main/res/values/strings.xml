@@ -71,7 +71,7 @@
     <string name="finished">Completed</string>
     <string name="unfinished">Not completed</string>
     <string name="search_btn">Apply</string>
-    <string name="unit_int">Número inteiro</string>
+    <string name="unit_int">Integer</string>
     <string name="unit_decimal">Decimal</string>
     <string name="unit_currency">Currency</string>
     <string name="save_recurring_task">Salvar tarefa recorrente</string>

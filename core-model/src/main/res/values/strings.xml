@@ -9,6 +9,6 @@
     <string name="achievement_goal_type">Concluir por</string>
     <string name="achievement_goal_type_step">Etapas</string>
     <string name="achievement_goal_type_percentage">Porcentagem</string>
-    <string name="achievement_goal_type_value">Valor</string>
+    <string name="achievement_goal_type_value">Value</string>
     <string name="achievement_goal_type_none">Apenas marcar concluída</string>
 </resources>

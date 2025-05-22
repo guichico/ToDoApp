@@ -137,22 +137,24 @@ class AddEditTaskViewModel @Inject constructor(
         startDateError.value = null
     }
 
-    fun onStartTimeChanged(time: LocalTime) {
-        val (newEndDate, newEndTime) =
-            Pair(
-                editingTask.value.endDate,
-                editingTask.value.endTime
-            )
-                .addMinutesBetween(
-                    startDate = editingTask.value.startDate,
-                    startTime = editingTask.value.startTime,
-                    endTime = time
+    fun onStartTimeChanged(time: LocalTime?) {
+        time?.let {
+            val (newEndDate, newEndTime) =
+                Pair(
+                    editingTask.value.endDate,
+                    editingTask.value.endTime
                 )
+                    .addMinutesBetween(
+                        startDate = editingTask.value.startDate,
+                        startTime = editingTask.value.startTime,
+                        endTime = time
+                    )
+
+            newEndDate?.let { editingTask.value = editingTask.value.copy(endDate = it) }
+            newEndTime?.let { editingTask.value = editingTask.value.copy(endTime = it) }
+        }
 
         editingTask.value = editingTask.value.copy(startTime = time)
-        newEndDate?.let { editingTask.value = editingTask.value.copy(endDate = it) }
-        newEndTime?.let { editingTask.value = editingTask.value.copy(endTime = it) }
-
         startDateError.value = null
     }
 
@@ -161,7 +163,7 @@ class AddEditTaskViewModel @Inject constructor(
         startDateError.value = null
     }
 
-    fun onEndTimeChanged(time: LocalTime) {
+    fun onEndTimeChanged(time: LocalTime?) {
         editingTask.value = editingTask.value.copy(endTime = time)
         startDateError.value = null
     }

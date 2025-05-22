@@ -64,7 +64,7 @@ class AddEditProgressViewModel @Inject constructor(
         editingProgress.value = editingProgress.value.copy(date = date)
     }
 
-    fun onTimeChanged(time: LocalTime) {
+    fun onTimeChanged(time: LocalTime?) {
         editingProgress.value = editingProgress.value.copy(time = time)
     }
 

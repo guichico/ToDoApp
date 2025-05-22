@@ -98,10 +98,18 @@ class CalendarRepositoryImpl(
     private fun List<Task>.sortByStartDate() =
         this.sortedWith(
             compareBy<Task> { task ->
-                task.startDate?.let {
-                    LocalDateTime.of(it, task.startTime ?: it.atStartOfDay().toLocalTime())
-                }
+                task.startDate != null
             }
+                .thenBy { task ->
+                    task.startDate?.let {
+                        LocalDateTime.of(it, task.startTime ?: it.atStartOfDay().toLocalTime())
+                    }
+                }
+                .thenBy(nullsLast()) { task ->
+                    task.endDate?.let {
+                        LocalDateTime.of(it, task.endTime ?: it.atStartOfDay().toLocalTime())
+                    }
+                }
                 .thenBy { it.endTime }
                 .thenBy { it.id }
         )

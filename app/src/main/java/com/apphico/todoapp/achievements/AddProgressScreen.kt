@@ -105,7 +105,7 @@ fun AddEditProgressScreenContent(
     onProgressChanged: (Float) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onDateChanged: (LocalDate?) -> Unit,
-    onTimeChanged: (LocalTime) -> Unit
+    onTimeChanged: (LocalTime?) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -216,7 +216,7 @@ private fun DateRow(
     date: State<LocalDate?>,
     time: State<LocalTime?>,
     onDateChanged: (LocalDate?) -> Unit,
-    onTimeChanged: (LocalTime) -> Unit
+    onTimeChanged: (LocalTime?) -> Unit
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = date.value?.toMillis() ?: getNowGMTMillis()
