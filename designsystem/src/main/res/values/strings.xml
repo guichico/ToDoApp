@@ -59,6 +59,8 @@
     <string name="add_progress">Add progress</string>
     <string name="name">Name</string>
     <string name="oops">Oops!</string>
+    <string name="no_internet_message">It looks like you\'re offline. Please check your internet connection and try again.</string>
+    <string name="error_message">There was an error processing your request. Please try again later.</string>
     <string name="discard_changes_title">Discard changes?</string>
     <string name="discard_changes_message">If you go back all unsaved changes will be discarded.</string>
     <string name="continue_btn">Continue</string>

@@ -60,7 +60,7 @@
     <string name="name">Nome</string>
     <string name="oops">Oops!</string>
     <string name="no_internet_message">Parece que você está sem internet. Verifique sua conexão com e tente novamente.</string>
-    <string name="error_message">Ocorreu algum erro ao processar sua solitação. Por favor, tente novamente mais tarde.</string>
+    <string name="error_message">Ocorreu algum erro ao processar sua solicitação. Por favor, tente novamente mais tarde.</string>
     <string name="discard_changes_title">Descartar alterações?</string>
     <string name="discard_changes_message">Se você voltar todas as alterações não salvas serão descartadas.</string>
     <string name="continue_btn">Continuar</string>
