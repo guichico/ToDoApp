@@ -88,7 +88,7 @@
     <string name="achievement_set_done_error">Erro ao concluir meta. Tente novamente.</string>
     <string name="group_saved">Grupo salvo com sucesso</string>
     <string name="group_save_error">Erro ao salvar grupo. Tente novamente.</string>
-    <string name="group_deleted">Groupo excluído com sucesso</string>
+    <string name="group_deleted">Grupo excluído com sucesso</string>
     <string name="group_delete_error">Erro ao excluir grupo. Tente novamente.</string>
     <string name="location_permission_title">Permissão de localização</string>
     <string name="location_permission_text">Essa permissão é necessária para adicionar a localização a tarefa. Por favor conceda acesso nas configurações do telefone.</string>

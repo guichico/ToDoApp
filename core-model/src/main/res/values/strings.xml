@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="status_all">Todas</string>
-    <string name="status_finished">Concluídas</string>
-    <string name="status_unfinished">Não concluídas</string>
-    <string name="recurring_task_this">Esta tarefa</string>
-    <string name="recurring_task_future">Esta e as tarefas seguintes</string>
-    <string name="recurring_task_all">Todas as tarefas</string>
-    <string name="achievement_goal_type">Concluir por</string>
-    <string name="achievement_goal_type_step">Etapas</string>
-    <string name="achievement_goal_type_percentage">Porcentagem</string>
+    <string name="status_all">All</string>
+    <string name="status_finished">Finished</string>
+    <string name="status_unfinished">Unfinished</string>
+    <string name="recurring_task_this">This task</string>
+    <string name="recurring_task_future">This and following tasks</string>
+    <string name="recurring_task_all">All tasks</string>
+    <string name="achievement_goal_type">Complete by</string>
+    <string name="achievement_goal_type_step">Steps</string>
+    <string name="achievement_goal_type_percentage">Percentage</string>
     <string name="achievement_goal_type_value">Value</string>
-    <string name="achievement_goal_type_none">Apenas marcar concluída</string>
+    <string name="achievement_goal_type_none">Just marking as completed</string>
 </resources>
