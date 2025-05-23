@@ -94,6 +94,7 @@ class AchievementRepositoryImpl(
     override suspend fun copyAchievement(achievement: Achievement): Boolean {
         val copiedAchievement = achievement.copy(
             id = 0,
+            name = "${achievement.name} (Copy)",
             doneDate = null,
             measurementType = when (achievement.measurementType) {
                 is MeasurementType.TaskDone -> {

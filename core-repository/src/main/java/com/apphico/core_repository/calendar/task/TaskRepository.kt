@@ -70,6 +70,7 @@ class TaskRepositoryImpl(
     override suspend fun copyTask(task: Task): Boolean {
         val copiedTask = task.copy(
             id = 0,
+            name = "${task.name} (Copy)",
             checkList = task.checkList.map { it.copy(id = 0) },
             location = task.location?.copy(id = 0)
         )
