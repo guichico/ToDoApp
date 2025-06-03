@@ -1,5 +1,6 @@
 package com.apphico.todoapp.achievements
 
+import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ScrollState
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -72,6 +74,8 @@ import com.apphico.designsystem.theme.White
 import com.apphico.extensions.format
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowGMTMillis
+import com.apphico.todoapp.ad.BannerAdView
+import com.apphico.todoapp.ad.ToDoAppBannerAd
 import java.time.LocalDate
 
 private val MeasurementValueUnit.label: Int
@@ -341,6 +345,20 @@ private fun MeasurementTypeFields(
     }
 
     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+
+    // Banner ad view
+    LocalActivity.current?.let {
+        ToDoAppBannerAd(it).getAdView()
+            .apply {
+                BannerAdView(adView = this)
+                Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+
+                DisposableEffect(Unit) {
+                    // Destroy the AdView to prevent memory leaks when the screen is disposed.
+                    onDispose { this@apply.destroy() }
+                }
+            }
+    }
 
     AnimatedContent(
         targetState = measurementType,
