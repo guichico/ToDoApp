@@ -1,5 +1,6 @@
 package com.apphico.todoapp.task
 
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -70,6 +72,8 @@ import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowGMTMillis
 import com.apphico.extensions.getNowTime
 import com.apphico.extensions.toMillis
+import com.apphico.todoapp.ad.BannerAdView
+import com.apphico.todoapp.ad.ToDoAppBannerAd
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -336,6 +340,20 @@ private fun AddTaskScreenContent(
             )
 
             Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+
+            // Banner ad view
+            LocalActivity.current?.let {
+                ToDoAppBannerAd(it).getAdView()
+                    .apply {
+                        BannerAdView(adView = this)
+                        Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+
+                        DisposableEffect(Unit) {
+                            // Destroy the AdView to prevent memory leaks when the screen is disposed.
+                            onDispose { this@apply.destroy() }
+                        }
+                    }
+            }
 
             ReminderField(
                 task = task,

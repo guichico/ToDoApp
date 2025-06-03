@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.todoapp.ad.ToDoAppInterstitialAd
 import com.apphico.todoapp.task.navigateToAddEditTask
 import com.apphico.todoapp.utils.getTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,6 +64,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        ToDoAppInterstitialAd(this).showWhenLoaded()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -84,3 +87,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+

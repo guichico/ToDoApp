@@ -69,8 +69,6 @@ android {
 }
 
 secrets {
-    // Optionally specify a different file name containing your secrets.
-    // The plugin defaults to "local.properties"
     propertiesFileName = "secrets.properties"
 }
 
@@ -111,6 +109,9 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.crashlytics)
+
+    // Ads
+    implementation(libs.play.services.ads)
 
     testImplementation(libs.junit)
 

@@ -30,6 +30,7 @@ mockitoAndroid = "5.17.0"
 mockitoKotlin = "5.4.0"
 navigationCompose = "2.9.0"
 ksp = "2.1.10-1.0.31"
+playServicesAds = "24.3.0"
 playServicesLocation = "21.3.0"
 playServicesMaps = "19.2.0"
 roomVersion = "2.7.1"
@@ -76,6 +77,7 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 mockito-android = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroid" }
 mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlin" }
+play-services-ads = { module = "com.google.android.gms:play-services-ads", version.ref = "playServicesAds" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
 secrets-gradle-plugin = { module = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin", version.ref = "secretsGradlePlugin" }
