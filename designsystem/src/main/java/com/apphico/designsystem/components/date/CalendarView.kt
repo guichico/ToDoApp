@@ -58,15 +58,13 @@ import java.util.Locale
 
 @Composable
 fun CalendarView(
+    modifier: Modifier = Modifier,
     isCalendarExpanded: State<Boolean>,
     selectedDate: State<LocalDate>,
     onSelectedDateChanged: (LocalDate) -> Unit
 ) {
-    AnimatedVisibility(
-        visible = isCalendarExpanded.value,
-        enter = slideInVertically(tween()) + expandVertically() + fadeIn(),
-        exit = slideOutVertically() + shrinkVertically() + fadeOut()
-    ) {
+    if(isCalendarExpanded.value) {
+
         val coroutineScope = rememberCoroutineScope()
 
         val currentMonth = remember { selectedDate.value.yearMonth }
@@ -86,7 +84,7 @@ fun CalendarView(
         }
 
         HorizontalCalendar(
-            modifier = Modifier
+            modifier = modifier
                 .background(MaterialTheme.colorScheme.background)
                 .padding(
                     start = ToDoAppTheme.spacing.small,

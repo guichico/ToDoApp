@@ -54,6 +54,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterView(
+    modifier: Modifier = Modifier,
     isFilterExpanded: State<Boolean>,
     showStatusFilter: Boolean = true,
     selectedStatus: State<Status>,
@@ -69,13 +70,8 @@ fun FilterView(
         exit = slideOutVertically() + shrinkVertically() + fadeOut()
     ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(
-                    vertical = ToDoAppTheme.spacing.small,
-                    horizontal = ToDoAppTheme.spacing.large
-                )
         ) {
             Column(
                 modifier = Modifier

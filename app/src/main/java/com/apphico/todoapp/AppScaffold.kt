@@ -1,10 +1,15 @@
 package com.apphico.todoapp
 
+import android.util.Log
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -14,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +39,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.apphico.core_model.CalendarViewMode
 import com.apphico.designsystem.components.date.CalendarView
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
+import com.apphico.designsystem.components.list.ToDoAppNestedScroll
+import com.apphico.designsystem.components.list.rememberNestedScroll
 import com.apphico.designsystem.components.snackbar.SnackBar
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
@@ -85,6 +93,8 @@ fun AppScaffold(
     val selectedDate = calendarViewModel.selectedDate.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
+    val tasksNestedScroll = rememberNestedScroll()
+
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackBarHostState) { data ->
@@ -97,6 +107,7 @@ fun AppScaffold(
         topBar = {
             if (isBottomBarVisible) {
                 TopBar(
+                    tasksNestedScroll = tasksNestedScroll,
                     filterViewModel = filterViewModel,
                     navBackStackEntry = navBackStackEntry,
                     bottomBarSelectedItem = bottomBarSelectedItem,
@@ -128,7 +139,8 @@ fun AppScaffold(
                     }
                 },
                 calendarViewModel = calendarViewModel,
-                achievementsViewModel = achievementsViewModel
+                achievementsViewModel = achievementsViewModel,
+                tasksNestedScroll = tasksNestedScroll
             )
         }
     }
@@ -137,6 +149,7 @@ fun AppScaffold(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
+    tasksNestedScroll: ToDoAppNestedScroll,
     filterViewModel: FilterViewModel?,
     groupViewModel: GroupViewModel = hiltViewModel(),
     navBackStackEntry: NavBackStackEntry?,
@@ -174,6 +187,8 @@ private fun TopBar(
         scrollBehavior.state.heightOffset = 0f
     }
 
+    Log.d("TEST", "scrollOffset: ${tasksNestedScroll.scrollOffset}, isScrollInProgress: ${tasksNestedScroll.isScrollInProgress}")
+
     val onTitleClicked = {
         isFilterExpanded.value = false
         isCalendarExpanded.value = !isCalendarExpanded.value
@@ -202,7 +217,31 @@ private fun TopBar(
                 )
             }
         )
+
+        val calendarInitialViewHeight = 342
+        var calendarViewHeight by remember { mutableStateOf(calendarInitialViewHeight.dp) }
+
+        LaunchedEffect(tasksNestedScroll.scrollOffset) {
+            if((tasksNestedScroll.scrollOffset * -1) >= calendarInitialViewHeight) {
+                isCalendarExpanded.value = false
+            }
+
+            val offset = tasksNestedScroll.scrollOffset.takeIf { it < 0 && (it * -1) < calendarInitialViewHeight } ?: 0f
+            calendarViewHeight = calendarInitialViewHeight.dp - (offset * -1).dp
+        }
+
+        LaunchedEffect(tasksNestedScroll.isScrollInProgress) {
+            if((tasksNestedScroll.scrollOffset * -1) >= 100 && !tasksNestedScroll.isScrollInProgress) {
+                isCalendarExpanded.value = false
+            } else {
+                calendarViewHeight = calendarInitialViewHeight.dp
+            }
+        }
+
         CalendarView(
+            modifier = Modifier
+                .animateContentSize()
+                .height(calendarViewHeight),
             isCalendarExpanded = isCalendarExpanded,
             selectedDate = selectedDate,
             onSelectedDateChanged = onSelectedDateChanged
@@ -213,6 +252,14 @@ private fun TopBar(
             val selectedGroups = filterViewModel.selectedGroups.collectAsState()
 
             FilterView(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(
+                        vertical = ToDoAppTheme.spacing.small,
+                        horizontal = ToDoAppTheme.spacing.large
+                    )
+                    .animateContentSize()
+                    .height(calendarViewHeight),
                 isFilterExpanded = isFilterExpanded,
                 showStatusFilter = !isFocusSelected,
                 selectedStatus = selectedStatus,

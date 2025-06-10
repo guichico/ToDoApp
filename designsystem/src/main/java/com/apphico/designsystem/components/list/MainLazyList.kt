@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
@@ -16,6 +17,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.nestedscroll.nestedScrollModifierNode
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.components.icons.ToDoAppIcon
@@ -26,6 +30,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 fun MainLazyList(
     modifier: Modifier = Modifier,
     listState: LazyListState,
+    nestedScroll: ToDoAppNestedScroll? = null,
     onAddClicked: () -> Unit,
     content: LazyListScope.() -> Unit
 ) {
@@ -36,7 +41,8 @@ fun MainLazyList(
     ) {
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .then(nestedScroll?.let { Modifier.nestedScroll(it) } ?: Modifier),
             state = listState,
             contentPadding = PaddingValues(
                 start = ToDoAppTheme.spacing.medium,

@@ -26,6 +26,8 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
 import com.apphico.designsystem.components.list.MainLazyList
+import com.apphico.designsystem.components.list.ToDoAppNestedScroll
+import com.apphico.designsystem.components.list.rememberNestedScroll
 import com.apphico.designsystem.task.TaskCard
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.getNowDate
@@ -39,6 +41,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun CalendarScreen(
     calendarViewModel: CalendarViewModel,
+    tasksNestedScroll: ToDoAppNestedScroll,
     navigateToAddEditTask: (Task?) -> Unit
 ) {
     val calendar = calendarViewModel.calendar.collectAsState()
@@ -47,6 +50,7 @@ fun CalendarScreen(
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
     CalendarScreenContent(
+        nestedScroll = tasksNestedScroll,
         onCurrentMonthChanged = calendarViewModel::onCurrentMonthChanged,
         selectedDate = selectedDate,
         calendarViewMode = calendarViewMode,
@@ -57,8 +61,10 @@ fun CalendarScreen(
     )
 }
 
+
 @Composable
 private fun CalendarScreenContent(
+    nestedScroll: ToDoAppNestedScroll,
     onCurrentMonthChanged: (Month?, Int?) -> Unit,
     selectedDate: State<LocalDate>,
     calendarViewMode: State<CalendarViewMode>,
@@ -84,6 +90,7 @@ private fun CalendarScreenContent(
 
     MainLazyList(
         listState = calendarListState,
+        nestedScroll = nestedScroll,
         onAddClicked = { navigateToAddEditTask(null) }
     ) {
         if (calendarViewMode.value == CalendarViewMode.DAY) {
@@ -203,6 +210,7 @@ private fun CalendarScreenPreview(
 ) {
     ToDoAppTheme {
         CalendarScreenContent(
+            nestedScroll = rememberNestedScroll(),
             onCurrentMonthChanged = { _, _ -> },
             selectedDate = remember { mutableStateOf(getNowDate()) },
             calendarViewMode = remember { mutableStateOf(CalendarViewMode.DAY) },
