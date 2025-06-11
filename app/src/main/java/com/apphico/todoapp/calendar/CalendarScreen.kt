@@ -23,6 +23,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.sp
 import com.apphico.core_model.CalendarViewMode
 import com.apphico.core_model.CheckListItem
+import com.apphico.core_model.Group
+import com.apphico.core_model.Status
 import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTasks
 import com.apphico.designsystem.components.list.MainLazyList
@@ -39,11 +41,20 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun CalendarScreen(
     calendarViewModel: CalendarViewModel,
-    navigateToAddEditTask: (Task?) -> Unit
+    navigateToAddEditTask: (Task?) -> Unit,
+
+    isCalendarExpanded: State<Boolean>,
+    selectedDate: State<LocalDate>,
+    onSelectedDateChanged: (LocalDate) -> Unit,
+    isFilterExpanded: State<Boolean>,
+    selectedStatus: State<Status>,
+    onStatusChanged: (Status) -> Unit,
+    groups: State<List<Group>>,
+    selectedGroups: State<List<Group>>,
+    onGroupSelected: (Group) -> Unit,
+    onSearchClicked: () -> Unit,
 ) {
     val calendar = calendarViewModel.calendar.collectAsState()
-
-    val selectedDate = calendarViewModel.selectedDate.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
     CalendarScreenContent(
@@ -53,7 +64,17 @@ fun CalendarScreen(
         tasks = calendar,
         navigateToAddEditTask = navigateToAddEditTask,
         onDoneCheckedChanged = { task, isDone -> calendarViewModel.setTaskDone(task, isDone) },
-        onCheckListItemDoneChanged = { checkListItem, task, isDone -> calendarViewModel.setCheckListItemDone(checkListItem, task, isDone) }
+        onCheckListItemDoneChanged = { checkListItem, task, isDone -> calendarViewModel.setCheckListItemDone(checkListItem, task, isDone) },
+
+        isCalendarExpanded = isCalendarExpanded,
+        onSelectedDateChanged = onSelectedDateChanged,
+        isFilterExpanded = isFilterExpanded,
+        selectedStatus = selectedStatus,
+        onStatusChanged = onStatusChanged,
+        groups = groups,
+        selectedGroups = selectedGroups,
+        onGroupSelected = onGroupSelected,
+        onSearchClicked = onSearchClicked
     )
 }
 
@@ -65,7 +86,17 @@ private fun CalendarScreenContent(
     tasks: State<List<Task>>,
     navigateToAddEditTask: (Task?) -> Unit,
     onDoneCheckedChanged: (Task, Boolean) -> Unit,
-    onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit
+    onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit,
+
+    isCalendarExpanded: State<Boolean>,
+    onSelectedDateChanged: (LocalDate) -> Unit,
+    isFilterExpanded: State<Boolean>,
+    selectedStatus: State<Status>,
+    onStatusChanged: (Status) -> Unit,
+    groups: State<List<Group>>,
+    selectedGroups: State<List<Group>>,
+    onGroupSelected: (Group) -> Unit,
+    onSearchClicked: () -> Unit,
 ) {
     val calendarListState = rememberLazyListState()
 
@@ -84,7 +115,17 @@ private fun CalendarScreenContent(
 
     MainLazyList(
         listState = calendarListState,
-        onAddClicked = { navigateToAddEditTask(null) }
+        onAddClicked = { navigateToAddEditTask(null) },
+        isCalendarExpanded = isCalendarExpanded,
+        selectedDate = selectedDate,
+        onSelectedDateChanged = onSelectedDateChanged,
+        isFilterExpanded = isFilterExpanded,
+        selectedStatus = selectedStatus,
+        onStatusChanged = onStatusChanged,
+        groups = groups,
+        selectedGroups = selectedGroups,
+        onGroupSelected = onGroupSelected,
+        onSearchClicked = onSearchClicked
     ) {
         if (calendarViewMode.value == CalendarViewMode.DAY) {
             taskRowsDayViewMode(
@@ -201,6 +242,7 @@ class CalendarScreenPreviewProvider : PreviewParameterProvider<List<Task>> {
 private fun CalendarScreenPreview(
     @PreviewParameter(CalendarScreenPreviewProvider::class) tasks: List<Task>
 ) {
+    /*
     ToDoAppTheme {
         CalendarScreenContent(
             onCurrentMonthChanged = { _, _ -> },
@@ -212,4 +254,5 @@ private fun CalendarScreenPreview(
             onCheckListItemDoneChanged = { _, _, _ -> }
         )
     }
+     */
 }

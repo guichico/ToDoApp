@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,20 +26,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.apphico.core_model.CalendarViewMode
-import com.apphico.designsystem.components.date.CalendarView
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.snackbar.SnackBar
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.views.FilterView
 import com.apphico.extensions.getNowDate
 import com.apphico.todoapp.achievements.AchievementsRoute
 import com.apphico.todoapp.achievements.AchievementsViewModel
@@ -55,6 +53,7 @@ import java.time.Month
 import java.time.format.TextStyle
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold(
     navController: NavHostController
@@ -69,21 +68,43 @@ fun AppScaffold(
         isBottomBarVisible = bottomBarSelectedItem != null && currentDestination?.route != null
     }
 
+    val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+
     val coroutine = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
 
     val calendarViewModel: CalendarViewModel = hiltViewModel()
     val achievementsViewModel: AchievementsViewModel = hiltViewModel()
 
+    val groupViewModel: GroupViewModel = hiltViewModel()
     val filterViewModel = when {
         currentDestination?.hasRoute(CalendarRoute::class) == true -> calendarViewModel
         currentDestination?.hasRoute(AchievementsRoute::class) == true -> achievementsViewModel
-        else -> null
+        else -> calendarViewModel
     }
 
     val currentMonth = calendarViewModel.currentMonth.collectAsState()
     val selectedDate = calendarViewModel.selectedDate.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
+
+    val isCalendarExpanded = remember { mutableStateOf(false) }
+    val isFilterExpanded = remember { mutableStateOf(false) }
+
+    LaunchedEffect(navBackStackEntry) {
+        isCalendarExpanded.value = false
+        isFilterExpanded.value = false
+
+        topBarScrollBehavior.state.heightOffset = 0f
+    }
+
+    val onTitleClicked = {
+        isFilterExpanded.value = false
+        isCalendarExpanded.value = !isCalendarExpanded.value
+    }
+
+    val groups = groupViewModel.groups.collectAsState()
+    val selectedStatus = filterViewModel.selectedStatus.collectAsState()
+    val selectedGroups = filterViewModel.selectedGroups.collectAsState()
 
     Scaffold(
         snackbarHost = {
@@ -97,14 +118,17 @@ fun AppScaffold(
         topBar = {
             if (isBottomBarVisible) {
                 TopBar(
-                    filterViewModel = filterViewModel,
-                    navBackStackEntry = navBackStackEntry,
+                    topBarScrollBehavior = topBarScrollBehavior,
                     bottomBarSelectedItem = bottomBarSelectedItem,
                     calendarViewMode = calendarViewMode,
                     onViewModeChanged = calendarViewModel::onViewModeChanged,
                     currentMonthAndYear = currentMonth,
-                    selectedDate = selectedDate,
-                    onSelectedDateChanged = calendarViewModel::onSelectedDateChanged
+                    onSelectedDateChanged = calendarViewModel::onSelectedDateChanged,
+                    onTitleClicked = onTitleClicked,
+                    onOpenFiltersClicked = {
+                        isCalendarExpanded.value = false
+                        isFilterExpanded.value = !isFilterExpanded.value
+                    }
                 )
             }
         },
@@ -128,7 +152,19 @@ fun AppScaffold(
                     }
                 },
                 calendarViewModel = calendarViewModel,
-                achievementsViewModel = achievementsViewModel
+                achievementsViewModel = achievementsViewModel,
+
+
+                isCalendarExpanded = isCalendarExpanded,
+                selectedDate = selectedDate,
+                onSelectedDateChanged = calendarViewModel::onSelectedDateChanged,
+                isFilterExpanded = isFilterExpanded,
+                selectedStatus = selectedStatus,
+                onStatusChanged = filterViewModel::onSelectedStatusChanged,
+                groups = groups,
+                selectedGroups = selectedGroups,
+                onGroupSelected = filterViewModel::onSelectedGroupChanged,
+                onSearchClicked = filterViewModel::onSearchClicked
             )
         }
     }
@@ -137,18 +173,16 @@ fun AppScaffold(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
-    filterViewModel: FilterViewModel?,
-    groupViewModel: GroupViewModel = hiltViewModel(),
-    navBackStackEntry: NavBackStackEntry?,
     bottomBarSelectedItem: TopLevelRoute<*>?,
+    topBarScrollBehavior: TopAppBarScrollBehavior,
     calendarViewMode: State<CalendarViewMode>,
     onViewModeChanged: () -> Unit,
     currentMonthAndYear: State<Pair<Month, Int>>,
-    selectedDate: State<LocalDate>,
-    onSelectedDateChanged: (LocalDate) -> Unit
+    onSelectedDateChanged: (LocalDate) -> Unit,
+    onTitleClicked: () -> Unit,
+    onOpenFiltersClicked: () -> Unit
 ) {
     val isCalendarSelected = bottomBarSelectedItem?.route is CalendarRoute
-    val isFocusSelected = bottomBarSelectedItem?.route is FocusRoute
 
     val topBarTitle = bottomBarSelectedItem?.name?.let { stringResource(id = it) } ?: ""
     val topBarSubTitle = when {
@@ -162,23 +196,6 @@ private fun TopBar(
         else -> null
     }
 
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-
-    val isCalendarExpanded = remember { mutableStateOf(false) }
-    val isFilterExpanded = remember { mutableStateOf(false) }
-
-    LaunchedEffect(navBackStackEntry) {
-        isCalendarExpanded.value = false
-        isFilterExpanded.value = false
-
-        scrollBehavior.state.heightOffset = 0f
-    }
-
-    val onTitleClicked = {
-        isFilterExpanded.value = false
-        isCalendarExpanded.value = !isCalendarExpanded.value
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -189,41 +206,17 @@ private fun TopBar(
             title = topBarTitle,
             onTitleClicked = if (isCalendarSelected) onTitleClicked else emptyLambda,
             subTitle = topBarSubTitle,
-            scrollBehavior = scrollBehavior,
+            scrollBehavior = topBarScrollBehavior,
             actions = {
                 FiltersButtonsRow(
                     isCalendarSelected = isCalendarSelected,
                     onSelectedDateChanged = onSelectedDateChanged,
                     calendarViewMode = calendarViewMode,
                     onViewModeChanged = onViewModeChanged,
-                    onOpenFiltersClicked = {
-                        isCalendarExpanded.value = false
-                        isFilterExpanded.value = !isFilterExpanded.value
-                    }
+                    onOpenFiltersClicked = onOpenFiltersClicked
                 )
             }
         )
-        CalendarView(
-            isCalendarExpanded = isCalendarExpanded,
-            selectedDate = selectedDate,
-            onSelectedDateChanged = onSelectedDateChanged
-        )
-
-        if (filterViewModel != null) {
-            val selectedStatus = filterViewModel.selectedStatus.collectAsState()
-            val selectedGroups = filterViewModel.selectedGroups.collectAsState()
-
-            FilterView(
-                isFilterExpanded = isFilterExpanded,
-                showStatusFilter = !isFocusSelected,
-                selectedStatus = selectedStatus,
-                onStatusChanged = filterViewModel::onSelectedStatusChanged,
-                groups = groupViewModel.groups.collectAsState(),
-                selectedGroups = selectedGroups,
-                onGroupSelected = filterViewModel::onSelectedGroupChanged,
-                onSearchClicked = filterViewModel::onSearchClicked
-            )
-        }
     }
 }
 

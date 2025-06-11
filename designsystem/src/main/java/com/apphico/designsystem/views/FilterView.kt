@@ -54,8 +54,8 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterView(
+    modifier: Modifier = Modifier,
     isFilterExpanded: State<Boolean>,
-    showStatusFilter: Boolean = true,
     selectedStatus: State<Status>,
     onStatusChanged: (Status) -> Unit,
     groups: State<List<Group>>,
@@ -69,7 +69,7 @@ fun FilterView(
         exit = slideOutVertically() + shrinkVertically() + fadeOut()
     ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background)
                 .padding(
@@ -81,28 +81,26 @@ fun FilterView(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                if (showStatusFilter) {
-                    Text(
-                        text = stringResource(R.string.status),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
-                    FlowRow(
-                        verticalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
-                        horizontalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
-                        maxItemsInEachRow = 3
-                    ) {
-                        Status.entries.forEach { status ->
-                            StatusRow(
-                                selectedStatus = selectedStatus,
-                                status = status,
-                                onStatusChanged = { onStatusChanged(status) }
-                            )
-                        }
+                Text(
+                    text = stringResource(R.string.status),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
+                FlowRow(
+                    verticalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
+                    horizontalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
+                    maxItemsInEachRow = 3
+                ) {
+                    Status.entries.forEach { status ->
+                        StatusRow(
+                            selectedStatus = selectedStatus,
+                            status = status,
+                            onStatusChanged = { onStatusChanged(status) }
+                        )
                     }
-                    Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
                 }
+                Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
                 Text(
                     text = stringResource(R.string.groups),
                     style = MaterialTheme.typography.titleSmall,

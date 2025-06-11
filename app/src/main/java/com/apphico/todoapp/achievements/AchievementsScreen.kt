@@ -12,6 +12,8 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
+import com.apphico.core_model.Group
+import com.apphico.core_model.Status
 import com.apphico.core_model.fakeData.mockedAchievements
 import com.apphico.designsystem.achievements.AchievementCard
 import com.apphico.designsystem.components.list.MainLazyList
@@ -21,7 +23,19 @@ import java.time.LocalDate
 @Composable
 fun AchievementsScreen(
     achievementsViewModel: AchievementsViewModel,
-    navigateToAddEditAchievement: (Achievement?) -> Unit
+    navigateToAddEditAchievement: (Achievement?) -> Unit,
+
+
+    isCalendarExpanded: State<Boolean>,
+    selectedDate: State<LocalDate>,
+    onSelectedDateChanged: (LocalDate) -> Unit,
+    isFilterExpanded: State<Boolean>,
+    selectedStatus: State<Status>,
+    onStatusChanged: (Status) -> Unit,
+    groups: State<List<Group>>,
+    selectedGroups: State<List<Group>>,
+    onGroupSelected: (Group) -> Unit,
+    onSearchClicked: () -> Unit,
 ) {
     val achievements = achievementsViewModel.achievements.collectAsState()
 
@@ -34,7 +48,20 @@ fun AchievementsScreen(
                 parentDate,
                 isDone
             )
-        }
+        },
+
+
+
+        isCalendarExpanded = isCalendarExpanded,
+        selectedDate = selectedDate,
+        onSelectedDateChanged = onSelectedDateChanged,
+        isFilterExpanded = isFilterExpanded,
+        selectedStatus = selectedStatus,
+        onStatusChanged = onStatusChanged,
+        groups = groups,
+        selectedGroups = selectedGroups,
+        onGroupSelected = onGroupSelected,
+        onSearchClicked = onSearchClicked
     )
 }
 
@@ -42,13 +69,37 @@ fun AchievementsScreen(
 private fun AchievementsScreenContent(
     achievements: State<List<Achievement>>,
     navigateToAddEditAchievement: (Achievement?) -> Unit,
-    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit
+    onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit,
+
+
+    isCalendarExpanded: State<Boolean>,
+    selectedDate: State<LocalDate>,
+    onSelectedDateChanged: (LocalDate) -> Unit,
+    isFilterExpanded: State<Boolean>,
+    selectedStatus: State<Status>,
+    onStatusChanged: (Status) -> Unit,
+    groups: State<List<Group>>,
+    selectedGroups: State<List<Group>>,
+    onGroupSelected: (Group) -> Unit,
+    onSearchClicked: () -> Unit,
 ) {
     val list = achievements.value
 
     MainLazyList(
         listState = rememberLazyListState(),
-        onAddClicked = { navigateToAddEditAchievement(null) }
+        onAddClicked = { navigateToAddEditAchievement(null) },
+
+
+        isCalendarExpanded = isCalendarExpanded,
+        selectedDate = selectedDate,
+        onSelectedDateChanged = onSelectedDateChanged,
+        isFilterExpanded = isFilterExpanded,
+        selectedStatus = selectedStatus,
+        onStatusChanged = onStatusChanged,
+        groups = groups,
+        selectedGroups = selectedGroups,
+        onGroupSelected = onGroupSelected,
+        onSearchClicked = onSearchClicked
     ) {
         items(list) {
             AchievementCard(
@@ -69,6 +120,7 @@ class AchievementsScreenPreviewProvider : PreviewParameterProvider<List<Achievem
 private fun AchievementsScreenPreview(
     @PreviewParameter(AchievementsScreenPreviewProvider::class) achievements: List<Achievement>
 ) {
+    /*
     ToDoAppTheme {
         AchievementsScreenContent(
             achievements = remember { mutableStateOf(achievements) },
@@ -76,4 +128,5 @@ private fun AchievementsScreenPreview(
             onCheckListItemDoneChanged = { _, _, _ -> }
         )
     }
+     */
 }

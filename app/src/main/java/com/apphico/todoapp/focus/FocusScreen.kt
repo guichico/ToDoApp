@@ -32,6 +32,7 @@ fun FocusScreenContent(
     routines: State<List<FocusMode>>,
     navigateToAddEditFocus: (FocusMode?) -> Unit
 ) {
+    /*
     MainLazyList(
         listState = rememberLazyListState(),
         onAddClicked = {}
@@ -43,6 +44,7 @@ fun FocusScreenContent(
             )
         }
     }
+     */
 }
 
 @PreviewLightDark
