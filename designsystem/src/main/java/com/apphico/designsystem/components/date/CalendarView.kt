@@ -58,6 +58,7 @@ import java.util.Locale
 
 @Composable
 fun CalendarView(
+    modifier: Modifier = Modifier,
     isCalendarExpanded: State<Boolean>,
     selectedDate: State<LocalDate>,
     onSelectedDateChanged: (LocalDate) -> Unit
@@ -86,7 +87,7 @@ fun CalendarView(
         }
 
         HorizontalCalendar(
-            modifier = Modifier
+            modifier = modifier
                 .background(MaterialTheme.colorScheme.background)
                 .padding(
                     start = ToDoAppTheme.spacing.small,

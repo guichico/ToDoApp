@@ -182,6 +182,7 @@ private fun TopBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            // TODO Check shadow
             .shadow(elevation = 8.dp, spotColor = Color.Transparent)
     ) {
         ToDoAppTopBar(
