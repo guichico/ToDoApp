@@ -10,9 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -30,11 +28,11 @@ fun NestedScroll(
     content: @Composable BoxScope.() -> Unit
 ) {
     val nestedScrollConnection = rememberNestedScrollConnection(anchorViewHeight)
-    val anchorViewOffsetHeightPx = nestedScrollConnection.anchorViewOffsetHeightPx.floatValue
+    var anchorViewOffsetHeightPx = nestedScrollConnection.anchorViewOffsetHeightPx
 
-    val offsetY by animateDpAsState(anchorViewOffsetHeightPx.roundToInt().dp)
+    val offsetY by animateDpAsState(anchorViewOffsetHeightPx.floatValue.roundToInt().dp)
     val padding by animateDpAsState(
-        (anchorViewHeight - (anchorViewOffsetHeightPx.dp * -1))
+        (anchorViewHeight - (anchorViewOffsetHeightPx.floatValue.dp * -1))
             .takeIf { it.value > 0 && isNestedViewExpanded.value } ?: 0.dp
     )
 
@@ -42,16 +40,18 @@ fun NestedScroll(
         nestedScrollConnection.anchorViewOffsetHeightPx.floatValue = if (isNestedViewExpanded.value) 0f else (anchorViewHeight.value * -1)
     }
 
-    val shouldCloseNestedView by remember {
-        derivedStateOf {
-            val scrollPercent = (offsetY * -1) / anchorViewHeight
-            val isScrollInProgress = nestedScrollConnection.isScrollInProgress.value
+    LaunchedEffect(nestedScrollConnection.isScrollInProgress.value) {
+        val scrollPercent = (offsetY * -1) / anchorViewHeight
+        val isScrollInProgress = nestedScrollConnection.isScrollInProgress.value
 
-            !isScrollInProgress && scrollPercent > 0.3
+        if (!isScrollInProgress) {
+            if (scrollPercent > 0.3) {
+                onNestedViewClosed()
+            } else {
+                anchorViewOffsetHeightPx.floatValue = 0f
+            }
         }
     }
-
-    if (shouldCloseNestedView) onNestedViewClosed()
 
     Box(
         modifier = Modifier
