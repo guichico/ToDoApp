@@ -1,6 +1,7 @@
 package com.apphico.todoapp
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,6 +17,7 @@ import androidx.core.util.Consumer
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
+import com.apphico.designsystem.LockScreenOrientation
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.todoapp.ad.ToDoAppInterstitialAd
 import com.apphico.todoapp.task.navigateToAddEditTask
@@ -35,6 +37,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+            // TODO Implement landscape (1.xx)
+            LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
             ToDoAppTheme {
                 val navController = rememberNavController()
 
