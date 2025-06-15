@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -30,7 +28,6 @@ import com.apphico.core_model.fakeData.mockedTasks
 import com.apphico.designsystem.components.list.MainLazyList
 import com.apphico.designsystem.task.TaskCard
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map

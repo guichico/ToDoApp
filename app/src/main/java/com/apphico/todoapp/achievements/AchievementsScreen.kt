@@ -5,8 +5,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -17,7 +15,6 @@ import com.apphico.core_model.Status
 import com.apphico.core_model.fakeData.mockedAchievements
 import com.apphico.designsystem.achievements.AchievementCard
 import com.apphico.designsystem.components.list.MainLazyList
-import com.apphico.designsystem.theme.ToDoAppTheme
 import java.time.LocalDate
 
 @Composable

@@ -42,7 +42,6 @@ import com.apphico.todoapp.achievements.AchievementsRoute
 import com.apphico.todoapp.achievements.AchievementsViewModel
 import com.apphico.todoapp.calendar.CalendarRoute
 import com.apphico.todoapp.calendar.CalendarViewModel
-import com.apphico.todoapp.focus.FocusRoute
 import com.apphico.todoapp.navigation.ToDoAppBottomBar
 import com.apphico.todoapp.navigation.TopLevelRoute
 import com.apphico.todoapp.navigation.mainGraph

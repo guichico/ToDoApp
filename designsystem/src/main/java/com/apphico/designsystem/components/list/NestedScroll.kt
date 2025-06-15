@@ -2,6 +2,7 @@ package com.apphico.designsystem.components.list
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -36,6 +39,7 @@ fun NestedScroll(
     selectedGroups: State<List<Group>>,
     onGroupSelected: (Group) -> Unit,
     onSearchClicked: () -> Unit,
+    nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
     content: @Composable () -> Unit
 ) {
     val nestedScrollConnection = rememberNestedScrollConnection(anchorViewHeight)
@@ -51,6 +55,18 @@ fun NestedScroll(
         nestedScrollConnection.anchorViewOffsetHeightPx.floatValue = if (isCalendarExpanded.value) 0f else (anchorViewHeight.value * -1)
     }
 
+    remember {
+        derivedStateOf {
+            val scrollPercent = (offsetY * -1) / anchorViewHeight
+            val isScrollInProgress = nestedScrollConnection.isScrollInProgress.value
+
+            if (isScrollInProgress && scrollPercent > 0.3) {
+            } else {
+
+            }
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -60,6 +76,8 @@ fun NestedScroll(
             .height(anchorViewHeight)
             .offset(y = offsetY)
             .shadow(elevation = 8.dp, spotColor = Color.Transparent)
+
+        nestedContent(modifier)
 
         CalendarView(
             modifier = modifier,
