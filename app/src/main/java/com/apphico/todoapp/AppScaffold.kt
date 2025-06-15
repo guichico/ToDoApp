@@ -37,6 +37,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.apphico.core_model.CalendarViewMode
 import com.apphico.designsystem.components.date.CalendarView
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
+import com.apphico.designsystem.components.list.MIN_CALENDAR_VIEW_HEIGHT
 import com.apphico.designsystem.components.snackbar.SnackBar
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
@@ -144,7 +145,7 @@ fun AppScaffold(
         }
     ) { padding ->
         val density = LocalDensity.current
-        val anchorViewHeight = remember { mutableStateOf(342.dp) }
+        val anchorViewHeight = remember { mutableStateOf(MIN_CALENDAR_VIEW_HEIGHT.dp) }
         val isNestedViewExpanded = remember {
             derivedStateOf {
                 if (isCalendarExpanded.value) isCalendarExpanded.value else isFilterExpanded.value
@@ -154,8 +155,6 @@ fun AppScaffold(
             isCalendarExpanded.value = false
             isFilterExpanded.value = false
         }
-
-        Log.d("TEST", "anchorViewHeight: ${anchorViewHeight.value}")
 
         NavHost(
             modifier = Modifier
