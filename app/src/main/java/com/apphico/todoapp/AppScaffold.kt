@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.apphico.core_model.CalendarViewMode
+import com.apphico.designsystem.components.date.CalendarView
 import com.apphico.designsystem.components.icons.ToDoAppIconButton
 import com.apphico.designsystem.components.snackbar.SnackBar
 import com.apphico.designsystem.components.topbar.ToDoAppTopBar
@@ -152,18 +153,17 @@ fun AppScaffold(
                 },
                 calendarViewModel = calendarViewModel,
                 achievementsViewModel = achievementsViewModel,
-
-
-                isCalendarExpanded = isCalendarExpanded,
                 selectedDate = selectedDate,
-                onSelectedDateChanged = calendarViewModel::onSelectedDateChanged,
-                isFilterExpanded = isFilterExpanded,
-                selectedStatus = selectedStatus,
-                onStatusChanged = filterViewModel::onSelectedStatusChanged,
-                groups = groups,
-                selectedGroups = selectedGroups,
-                onGroupSelected = filterViewModel::onSelectedGroupChanged,
-                onSearchClicked = filterViewModel::onSearchClicked
+                isNestedViewExpanded = isCalendarExpanded,
+                onNestedViewClosed = { isCalendarExpanded.value = false },
+                nestedContent = { modifier ->
+                    CalendarView(
+                        modifier = modifier,
+                        isCalendarExpanded = isCalendarExpanded,
+                        selectedDate = selectedDate,
+                        onSelectedDateChanged = calendarViewModel::onSelectedDateChanged
+                    )
+                }
             )
         }
     }

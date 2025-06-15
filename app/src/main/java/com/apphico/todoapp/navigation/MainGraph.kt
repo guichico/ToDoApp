@@ -1,8 +1,10 @@
 package com.apphico.todoapp.navigation
 
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
@@ -11,8 +13,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import com.apphico.core_model.Group
-import com.apphico.core_model.Status
 import com.apphico.todoapp.achievements.AchievementsViewModel
 import com.apphico.todoapp.achievements.achievementScreen
 import com.apphico.todoapp.achievements.addEditAchievementScreen
@@ -48,18 +48,10 @@ fun NavGraphBuilder.mainGraph(
     snackBar: (String) -> Unit,
     calendarViewModel: CalendarViewModel,
     achievementsViewModel: AchievementsViewModel,
-
-
-    isCalendarExpanded: State<Boolean>,
     selectedDate: State<LocalDate>,
-    onSelectedDateChanged: (LocalDate) -> Unit,
-    isFilterExpanded: State<Boolean>,
-    selectedStatus: State<Status>,
-    onStatusChanged: (Status) -> Unit,
-    groups: State<List<Group>>,
-    selectedGroups: State<List<Group>>,
-    onGroupSelected: (Group) -> Unit,
-    onSearchClicked: () -> Unit,
+    isNestedViewExpanded: State<Boolean>,
+    onNestedViewClosed: () -> Unit,
+    nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
 ) {
     val previousBackStackEntry = { navController.previousBackStackEntry!! }
 
@@ -69,33 +61,17 @@ fun NavGraphBuilder.mainGraph(
     calendarScreen(
         calendarViewModel = calendarViewModel,
         onTaskClicked = navController::navigateToAddEditTask,
-
-        isCalendarExpanded = isCalendarExpanded,
         selectedDate = selectedDate,
-        onSelectedDateChanged = onSelectedDateChanged,
-        isFilterExpanded = isFilterExpanded,
-        selectedStatus = selectedStatus,
-        onStatusChanged = onStatusChanged,
-        groups = groups,
-        selectedGroups = selectedGroups,
-        onGroupSelected = onGroupSelected,
-        onSearchClicked = onSearchClicked
+        isNestedViewExpanded = isNestedViewExpanded,
+        onNestedViewClosed = onNestedViewClosed,
+        nestedContent = nestedContent
     )
     achievementScreen(
         achievementsViewModel = achievementsViewModel,
         onAchievementClicked = navController::navigateToAddEditAchievement,
-
-
-        isCalendarExpanded = isCalendarExpanded,
-        selectedDate = selectedDate,
-        onSelectedDateChanged = onSelectedDateChanged,
-        isFilterExpanded = isFilterExpanded,
-        selectedStatus = selectedStatus,
-        onStatusChanged = onStatusChanged,
-        groups = groups,
-        selectedGroups = selectedGroups,
-        onGroupSelected = onGroupSelected,
-        onSearchClicked = onSearchClicked
+        isNestedViewExpanded = isNestedViewExpanded,
+        onNestedViewClosed = onNestedViewClosed,
+        nestedContent = nestedContent
     )
     addEditTaskScreen(
         snackBar = snackBar,

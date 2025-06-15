@@ -2,41 +2,37 @@ package com.apphico.designsystem.components.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import com.apphico.core_model.Group
-import com.apphico.core_model.Status
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import java.time.LocalDate
 
 @Composable
 fun MainLazyList(
     listState: LazyListState,
     onAddClicked: () -> Unit,
-    isCalendarExpanded: State<Boolean>,
-    selectedDate: State<LocalDate>,
-    onSelectedDateChanged: (LocalDate) -> Unit,
-    isFilterExpanded: State<Boolean>,
-    selectedStatus: State<Status>,
-    onStatusChanged: (Status) -> Unit,
-    groups: State<List<Group>>,
-    selectedGroups: State<List<Group>>,
-    onGroupSelected: (Group) -> Unit,
-    onSearchClicked: () -> Unit,
+    isNestedViewExpanded: State<Boolean>,
+    onNestedViewClosed: () -> Unit,
+    nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
     content: LazyListScope.() -> Unit
 ) {
     Box(
@@ -46,16 +42,9 @@ fun MainLazyList(
     ) {
         NestedScroll(
             anchorViewHeight = 342.dp,
-            isCalendarExpanded = isCalendarExpanded,
-            selectedDate = selectedDate,
-            onSelectedDateChanged = onSelectedDateChanged,
-            isFilterExpanded = isFilterExpanded,
-            selectedStatus = selectedStatus,
-            onStatusChanged = onStatusChanged,
-            groups = groups,
-            selectedGroups = selectedGroups,
-            onGroupSelected = onGroupSelected,
-            onSearchClicked = onSearchClicked
+            isNestedViewExpanded = isNestedViewExpanded,
+            onNestedViewClosed = onNestedViewClosed,
+            nestedContent = nestedContent
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -90,10 +79,12 @@ fun MainLazyList(
 @PreviewLightDark
 @Composable
 private fun MainLazyListPreview() {
-    /*
     MainLazyList(
         listState = rememberLazyListState(),
-        onAddClicked = {}
+        onAddClicked = {},
+        isNestedViewExpanded = remember { mutableStateOf(false) },
+        onNestedViewClosed = {},
+        nestedContent = {}
     ) {
         val list = listOf("First", "Second", "Third")
 
@@ -101,5 +92,4 @@ private fun MainLazyListPreview() {
             Text(item)
         }
     }
-     */
 }

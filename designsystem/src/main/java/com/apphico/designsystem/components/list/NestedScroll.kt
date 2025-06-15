@@ -19,28 +19,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.apphico.core_model.Group
-import com.apphico.core_model.Status
-import com.apphico.designsystem.components.date.CalendarView
-import com.apphico.designsystem.views.FilterView
-import java.time.LocalDate
 import kotlin.math.roundToInt
 
 @Composable
 fun NestedScroll(
     anchorViewHeight: Dp,
-    isCalendarExpanded: State<Boolean>,
-    selectedDate: State<LocalDate>,
-    onSelectedDateChanged: (LocalDate) -> Unit,
-    isFilterExpanded: State<Boolean>,
-    selectedStatus: State<Status>,
-    onStatusChanged: (Status) -> Unit,
-    groups: State<List<Group>>,
-    selectedGroups: State<List<Group>>,
-    onGroupSelected: (Group) -> Unit,
-    onSearchClicked: () -> Unit,
+    isNestedViewExpanded: State<Boolean>,
+    onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable BoxScope.() -> Unit
 ) {
     val nestedScrollConnection = rememberNestedScrollConnection(anchorViewHeight)
     val anchorViewOffsetHeightPx = nestedScrollConnection.anchorViewOffsetHeightPx.floatValue
@@ -48,24 +35,23 @@ fun NestedScroll(
     val offsetY by animateDpAsState(anchorViewOffsetHeightPx.roundToInt().dp)
     val padding by animateDpAsState(
         (anchorViewHeight - (anchorViewOffsetHeightPx.dp * -1))
-            .takeIf { it.value > 0 && isCalendarExpanded.value } ?: 0.dp
+            .takeIf { it.value > 0 && isNestedViewExpanded.value } ?: 0.dp
     )
 
-    LaunchedEffect(isCalendarExpanded.value) {
-        nestedScrollConnection.anchorViewOffsetHeightPx.floatValue = if (isCalendarExpanded.value) 0f else (anchorViewHeight.value * -1)
+    LaunchedEffect(isNestedViewExpanded.value) {
+        nestedScrollConnection.anchorViewOffsetHeightPx.floatValue = if (isNestedViewExpanded.value) 0f else (anchorViewHeight.value * -1)
     }
 
-    remember {
+    val shouldCloseNestedView by remember {
         derivedStateOf {
             val scrollPercent = (offsetY * -1) / anchorViewHeight
             val isScrollInProgress = nestedScrollConnection.isScrollInProgress.value
 
-            if (isScrollInProgress && scrollPercent > 0.3) {
-            } else {
-
-            }
+            !isScrollInProgress && scrollPercent > 0.3
         }
     }
+
+    if (shouldCloseNestedView) onNestedViewClosed()
 
     Box(
         modifier = Modifier
@@ -78,24 +64,6 @@ fun NestedScroll(
             .shadow(elevation = 8.dp, spotColor = Color.Transparent)
 
         nestedContent(modifier)
-
-        CalendarView(
-            modifier = modifier,
-            isCalendarExpanded = isCalendarExpanded,
-            selectedDate = selectedDate,
-            onSelectedDateChanged = onSelectedDateChanged
-        )
-
-        FilterView(
-            modifier = modifier,
-            isFilterExpanded = isFilterExpanded,
-            selectedStatus = selectedStatus,
-            onStatusChanged = onStatusChanged,
-            groups = groups,
-            selectedGroups = selectedGroups,
-            onGroupSelected = onGroupSelected,
-            onSearchClicked = onSearchClicked
-        )
 
         Box(
             modifier = Modifier
