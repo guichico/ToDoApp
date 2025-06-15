@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.fakeData.mockedAchievements
@@ -24,6 +26,7 @@ import java.time.LocalDate
 fun AchievementsScreen(
     achievementsViewModel: AchievementsViewModel,
     navigateToAddEditAchievement: (Achievement?) -> Unit,
+    anchorViewHeight: State<Dp>,
     isNestedViewExpanded: State<Boolean>,
     onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
@@ -40,6 +43,7 @@ fun AchievementsScreen(
                 isDone
             )
         },
+        anchorViewHeight = anchorViewHeight,
         isNestedViewExpanded = isNestedViewExpanded,
         onNestedViewClosed = onNestedViewClosed,
         nestedContent = nestedContent
@@ -51,6 +55,7 @@ private fun AchievementsScreenContent(
     achievements: State<List<Achievement>>,
     navigateToAddEditAchievement: (Achievement?) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, LocalDate?, Boolean) -> Unit,
+    anchorViewHeight: State<Dp>,
     isNestedViewExpanded: State<Boolean>,
     onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
@@ -60,6 +65,7 @@ private fun AchievementsScreenContent(
     MainLazyList(
         listState = rememberLazyListState(),
         onAddClicked = { navigateToAddEditAchievement(null) },
+        anchorViewHeight = anchorViewHeight,
         isNestedViewExpanded = isNestedViewExpanded,
         onNestedViewClosed = onNestedViewClosed,
         nestedContent = nestedContent
@@ -88,6 +94,7 @@ private fun AchievementsScreenPreview(
             achievements = remember { mutableStateOf(achievements) },
             navigateToAddEditAchievement = {},
             onCheckListItemDoneChanged = { _, _, _ -> },
+            anchorViewHeight = remember { mutableStateOf(342.dp) },
             isNestedViewExpanded = remember { mutableStateOf(false) },
             onNestedViewClosed = {},
             nestedContent = {}

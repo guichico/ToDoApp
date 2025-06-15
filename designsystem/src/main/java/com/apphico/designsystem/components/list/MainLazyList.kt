@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.apphico.designsystem.components.icons.ToDoAppIcon
 import com.apphico.designsystem.theme.ToDoAppIcons
@@ -30,6 +31,7 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 fun MainLazyList(
     listState: LazyListState,
     onAddClicked: () -> Unit,
+    anchorViewHeight: State<Dp>,
     isNestedViewExpanded: State<Boolean>,
     onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
@@ -41,7 +43,7 @@ fun MainLazyList(
             .background(MaterialTheme.colorScheme.primaryContainer)
     ) {
         NestedScroll(
-            anchorViewHeight = 342.dp,
+            anchorViewHeight = anchorViewHeight,
             isNestedViewExpanded = isNestedViewExpanded,
             onNestedViewClosed = onNestedViewClosed,
             nestedContent = nestedContent
@@ -82,6 +84,7 @@ private fun MainLazyListPreview() {
     MainLazyList(
         listState = rememberLazyListState(),
         onAddClicked = {},
+        anchorViewHeight = remember { mutableStateOf(342.dp) },
         isNestedViewExpanded = remember { mutableStateOf(false) },
         onNestedViewClosed = {},
         nestedContent = {}

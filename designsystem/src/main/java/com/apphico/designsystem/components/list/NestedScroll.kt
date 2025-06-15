@@ -4,7 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
@@ -19,29 +19,33 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
+// TODO Make it more dynamically
+private const val MIN_CALENDAR_VIEW_HEIGHT = 342
+private const val CALENDAR_VIEW_ROW_HEIGHT = 50
+
 @Composable
 fun NestedScroll(
-    anchorViewHeight: Dp,
+    anchorViewHeight: State<Dp>,
     isNestedViewExpanded: State<Boolean>,
     onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
     content: @Composable BoxScope.() -> Unit
 ) {
-    val nestedScrollConnection = rememberNestedScrollConnection(anchorViewHeight)
+    val nestedScrollConnection = rememberNestedScrollConnection(anchorViewHeight.value)
     var anchorViewOffsetHeightPx = nestedScrollConnection.anchorViewOffsetHeightPx
 
     val offsetY by animateDpAsState(anchorViewOffsetHeightPx.floatValue.roundToInt().dp)
     val padding by animateDpAsState(
-        (anchorViewHeight - (anchorViewOffsetHeightPx.floatValue.dp * -1))
+        (anchorViewHeight.value - (anchorViewOffsetHeightPx.floatValue.dp * -1))
             .takeIf { it.value > 0 && isNestedViewExpanded.value } ?: 0.dp
     )
 
     LaunchedEffect(isNestedViewExpanded.value) {
-        nestedScrollConnection.anchorViewOffsetHeightPx.floatValue = if (isNestedViewExpanded.value) 0f else (anchorViewHeight.value * -1)
+        nestedScrollConnection.anchorViewOffsetHeightPx.floatValue = if (isNestedViewExpanded.value) 0f else (anchorViewHeight.value.value * -1)
     }
 
     LaunchedEffect(nestedScrollConnection.isScrollInProgress.value) {
-        val scrollPercent = (offsetY * -1) / anchorViewHeight
+        val scrollPercent = (offsetY * -1) / anchorViewHeight.value
         val isScrollInProgress = nestedScrollConnection.isScrollInProgress.value
 
         if (!isScrollInProgress) {
@@ -59,8 +63,8 @@ fun NestedScroll(
             .nestedScroll(nestedScrollConnection)
     ) {
         val modifier = Modifier
-            .height(anchorViewHeight)
             .offset(y = offsetY)
+            .heightIn(min = MIN_CALENDAR_VIEW_HEIGHT.dp, max = (anchorViewHeight.value + CALENDAR_VIEW_ROW_HEIGHT.dp))
             .shadow(elevation = 8.dp, spotColor = Color.Transparent)
 
         nestedContent(modifier)

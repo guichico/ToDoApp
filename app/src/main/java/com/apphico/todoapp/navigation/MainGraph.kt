@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
@@ -49,6 +50,7 @@ fun NavGraphBuilder.mainGraph(
     calendarViewModel: CalendarViewModel,
     achievementsViewModel: AchievementsViewModel,
     selectedDate: State<LocalDate>,
+    anchorViewHeight: State<Dp>,
     isNestedViewExpanded: State<Boolean>,
     onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
@@ -62,6 +64,7 @@ fun NavGraphBuilder.mainGraph(
         calendarViewModel = calendarViewModel,
         onTaskClicked = navController::navigateToAddEditTask,
         selectedDate = selectedDate,
+        anchorViewHeight = anchorViewHeight,
         isNestedViewExpanded = isNestedViewExpanded,
         onNestedViewClosed = onNestedViewClosed,
         nestedContent = nestedContent
@@ -69,6 +72,7 @@ fun NavGraphBuilder.mainGraph(
     achievementScreen(
         achievementsViewModel = achievementsViewModel,
         onAchievementClicked = navController::navigateToAddEditAchievement,
+        anchorViewHeight = anchorViewHeight,
         isNestedViewExpanded = isNestedViewExpanded,
         onNestedViewClosed = onNestedViewClosed,
         nestedContent = nestedContent

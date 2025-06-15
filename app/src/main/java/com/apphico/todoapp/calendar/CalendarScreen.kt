@@ -21,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apphico.core_model.CalendarViewMode
 import com.apphico.core_model.CheckListItem
@@ -42,6 +44,7 @@ fun CalendarScreen(
     calendarViewModel: CalendarViewModel,
     navigateToAddEditTask: (Task?) -> Unit,
     selectedDate: State<LocalDate>,
+    anchorViewHeight: State<Dp>,
     isNestedViewExpanded: State<Boolean>,
     onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
@@ -57,6 +60,7 @@ fun CalendarScreen(
         navigateToAddEditTask = navigateToAddEditTask,
         onDoneCheckedChanged = { task, isDone -> calendarViewModel.setTaskDone(task, isDone) },
         onCheckListItemDoneChanged = { checkListItem, task, isDone -> calendarViewModel.setCheckListItemDone(checkListItem, task, isDone) },
+        anchorViewHeight = anchorViewHeight,
         isNestedViewExpanded = isNestedViewExpanded,
         onNestedViewClosed = onNestedViewClosed,
         nestedContent = nestedContent
@@ -72,6 +76,7 @@ private fun CalendarScreenContent(
     navigateToAddEditTask: (Task?) -> Unit,
     onDoneCheckedChanged: (Task, Boolean) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit,
+    anchorViewHeight: State<Dp>,
     isNestedViewExpanded: State<Boolean>,
     onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
@@ -94,6 +99,7 @@ private fun CalendarScreenContent(
     MainLazyList(
         listState = calendarListState,
         onAddClicked = { navigateToAddEditTask(null) },
+        anchorViewHeight = anchorViewHeight,
         isNestedViewExpanded = isNestedViewExpanded,
         onNestedViewClosed = onNestedViewClosed,
         nestedContent = nestedContent
@@ -222,6 +228,7 @@ private fun CalendarScreenPreview(
             navigateToAddEditTask = {},
             onDoneCheckedChanged = { _, _ -> },
             onCheckListItemDoneChanged = { _, _, _ -> },
+            anchorViewHeight = remember { mutableStateOf(342.dp) },
             isNestedViewExpanded = remember { mutableStateOf(false) },
             onNestedViewClosed = {},
             nestedContent = {}

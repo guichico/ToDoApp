@@ -68,7 +68,7 @@ fun FilterView(
         enter = slideInVertically(tween()) + expandVertically() + fadeIn(),
         exit = slideOutVertically() + shrinkVertically() + fadeOut()
     ) {
-        Box(
+        Column(
             modifier = modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background)
@@ -77,57 +77,52 @@ fun FilterView(
                     horizontal = ToDoAppTheme.spacing.large
                 )
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
+            Text(
+                text = stringResource(R.string.status),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
+            FlowRow(
+                verticalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
+                horizontalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
+                maxItemsInEachRow = 3
             ) {
-                Text(
-                    text = stringResource(R.string.status),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
-                FlowRow(
-                    verticalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
-                    horizontalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
-                    maxItemsInEachRow = 3
-                ) {
-                    Status.entries.forEach { status ->
-                        StatusRow(
-                            selectedStatus = selectedStatus,
-                            status = status,
-                            onStatusChanged = { onStatusChanged(status) }
-                        )
-                    }
+                Status.entries.forEach { status ->
+                    StatusRow(
+                        selectedStatus = selectedStatus,
+                        status = status,
+                        onStatusChanged = { onStatusChanged(status) }
+                    )
                 }
-                Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
-                Text(
-                    text = stringResource(R.string.groups),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
-                FlowRow(
-                    verticalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
-                    horizontalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
-                    maxItemsInEachRow = 3
-                ) {
-                    groups.value.forEach { group ->
-                        GroupRow(
-                            group = group,
-                            selectedGroups = selectedGroups,
-                            onGroupSelected = onGroupSelected
-                        )
-                    }
-                }
-                SmallButton(
-                    modifier = Modifier
-                        .padding(top = ToDoAppTheme.spacing.small)
-                        .align(Alignment.End),
-                    onClick = onSearchClicked,
-                    text = stringResource(R.string.search_btn)
-                )
             }
+            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+            Text(
+                text = stringResource(R.string.groups),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.medium))
+            FlowRow(
+                verticalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
+                horizontalArrangement = Arrangement.spacedBy(ToDoAppTheme.spacing.small),
+                maxItemsInEachRow = 3
+            ) {
+                groups.value.forEach { group ->
+                    GroupRow(
+                        group = group,
+                        selectedGroups = selectedGroups,
+                        onGroupSelected = onGroupSelected
+                    )
+                }
+            }
+            SmallButton(
+                modifier = Modifier
+                    .padding(top = ToDoAppTheme.spacing.small)
+                    .align(Alignment.End),
+                onClick = onSearchClicked,
+                text = stringResource(R.string.search_btn)
+            )
         }
     }
 }
