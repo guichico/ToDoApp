@@ -1,5 +1,6 @@
 package com.apphico.todoapp.calendar
 
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
@@ -20,6 +21,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.apphico.core_model.CalendarViewMode
 import com.apphico.core_model.CheckListItem
@@ -39,11 +42,14 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun CalendarScreen(
     calendarViewModel: CalendarViewModel,
-    navigateToAddEditTask: (Task?) -> Unit
+    navigateToAddEditTask: (Task?) -> Unit,
+    selectedDate: State<LocalDate>,
+    anchorViewHeight: State<Dp>,
+    isNestedViewExpanded: State<Boolean>,
+    onNestedViewClosed: () -> Unit,
+    nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
 ) {
     val calendar = calendarViewModel.calendar.collectAsState()
-
-    val selectedDate = calendarViewModel.selectedDate.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
     CalendarScreenContent(
@@ -53,7 +59,11 @@ fun CalendarScreen(
         tasks = calendar,
         navigateToAddEditTask = navigateToAddEditTask,
         onDoneCheckedChanged = { task, isDone -> calendarViewModel.setTaskDone(task, isDone) },
-        onCheckListItemDoneChanged = { checkListItem, task, isDone -> calendarViewModel.setCheckListItemDone(checkListItem, task, isDone) }
+        onCheckListItemDoneChanged = { checkListItem, task, isDone -> calendarViewModel.setCheckListItemDone(checkListItem, task, isDone) },
+        anchorViewHeight = anchorViewHeight,
+        isNestedViewExpanded = isNestedViewExpanded,
+        onNestedViewClosed = onNestedViewClosed,
+        nestedContent = nestedContent
     )
 }
 
@@ -65,7 +75,11 @@ private fun CalendarScreenContent(
     tasks: State<List<Task>>,
     navigateToAddEditTask: (Task?) -> Unit,
     onDoneCheckedChanged: (Task, Boolean) -> Unit,
-    onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit
+    onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit,
+    anchorViewHeight: State<Dp>,
+    isNestedViewExpanded: State<Boolean>,
+    onNestedViewClosed: () -> Unit,
+    nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
 ) {
     val calendarListState = rememberLazyListState()
 
@@ -84,7 +98,11 @@ private fun CalendarScreenContent(
 
     MainLazyList(
         listState = calendarListState,
-        onAddClicked = { navigateToAddEditTask(null) }
+        onAddClicked = { navigateToAddEditTask(null) },
+        anchorViewHeight = anchorViewHeight,
+        isNestedViewExpanded = isNestedViewExpanded,
+        onNestedViewClosed = onNestedViewClosed,
+        nestedContent = nestedContent
     ) {
         if (calendarViewMode.value == CalendarViewMode.DAY) {
             taskRowsDayViewMode(
@@ -209,7 +227,11 @@ private fun CalendarScreenPreview(
             tasks = remember { mutableStateOf(tasks) },
             navigateToAddEditTask = {},
             onDoneCheckedChanged = { _, _ -> },
-            onCheckListItemDoneChanged = { _, _, _ -> }
+            onCheckListItemDoneChanged = { _, _, _ -> },
+            anchorViewHeight = remember { mutableStateOf(342.dp) },
+            isNestedViewExpanded = remember { mutableStateOf(false) },
+            onNestedViewClosed = {},
+            nestedContent = {}
         )
     }
 }

@@ -1,7 +1,11 @@
 package com.apphico.todoapp.navigation
 
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
@@ -37,13 +41,19 @@ import com.apphico.todoapp.location.navigateToSelectLocationOnMap
 import com.apphico.todoapp.location.selectLocationOnMapScreen
 import com.apphico.todoapp.task.addEditTaskScreen
 import com.apphico.todoapp.task.navigateToAddEditTask
+import java.time.LocalDate
 import kotlin.reflect.KType
 
 fun NavGraphBuilder.mainGraph(
     navController: NavController,
     snackBar: (String) -> Unit,
     calendarViewModel: CalendarViewModel,
-    achievementsViewModel: AchievementsViewModel
+    achievementsViewModel: AchievementsViewModel,
+    selectedDate: State<LocalDate>,
+    anchorViewHeight: State<Dp>,
+    isNestedViewExpanded: State<Boolean>,
+    onNestedViewClosed: () -> Unit,
+    nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
 ) {
     val previousBackStackEntry = { navController.previousBackStackEntry!! }
 
@@ -52,11 +62,20 @@ fun NavGraphBuilder.mainGraph(
     )
     calendarScreen(
         calendarViewModel = calendarViewModel,
-        onTaskClicked = navController::navigateToAddEditTask
+        onTaskClicked = navController::navigateToAddEditTask,
+        selectedDate = selectedDate,
+        anchorViewHeight = anchorViewHeight,
+        isNestedViewExpanded = isNestedViewExpanded,
+        onNestedViewClosed = onNestedViewClosed,
+        nestedContent = nestedContent
     )
     achievementScreen(
         achievementsViewModel = achievementsViewModel,
-        onAchievementClicked = navController::navigateToAddEditAchievement
+        onAchievementClicked = navController::navigateToAddEditAchievement,
+        anchorViewHeight = anchorViewHeight,
+        isNestedViewExpanded = isNestedViewExpanded,
+        onNestedViewClosed = onNestedViewClosed,
+        nestedContent = nestedContent
     )
     addEditTaskScreen(
         snackBar = snackBar,

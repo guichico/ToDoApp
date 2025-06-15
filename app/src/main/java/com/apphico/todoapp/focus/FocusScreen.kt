@@ -1,7 +1,5 @@
 package com.apphico.todoapp.focus
 
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -10,8 +8,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.FocusMode
-import com.apphico.designsystem.components.list.MainLazyList
-import com.apphico.designsystem.focus.FocusCard
 import com.apphico.designsystem.theme.ToDoAppTheme
 
 @Composable
@@ -32,6 +28,7 @@ fun FocusScreenContent(
     routines: State<List<FocusMode>>,
     navigateToAddEditFocus: (FocusMode?) -> Unit
 ) {
+    /*
     MainLazyList(
         listState = rememberLazyListState(),
         onAddClicked = {}
@@ -43,6 +40,7 @@ fun FocusScreenContent(
             )
         }
     }
+     */
 }
 
 @PreviewLightDark
