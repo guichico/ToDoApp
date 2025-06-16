@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 
 // TODO Make it more dynamically
-const val MIN_CALENDAR_VIEW_HEIGHT = 296
+private const val MIN_CALENDAR_VIEW_HEIGHT = 296
 private const val CALENDAR_VIEW_ROW_HEIGHT = 50
 
 @Composable

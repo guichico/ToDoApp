@@ -1,4 +1,4 @@
-package com.apphico.designsystem.views
+package com.apphico.todoapp
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -30,6 +30,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,6 +42,7 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.Group
 import com.apphico.core_model.Status
 import com.apphico.core_model.fakeData.mockedGroups
@@ -54,6 +56,30 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun FilterView(
+    modifier: Modifier = Modifier,
+    groupViewModel: GroupViewModel = hiltViewModel(),
+    filterViewModel: FilterViewModel,
+    isFilterExpanded: State<Boolean>
+) {
+    val groups = groupViewModel.groups.collectAsState()
+    val selectedStatus = filterViewModel.selectedStatus.collectAsState()
+    val selectedGroups = filterViewModel.selectedGroups.collectAsState()
+
+    FilterViewContent(
+        modifier = modifier,
+        isFilterExpanded = isFilterExpanded,
+        selectedStatus = selectedStatus,
+        onStatusChanged = filterViewModel::onSelectedStatusChanged,
+        groups = groups,
+        selectedGroups = selectedGroups,
+        onGroupSelected = filterViewModel::onSelectedGroupChanged,
+        onSearchClicked = filterViewModel::onSearchClicked
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun FilterViewContent(
     modifier: Modifier = Modifier,
     isFilterExpanded: State<Boolean>,
     selectedStatus: State<Status>,
@@ -236,7 +262,7 @@ private fun FilterViewPreview(
     @PreviewParameter(FilterViewPreviewProvider::class) groups: List<Group>
 ) {
     ToDoAppTheme {
-        FilterView(
+        FilterViewContent(
             isFilterExpanded = remember { mutableStateOf(true) },
             selectedStatus = remember { mutableStateOf(Status.ALL) },
             onStatusChanged = {},
