@@ -1,6 +1,5 @@
 package com.apphico.todoapp
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -42,9 +41,7 @@ import com.apphico.designsystem.components.topbar.ToDoAppTopBar
 import com.apphico.designsystem.emptyLambda
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.views.FilterView
 import com.apphico.extensions.getNowDate
-import com.apphico.todoapp.achievements.AchievementsRoute
 import com.apphico.todoapp.achievements.AchievementsViewModel
 import com.apphico.todoapp.calendar.CalendarRoute
 import com.apphico.todoapp.calendar.CalendarViewModel
@@ -63,30 +60,32 @@ import java.util.Locale
 fun AppScaffold(
     navController: NavHostController
 ) {
+    val calendarViewModel: CalendarViewModel = hiltViewModel()
+    val achievementsViewModel: AchievementsViewModel = hiltViewModel()
+
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
     val bottomBarSelectedItem = topLevelRoutes.firstOrNull { currentDestination?.hasRoute(it.route::class) == true }
+    var isCalendarSelected by remember { mutableStateOf(true) }
 
     var isBottomBarVisible by remember { mutableStateOf(true) }
+    var filterViewModel: FilterViewModel by remember { mutableStateOf(calendarViewModel) }
+
     LaunchedEffect(bottomBarSelectedItem) {
         isBottomBarVisible = bottomBarSelectedItem != null && currentDestination?.route != null
+        isCalendarSelected = bottomBarSelectedItem?.route is CalendarRoute
+
+        filterViewModel = when {
+            isCalendarSelected -> calendarViewModel
+            else -> achievementsViewModel
+        }
     }
 
     val topBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
     val coroutine = rememberCoroutineScope()
     val snackBarHostState = remember { SnackbarHostState() }
-
-    val calendarViewModel: CalendarViewModel = hiltViewModel()
-    val achievementsViewModel: AchievementsViewModel = hiltViewModel()
-
-    val groupViewModel: GroupViewModel = hiltViewModel()
-    val filterViewModel = when {
-        currentDestination?.hasRoute(CalendarRoute::class) == true -> calendarViewModel
-        currentDestination?.hasRoute(AchievementsRoute::class) == true -> achievementsViewModel
-        else -> calendarViewModel
-    }
 
     val currentMonth = calendarViewModel.currentMonth.collectAsState()
     val selectedDate = calendarViewModel.selectedDate.collectAsState()
@@ -107,10 +106,6 @@ fun AppScaffold(
         isCalendarExpanded.value = !isCalendarExpanded.value
     }
 
-    val groups = groupViewModel.groups.collectAsState()
-    val selectedStatus = filterViewModel.selectedStatus.collectAsState()
-    val selectedGroups = filterViewModel.selectedGroups.collectAsState()
-
     Scaffold(
         snackbarHost = {
             SnackbarHost(snackBarHostState) { data ->
@@ -123,6 +118,7 @@ fun AppScaffold(
         topBar = {
             if (isBottomBarVisible) {
                 TopBar(
+                    isCalendarSelected = isCalendarSelected,
                     topBarScrollBehavior = topBarScrollBehavior,
                     bottomBarSelectedItem = bottomBarSelectedItem,
                     calendarViewMode = calendarViewMode,
@@ -154,8 +150,6 @@ fun AppScaffold(
             isCalendarExpanded.value = false
             isFilterExpanded.value = false
         }
-
-        Log.d("TEST", "anchorViewHeight: ${anchorViewHeight.value}")
 
         NavHost(
             modifier = Modifier
@@ -195,13 +189,8 @@ fun AppScaffold(
                         isFilterExpanded.value -> {
                             FilterView(
                                 modifier = modifier,
-                                isFilterExpanded = isFilterExpanded,
-                                selectedStatus = selectedStatus,
-                                onStatusChanged = filterViewModel::onSelectedStatusChanged,
-                                groups = groups,
-                                selectedGroups = selectedGroups,
-                                onGroupSelected = filterViewModel::onSelectedGroupChanged,
-                                onSearchClicked = filterViewModel::onSearchClicked
+                                filterViewModel = filterViewModel,
+                                isFilterExpanded = isFilterExpanded
                             )
                         }
                     }
@@ -214,6 +203,7 @@ fun AppScaffold(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
+    isCalendarSelected: Boolean,
     bottomBarSelectedItem: TopLevelRoute<*>?,
     topBarScrollBehavior: TopAppBarScrollBehavior,
     calendarViewMode: State<CalendarViewMode>,
@@ -223,8 +213,6 @@ private fun TopBar(
     onTitleClicked: () -> Unit,
     onOpenFiltersClicked: () -> Unit
 ) {
-    val isCalendarSelected = bottomBarSelectedItem?.route is CalendarRoute
-
     val topBarTitle = bottomBarSelectedItem?.name?.let { stringResource(id = it) } ?: ""
     val topBarSubTitle = when {
         isCalendarSelected -> {
