@@ -15,8 +15,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.reflect.typeOf
@@ -67,33 +69,32 @@ class AddEditLocationViewModel @Inject constructor(
 
     fun setDefaultLocation() {
         if (editingLocation.value == null) {
-            viewModelScope.launch {
-                locationRepository.getLastKnownLocation(context)
-                    .flowOn(Dispatchers.IO)
-                    .collectLatest(editingLocation::emit)
-            }
+            locationRepository.getLastKnownLocation(context)
+                .flowOn(Dispatchers.IO)
+                .onEach(editingLocation::emit)
+                .launchIn(viewModelScope)
 
-            viewModelScope.launch {
-                locationRepository.getMyLocationFullAddress(context)
-                    .flowOn(Dispatchers.IO)
-                    .collectLatest { location ->
-                        editingLocation.emit(location)
-                        isLoadingDefaultLocation.emit(false)
-                    }
-            }
+            locationRepository.getMyLocationFullAddress(context)
+                .flowOn(Dispatchers.IO)
+                .onEach { location ->
+                    editingLocation.emit(location)
+                    isLoadingDefaultLocation.emit(false)
+                }
+                .launchIn(viewModelScope)
         }
     }
 
-    fun searchFromCoordinates(coordinates: Coordinates) = viewModelScope.launch {
+    fun searchFromCoordinates(coordinates: Coordinates) =
         locationRepository.getFromCoordinates(context, coordinates)
             .flowOn(Dispatchers.IO)
-            .collectLatest(editingLocation::emit)
-    }
+            .onEach(editingLocation::emit)
+            .launchIn(viewModelScope)
 
     fun searchLocation(text: String?) = viewModelScope.launch {
         if (!text.isNullOrEmpty()) {
             locationRepository.getFromName(context, text)
                 .filterNotNull()
+                .flowOn(Dispatchers.IO)
                 .collectLatest(editingLocation::emit)
         }
     }

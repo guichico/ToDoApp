@@ -28,11 +28,12 @@ import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -74,37 +75,41 @@ class AddEditTaskViewModel @Inject constructor(
             }
         }
 
-        viewModelScope.launch {
-            savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
-                .filterNotNull()
-                .map { editingTask.value.copy(group = it) }
-                .flowOn(Dispatchers.IO)
-                .collectLatest(editingTask::emit)
-        }
+        savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
+            .filterNotNull()
+            .map { editingTask.value.copy(group = it) }
+            .flowOn(Dispatchers.IO)
+            .onEach(editingTask::emit)
+            .launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
-                .filterNotNull()
-                .filter { !it.address.isNullOrEmpty() }
-                .map { locationArg ->
-                    val location = editingTask.value.location?.id?.let { locationId ->
-                        locationArg.copy(id = locationId)
-                    } ?: locationArg
+        savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
+            .filterNotNull()
+            .map { editingTask.value.copy(group = it) }
+            .flowOn(Dispatchers.IO)
+            .onEach(editingTask::emit)
+            .launchIn(viewModelScope)
 
-                    editingTask.value.copy(location = location)
-                }
-                .flowOn(Dispatchers.IO)
-                .collectLatest(editingTask::emit)
-        }
+        savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
+            .filterNotNull()
+            .filter { !it.address.isNullOrEmpty() }
+            .map { locationArg ->
+                val location = editingTask.value.location?.id?.let { locationId ->
+                    locationArg.copy(id = locationId)
+                } ?: locationArg
 
-        viewModelScope.launch {
-            savedStateHandle.getLiveData<Boolean>(REMOVE_LOCATION_ARG, false).asFlow()
-                .filterNotNull()
-                .ifTrue()
-                .map { editingTask.value.copy(location = null) }
-                .flowOn(Dispatchers.IO)
-                .collectLatest(editingTask::emit)
-        }
+                editingTask.value.copy(location = location)
+            }
+            .flowOn(Dispatchers.IO)
+            .onEach(editingTask::emit)
+            .launchIn(viewModelScope)
+
+        savedStateHandle.getLiveData<Boolean>(REMOVE_LOCATION_ARG, false).asFlow()
+            .filterNotNull()
+            .ifTrue()
+            .map { editingTask.value.copy(location = null) }
+            .flowOn(Dispatchers.IO)
+            .onEach(editingTask::emit)
+            .launchIn(viewModelScope)
     }
 
     fun canSaveAll(): Boolean {
@@ -278,7 +283,7 @@ class AddEditTaskViewModel @Inject constructor(
     fun copy(onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
             val task = editingTask.value.copy(checkList = editingCheckList.value)
-            onResult(taskRepository.copyTask(task))
+            onResult(taskRepository.copyTask(task, "${task.name} (Copy)"))
         }
     }
 }

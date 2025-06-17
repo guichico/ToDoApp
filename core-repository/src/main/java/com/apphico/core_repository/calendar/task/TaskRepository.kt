@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 interface TaskRepository {
     suspend fun getTask(taskId: Long): Task
     suspend fun insertTask(task: Task): Boolean
-    suspend fun copyTask(task: Task): Boolean
+    suspend fun copyTask(task: Task, taskName: String = task.name): Boolean
     suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean
     suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean
     suspend fun setAlarm(taskId: Long): Long
@@ -67,10 +67,10 @@ class TaskRepositoryImpl(
         }
     }
 
-    override suspend fun copyTask(task: Task): Boolean {
+    override suspend fun copyTask(task: Task, taskName: String): Boolean {
         val copiedTask = task.copy(
             id = 0,
-            name = "${task.name} (Copy)",
+            name = taskName,
             checkList = task.checkList.map { it.copy(id = 0) },
             location = task.location?.copy(id = 0)
         )
@@ -188,19 +188,30 @@ class TaskRepositoryImpl(
 
     private suspend fun setAlarm(startDay: Int, taskId: Long): Long {
         val task = getTask(taskId)
-        var alarmId = 0L
+        var alarmId = task.key()
 
         if (task.isRepeatable()) {
             var nextAlarmDate: LocalDate? = null
 
+            val startDate = with(LocalDateTime.of(task.startDate, task.startTime)) {
+                task.reminderDateTime(
+                    (getNowDateTime().takeIf { it.isAfter(this) } ?: this).toLocalDate()
+                ) ?: getNowDateTime()
+            }
+
             for (days in startDay..7) {
-                val nextDate = getNowDate().plusDays(days.toLong())
+                val nextDate = startDate.plusDays(days.toLong())
                 val nextDayOfWeek = nextDate.dayOfWeek.getInt()
 
                 if (task.daysOfWeek.contains(nextDayOfWeek)) {
                     alarmId = task.key() + nextDayOfWeek
-                    nextAlarmDate = nextDate
-                    break
+
+                    val reminderDateTime = task.reminderDateTime(nextDate.toLocalDate())
+
+                    if (nextDate.isAfter(reminderDateTime)) {
+                        nextAlarmDate = nextDate.toLocalDate()
+                        break
+                    }
                 }
             }
 

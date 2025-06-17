@@ -22,10 +22,11 @@ import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -58,51 +59,49 @@ class AddEditAchievementViewModel @Inject constructor(
     val dateError = MutableStateFlow<Int?>(null)
 
     init {
-        viewModelScope.launch {
-            savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
-                .filterNotNull()
-                .map { editingAchievement.value.copy(group = it) }
-                .flowOn(Dispatchers.IO)
-                .collectLatest(editingAchievement::emit)
-        }
+        savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
+            .filterNotNull()
+            .map { editingAchievement.value.copy(group = it) }
+            .flowOn(Dispatchers.IO)
+            .onEach(editingAchievement::emit)
+            .launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            combine(
-                savedStateHandle.getStateFlow<Int?>(MEASUREMENT_TYPE_ARG, null).filterNotNull(),
-                savedStateHandle.getStateFlow<Operation?>(OPERATION_ARG, null).filterNotNull()
-            )
-                .flowOn(Dispatchers.IO)
-                .map { (measurementType, operation) ->
-                    var progressList = when (measurementType) {
-                        MeasurementType.Percentage().intValue -> editingPercentageProgress.value.progress
-                        MeasurementType.Value().intValue -> editingValueProgress.value.trackedValues
-                        else -> emptyList()
-                    }
-
-                    progressList = when (operation) {
-                        is Operation.Save -> progressList.add(operation.progress)
-                        is Operation.Update -> progressList.update(operation.oldProgress, operation.progress)
-                        is Operation.Delete -> progressList.remove(operation.progress)
-                    }
-
-                    measurementType to progressList
+        combine(
+            savedStateHandle.getStateFlow<Int?>(MEASUREMENT_TYPE_ARG, null).filterNotNull(),
+            savedStateHandle.getStateFlow<Operation?>(OPERATION_ARG, null).filterNotNull()
+        )
+            .flowOn(Dispatchers.IO)
+            .map { (measurementType, operation) ->
+                var progressList = when (measurementType) {
+                    MeasurementType.Percentage().intValue -> editingPercentageProgress.value.progress
+                    MeasurementType.Value().intValue -> editingValueProgress.value.trackedValues
+                    else -> emptyList()
                 }
-                .collectLatest { (measurementType, progressList) ->
-                    when (measurementType) {
-                        MeasurementType.Percentage().intValue -> {
-                            editingPercentageProgress.value = editingPercentageProgress.value.copy(
-                                progress = progressList
-                            )
-                        }
 
-                        MeasurementType.Value().intValue -> {
-                            editingValueProgress.value = editingValueProgress.value.copy(
-                                trackedValues = progressList
-                            )
-                        }
+                progressList = when (operation) {
+                    is Operation.Save -> progressList.add(operation.progress)
+                    is Operation.Update -> progressList.update(operation.oldProgress, operation.progress)
+                    is Operation.Delete -> progressList.remove(operation.progress)
+                }
+
+                measurementType to progressList
+            }
+            .onEach { (measurementType, progressList) ->
+                when (measurementType) {
+                    MeasurementType.Percentage().intValue -> {
+                        editingPercentageProgress.value = editingPercentageProgress.value.copy(
+                            progress = progressList
+                        )
+                    }
+
+                    MeasurementType.Value().intValue -> {
+                        editingValueProgress.value = editingValueProgress.value.copy(
+                            trackedValues = progressList
+                        )
                     }
                 }
-        }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun hasChanges(): Boolean {

@@ -2,6 +2,8 @@ package com.apphico.todoapp.ad
 
 import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.LocalActivity
+import androidx.compose.runtime.Composable
 import com.apphico.todoapp.BuildConfig
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -9,6 +11,13 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+
+@Composable
+fun ShowInterstitialAd() {
+    LocalActivity.current?.let { activity ->
+        ToDoAppInterstitialAd(activity).showWhenLoaded()
+    }
+}
 
 class ToDoAppInterstitialAd(val activity: Activity) : FullScreenContentCallback() {
 
