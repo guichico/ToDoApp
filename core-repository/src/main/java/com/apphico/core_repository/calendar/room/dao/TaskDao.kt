@@ -6,6 +6,7 @@ import androidx.room.Transaction
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskWithRelations
 import com.apphico.extensions.getInt
+import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
@@ -51,6 +52,10 @@ interface TaskDao : BaseDao<TaskDB> {
         nullableGroupIdsFlag: Boolean,
         groupIds: List<Long>
     ): Flow<List<TaskWithRelations>>
+
+    @Transaction
+    @Query("SELECT taskId FROM TaskComplete WHERE reminderId != 0 ORDER BY startTime")
+    suspend fun getIdsWithReminders(): List<Long>
 
     @Transaction
     @Query("UPDATE taskdb SET endDate = :endDate WHERE taskId = :taskId")

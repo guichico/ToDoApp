@@ -30,6 +30,7 @@ interface TaskRepository {
     suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean
     suspend fun setAlarm(taskId: Long): Long
     suspend fun setNextAlarm(taskId: Long): Long
+    suspend fun setAlarmsAfterReboot()
 }
 
 class TaskRepositoryImpl(
@@ -152,6 +153,13 @@ class TaskRepositoryImpl(
 
     override suspend fun setNextAlarm(taskId: Long): Long = setAlarm(1, taskId)
 
+    override suspend fun setAlarmsAfterReboot() =
+        taskDao.getIdsWithReminders()
+            .forEach { taskId ->
+                setAlarm(taskId)
+                Log.d("TEST", "taskId: $taskId")
+            }
+
     private fun Task.checkDaysOfWeek(): Task {
         if (this.daysOfWeek.isEmpty() &&
             ((this.endDate == null && this.startDate != null) || (this.endDate != null && this.endDate.isAfterRightNotNull(this.startDate)))
@@ -206,9 +214,7 @@ class TaskRepositoryImpl(
                 if (task.daysOfWeek.contains(nextDayOfWeek)) {
                     alarmId = task.key() + nextDayOfWeek
 
-                    val reminderDateTime = task.reminderDateTime(nextDate.toLocalDate())
-
-                    if (nextDate.isAfter(reminderDateTime)) {
+                    if (nextDate.isAfter(getNowDateTime())) {
                         nextAlarmDate = nextDate.toLocalDate()
                         break
                     }
