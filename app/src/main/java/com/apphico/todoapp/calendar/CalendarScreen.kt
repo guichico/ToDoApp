@@ -58,10 +58,18 @@ fun CalendarScreen(
     onNestedViewClosed: () -> Unit,
     nestedContent: @Composable BoxScope.(modifier: Modifier) -> Unit,
 ) {
+    val wasWelcomeClosed by calendarViewModel.wasWelcomeClosed.collectAsState(true)
+
     val calendar = calendarViewModel.calendar.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
-    WelcomeDialog()
+    if (!wasWelcomeClosed) {
+        WelcomeDialog(
+            onExploreClicked = {
+                calendarViewModel.setWasWelcomeClosed()
+            }
+        )
+    }
 
     CalendarScreenContent(
         onCurrentMonthChanged = calendarViewModel::onCurrentMonthChanged,

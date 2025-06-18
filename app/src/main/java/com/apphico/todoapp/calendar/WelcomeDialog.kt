@@ -35,7 +35,9 @@ import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.todoapp.R
 
 @Composable
-fun WelcomeDialog() {
+fun WelcomeDialog(
+    onExploreClicked: () -> Unit
+) {
     var isWelcomeDialogOpen by remember { mutableStateOf(true) }
 
     if (isWelcomeDialogOpen) {
@@ -86,7 +88,10 @@ fun WelcomeDialog() {
 
                 NormalButton(
                     text = "Explorar",
-                    onClick = { isWelcomeDialogOpen = false }
+                    onClick = {
+                        isWelcomeDialogOpen = false
+                        onExploreClicked()
+                    }
                 )
             }
         }
@@ -97,6 +102,8 @@ fun WelcomeDialog() {
 @Composable
 private fun WelcomeDialogPreview() {
     ToDoAppTheme {
-        WelcomeDialog()
+        WelcomeDialog(
+            onExploreClicked = {}
+        )
     }
 }

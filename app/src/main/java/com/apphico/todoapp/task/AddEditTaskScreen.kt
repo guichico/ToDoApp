@@ -90,6 +90,8 @@ fun AddEditTaskScreen(
     navigateToSelectLocation: (Location?) -> Unit,
     navigateBack: () -> Unit
 ) {
+    val wasDatesExplanationClosed = addEditTaskViewModel.wasDatesExplanationClosed.collectAsState(true)
+
     val editingTask = addEditTaskViewModel.editingTask.collectAsState()
     val editingCheckList = addEditTaskViewModel.editingCheckList.collectAsState()
 
@@ -232,6 +234,8 @@ fun AddEditTaskScreen(
             onDescriptionChange = addEditTaskViewModel::onDescriptionChanged,
             navigateToSelectGroup = navigateToSelectGroup,
             onGroupRemoved = addEditTaskViewModel::onGroupRemoved,
+            wasDatesExplanationClosed = wasDatesExplanationClosed,
+            onWasDatesExplanationClosed = { addEditTaskViewModel.setWasDatesExplanationClosed() },
             startDateError = startDateError,
             onStartDateChanged = addEditTaskViewModel::onStartDateChanged,
             onStartTimeChanged = addEditTaskViewModel::onStartTimeChanged,
@@ -258,6 +262,8 @@ private fun AddTaskScreenContent(
     onDescriptionChange: (String) -> Unit,
     navigateToSelectGroup: () -> Unit,
     onGroupRemoved: () -> Unit,
+    wasDatesExplanationClosed: State<Boolean>,
+    onWasDatesExplanationClosed: () -> Unit,
     startDateError: State<Int?>,
     onStartDateChanged: (LocalDate?) -> Unit,
     onStartTimeChanged: (LocalTime?) -> Unit,
@@ -304,6 +310,8 @@ private fun AddTaskScreenContent(
             Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
 
             Dates(
+                wasDatesExplanationClosed = wasDatesExplanationClosed,
+                onWasDatesExplanationClosed = onWasDatesExplanationClosed,
                 startDate = remember { derivedStateOf { task.value.startDate } },
                 startTime = remember { derivedStateOf { task.value.startTime } },
                 endDate = remember { derivedStateOf { task.value.endDate } },
@@ -346,18 +354,20 @@ private fun AddTaskScreenContent(
 
             Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
 
-            // Banner ad view
-            LocalActivity.current?.let {
-                ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
-                    .apply {
-                        BannerAdView(adView = this)
-                        Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+            if (wasDatesExplanationClosed.value) {
+                // Banner ad view
+                LocalActivity.current?.let {
+                    ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
+                        .apply {
+                            BannerAdView(adView = this)
+                            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
 
-                        DisposableEffect(Unit) {
-                            // Destroy the AdView to prevent memory leaks when the screen is disposed.
-                            onDispose { this@apply.destroy() }
+                            DisposableEffect(Unit) {
+                                // Destroy the AdView to prevent memory leaks when the screen is disposed.
+                                onDispose { this@apply.destroy() }
+                            }
                         }
-                    }
+                }
             }
 
             ReminderField(
@@ -388,6 +398,8 @@ private fun AddTaskScreenContent(
 
 @Composable
 private fun Dates(
+    wasDatesExplanationClosed: State<Boolean>,
+    onWasDatesExplanationClosed: () -> Unit,
     startDate: State<LocalDate?>,
     onStartDateChanged: (LocalDate?) -> Unit,
     startDateError: State<Int?>,
@@ -399,7 +411,11 @@ private fun Dates(
     onEndTimeChanged: (LocalTime?) -> Unit
 ) {
     Column {
-        DatesExplanationDialog()
+        if (!wasDatesExplanationClosed.value) {
+            DatesExplanationDialog(
+                onWasDatesExplanationClosed = onWasDatesExplanationClosed
+            )
+        }
 
         StarDateRow(
             startDate = startDate,
@@ -689,6 +705,8 @@ private fun AddTaskScreenPreview(
             onDescriptionChange = {},
             navigateToSelectGroup = {},
             onGroupRemoved = {},
+            wasDatesExplanationClosed = remember { mutableStateOf(true) },
+            onWasDatesExplanationClosed = { },
             startDateError = remember { mutableStateOf(null) },
             onStartDateChanged = {},
             onStartTimeChanged = {},

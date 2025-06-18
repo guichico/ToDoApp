@@ -11,6 +11,7 @@ import com.apphico.core_model.RecurringTask
 import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
+import com.apphico.core_repository.calendar.datastore.AppSettingsDataStore
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.designsystem.R
 import com.apphico.extensions.add
@@ -44,7 +45,8 @@ import kotlin.reflect.typeOf
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val taskRepository: TaskRepository,
+    private val appSettingsDataStore: AppSettingsDataStore,
+    private val taskRepository: TaskRepository,
     private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
@@ -62,6 +64,8 @@ class AddEditTaskViewModel @Inject constructor(
 
     val nameError = MutableStateFlow<Int?>(null)
     val startDateError = MutableStateFlow<Int?>(null)
+
+    val wasDatesExplanationClosed = appSettingsDataStore.wasDatesExplanationClosed
 
     init {
         if (addEditTaskParameters.isFromIntent) {
@@ -111,6 +115,8 @@ class AddEditTaskViewModel @Inject constructor(
             .onEach(editingTask::emit)
             .launchIn(viewModelScope)
     }
+
+    fun setWasDatesExplanationClosed() = viewModelScope.launch { appSettingsDataStore.setWasDatesExplanationClosed(true) }
 
     fun canSaveAll(): Boolean {
         val editingTask = editingTask.value

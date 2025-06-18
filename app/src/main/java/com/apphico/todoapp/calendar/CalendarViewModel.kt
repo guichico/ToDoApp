@@ -9,6 +9,7 @@ import com.apphico.core_model.Status
 import com.apphico.core_model.Task
 import com.apphico.core_repository.calendar.calendar.CalendarRepository
 import com.apphico.core_repository.calendar.checklist.CheckListRepository
+import com.apphico.core_repository.calendar.datastore.AppSettingsDataStore
 import com.apphico.core_repository.calendar.settings.UserSettingsRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.combine
@@ -34,10 +35,13 @@ import javax.inject.Inject
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val appSettingsDataStore: AppSettingsDataStore,
     private val userSettingsRepository: UserSettingsRepository,
     private val calendarRepository: CalendarRepository,
     private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle), FilterViewModel {
+
+    val wasWelcomeClosed = appSettingsDataStore.wasWelcomeClosed
 
     val currentMonth = MutableStateFlow<Pair<Month, Int>>(with(getNowDate()) { month to year })
 
@@ -72,6 +76,8 @@ class CalendarViewModel @Inject constructor(
         }
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun setWasWelcomeClosed() = viewModelScope.launch { appSettingsDataStore.setWasWelcomeClosed(true) }
 
     fun onCurrentMonthChanged(month: Month?, year: Int?) {
         if (month != null && year != null) currentMonth.value = Pair(month, year)

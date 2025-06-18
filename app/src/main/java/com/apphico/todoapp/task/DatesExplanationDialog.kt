@@ -27,7 +27,9 @@ import com.apphico.designsystem.theme.White
 import com.apphico.designsystem.theme.isColorDark
 
 @Composable
-fun DatesExplanationDialog() {
+fun DatesExplanationDialog(
+    onWasDatesExplanationClosed: () -> Unit
+) {
     var isDatesExplanationDialogOpen by remember { mutableStateOf(true) }
 
     if (isDatesExplanationDialogOpen) {
@@ -110,7 +112,10 @@ fun DatesExplanationDialog() {
                         modifier = Modifier
                             .padding(top = ToDoAppTheme.spacing.medium)
                             .align(Alignment.End),
-                        onClick = { isDatesExplanationDialogOpen = false },
+                        onClick = {
+                            isDatesExplanationDialogOpen = false
+                            onWasDatesExplanationClosed()
+                        },
                         text = "Entendi"
                     )
                 }
@@ -123,6 +128,8 @@ fun DatesExplanationDialog() {
 @Composable
 private fun WelcomeDialogPreview() {
     ToDoAppTheme {
-        DatesExplanationDialog()
+        DatesExplanationDialog(
+            onWasDatesExplanationClosed = {}
+        )
     }
 }
