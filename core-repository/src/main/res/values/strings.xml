@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="task_name_1">Run</string>
+    <string name="task_name_1">Run - (Sample, delete it)</string>
     <string name="task_description_1">Run 2 miles every morning</string>
-    <string name="task_name_2">Go grocery shopping</string>
+    <string name="task_name_2">Grocery - (Sample, delete it)</string>
     <string name="task_description_2">Grocery list</string>
 
     <string name="group_name_1">Work</string>
@@ -22,9 +22,9 @@
     <string name="task_check_list_item_6">Bananas</string>
     <string name="task_check_list_item_7">Fish</string>
 
-    <string name="achievement_name_1">Get in shape</string>
+    <string name="achievement_name_1">Get in shape - (Sample, delete it)</string>
     <string name="achievement_description_1">I aim to get in shape by the end of the year</string>
-    <string name="achievement_name_2">Save money</string>
+    <string name="achievement_name_2">Save money - (Sample, delete it)</string>
     <string name="achievement_description_2">Achieve financial security.</string>
 
     <string name="achievement_check_list_item_1">Get more muscles</string>

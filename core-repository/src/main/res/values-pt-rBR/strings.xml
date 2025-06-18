@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="task_name_1">Correr</string>
+    <string name="task_name_1">Correr - (Exemplo, deletar)</string>
     <string name="task_description_1">Correr 2km todas as manhãs.</string>
-    <string name="task_name_2">Fazer compras</string>
+    <string name="task_name_2">Fazer compras - (Exemplo, deletar)</string>
     <string name="task_description_2">Lista de compras.</string>
 
     <string name="group_name_1">Trabalho</string>
@@ -22,11 +22,11 @@
     <string name="task_check_list_item_6">Bananas</string>
     <string name="task_check_list_item_7">Peixe</string>
 
-    <string name="achievement_name_1">Ficar em forma</string>
+    <string name="achievement_name_1">Ficar em forma - (Exemplo, deletar)</string>
     <string name="achievement_description_1">Pretendo entrar em forma até o final do ano.</string>
-    <string name="achievement_name_2">Guardar dinheiro</string>
+    <string name="achievement_name_2">Guardar dinheiro - (Exemplo, deletar)</string>
     <string name="achievement_description_2">Alcançar segurança financeira.</string>
 
     <string name="achievement_check_list_item_1">Ganhar mais músculos</string>
-    <string name="achievement_check_list_item_2">Ficar trincado</string>
+    <string name="achievement_check_list_item_2">Secar</string>
 </resources>
