@@ -97,7 +97,7 @@
     <string name="permission_configurations">Configurações</string>
     <string name="permission_deny">Não conceder</string>
     <string name="stop_alarm">Desativar</string>
-    <string name="attention">Atenção</string>
+    <string name="attention">Atenção!</string>
     <string name="set_reminder_require_start_dates">É necessário colocar uma data e hora de ínicio para definir um alarme.</string>
     <string name="welcome">Bem-vindo(a) ao Taskhico!</string>
     <string name="welcome_message">Organize suas tarefas, gerencie suas metas e planeje seu dia com facilidade.</string>
