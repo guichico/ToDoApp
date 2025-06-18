@@ -14,6 +14,7 @@ val DarkerGray = Color(0XFF23262A)
 val ChiliRed = Color(0xFFE23D28)
 
 val LightBlue = Color(0XFFF5F7FD)
+val SemiMediumBlue = Color(0XFFE6F1FF)
 val MediumBlue = Color(0XFFCEE5FF)
 val RippleBlue = Color(0XFFCDD3E5)
 

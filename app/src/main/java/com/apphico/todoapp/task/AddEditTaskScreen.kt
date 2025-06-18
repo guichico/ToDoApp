@@ -34,14 +34,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.apphico.core_model.CheckListItem
@@ -52,11 +59,13 @@ import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
 import com.apphico.designsystem.R
 import com.apphico.designsystem.animatedElevation
+import com.apphico.designsystem.components.buttons.SmallButton
 import com.apphico.designsystem.components.card.AddEditHeader
 import com.apphico.designsystem.components.checklist.CreateCheckList
 import com.apphico.designsystem.components.date.DaysOfWeekGrid
 import com.apphico.designsystem.components.dialogs.CheckBoxDialog
 import com.apphico.designsystem.components.dialogs.DateDialog
+import com.apphico.designsystem.components.dialogs.DefaultDialog
 import com.apphico.designsystem.components.dialogs.ReminderDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
@@ -67,8 +76,11 @@ import com.apphico.designsystem.components.textfield.NormalTextField
 import com.apphico.designsystem.components.textfield.SmallTextField
 import com.apphico.designsystem.components.topbar.DeleteSaveTopBar
 import com.apphico.designsystem.reminder.CheckNotificationPermission
+import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.designsystem.theme.White
+import com.apphico.designsystem.theme.isColorDark
 import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.formatMediumDateAndTime
 import com.apphico.extensions.formatShortTime
@@ -399,6 +411,8 @@ private fun Dates(
     onEndTimeChanged: (LocalTime?) -> Unit
 ) {
     Column {
+        DatesExplanationDialog()
+
         StarDateRow(
             startDate = startDate,
             startDateError = startDateError,

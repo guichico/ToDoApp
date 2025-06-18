@@ -61,6 +61,8 @@ fun CalendarScreen(
     val calendar = calendarViewModel.calendar.collectAsState()
     val calendarViewMode = calendarViewModel.calendarViewMode.collectAsState()
 
+    WelcomeDialog()
+
     CalendarScreenContent(
         onCurrentMonthChanged = calendarViewModel::onCurrentMonthChanged,
         selectedDate = selectedDate,
