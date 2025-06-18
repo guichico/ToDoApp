@@ -6,7 +6,6 @@ import androidx.room.Transaction
 import com.apphico.core_repository.calendar.room.entities.TaskDB
 import com.apphico.core_repository.calendar.room.entities.TaskWithRelations
 import com.apphico.extensions.getInt
-import com.apphico.extensions.getNowDate
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
