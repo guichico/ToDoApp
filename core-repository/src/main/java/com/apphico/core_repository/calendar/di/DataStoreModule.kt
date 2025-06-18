@@ -1,6 +1,7 @@
 package com.apphico.core_repository.calendar.di
 
 import android.content.Context
+import com.apphico.core_repository.calendar.datastore.AppSettingsDataStore
 import com.apphico.core_repository.calendar.datastore.UserSettingsDataStore
 import dagger.Module
 import dagger.Provides
@@ -12,6 +13,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DataStoreModule() {
+
+    @Provides
+    @Singleton
+    fun provideAppSettingsDataStore(@ApplicationContext appContext: Context): AppSettingsDataStore =
+        AppSettingsDataStore(appContext, "app_settings")
 
     @Provides
     @Singleton
