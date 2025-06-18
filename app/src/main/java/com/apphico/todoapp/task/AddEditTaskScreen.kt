@@ -36,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -347,7 +348,7 @@ private fun AddTaskScreenContent(
 
             // Banner ad view
             LocalActivity.current?.let {
-                ToDoAppBannerAd(it).getAdView()
+                ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
                     .apply {
                         BannerAdView(adView = this)
                         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))

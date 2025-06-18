@@ -38,6 +38,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.PreviewLightDark
@@ -348,7 +350,7 @@ private fun MeasurementTypeFields(
 
     // Banner ad view
     LocalActivity.current?.let {
-        ToDoAppBannerAd(it).getAdView()
+        ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
             .apply {
                 BannerAdView(adView = this)
                 Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))

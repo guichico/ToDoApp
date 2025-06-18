@@ -48,23 +48,32 @@ class ToDoAppBannerAd(val activity: Activity) : AdListener() {
 
     companion object {
         private val TAG = ToDoAppBannerAd::class.simpleName
-
-        private const val AD_WIDTH = 320
     }
 
-    fun getAdView(): AdView {
-        val adSize = AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(
-            activity,
-            AD_WIDTH
+    fun getAnchoredAdView(): AdView =
+        getAdView(
+            AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+                activity,
+                360
+            )
         )
 
+    fun getAdaptiveAdView(width: Int): AdView =
+        getAdView(
+            AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(
+                activity,
+                width
+            )
+        )
+
+    private fun getAdView(adSize: AdSize): AdView {
         return AdView(activity)
             .apply {
                 adUnitId = BuildConfig.ADMOB_BANNER_AD
                 setAdSize(adSize)
 
-                loadAd(AdRequest.Builder().build())
                 adListener = this@ToDoAppBannerAd
+                loadAd(AdRequest.Builder().build())
             }
     }
 

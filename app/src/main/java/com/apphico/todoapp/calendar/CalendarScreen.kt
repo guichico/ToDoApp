@@ -1,7 +1,10 @@
 package com.apphico.todoapp.calendar
 
+import androidx.activity.compose.LocalActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -10,11 +13,14 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -32,6 +38,9 @@ import com.apphico.designsystem.components.list.MainLazyList
 import com.apphico.designsystem.task.TaskCard
 import com.apphico.designsystem.theme.ToDoAppTheme
 import com.apphico.extensions.getNowDate
+import com.apphico.todoapp.ad.BannerAdView
+import com.apphico.todoapp.ad.ToDoAppBannerAd
+import com.google.android.gms.ads.AdView
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -96,6 +105,21 @@ private fun CalendarScreenContent(
             }
     }
 
+    val activity = LocalActivity.current
+
+    var loadedAd by remember { mutableStateOf<AdView?>(null) }
+
+    LaunchedEffect(Unit) {
+        activity?.let {
+            loadedAd = ToDoAppBannerAd(activity).getAnchoredAdView()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        // Destroy the AdView to prevent memory leaks when the screen is disposed.
+        onDispose { loadedAd?.destroy() }
+    }
+
     MainLazyList(
         listState = calendarListState,
         onAddClicked = { navigateToAddEditTask(null) },
@@ -114,6 +138,7 @@ private fun CalendarScreenContent(
             )
         } else {
             taskRowsAgendaViewMode(
+                loadedAd = loadedAd,
                 tasks = tasks.value,
                 onTaskClicked = navigateToAddEditTask,
                 onDoneCheckedChanged = onDoneCheckedChanged,
@@ -184,6 +209,7 @@ private fun LazyListScope.taskRowsDayViewMode(
 }
 
 private fun LazyListScope.taskRowsAgendaViewMode(
+    loadedAd: AdView?,
     tasks: List<Task>,
     onTaskClicked: (Task?) -> Unit,
     onDoneCheckedChanged: (Task, Boolean) -> Unit,
@@ -198,6 +224,18 @@ private fun LazyListScope.taskRowsAgendaViewMode(
 
             if (date != previousDate) {
                 DateHeader(date = date)
+            }
+        }
+
+        if (index != 0 && (index == 8 || index % 30 == 0)) {
+            loadedAd?.let {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = ToDoAppTheme.spacing.large)
+                ) {
+                    BannerAdView(adView = it)
+                }
             }
         }
 
