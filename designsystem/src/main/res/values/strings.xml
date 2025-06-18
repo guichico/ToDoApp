@@ -97,4 +97,19 @@
     <string name="permission_configurations">Settings</string>
     <string name="permission_deny">Do not grant</string>
     <string name="stop_alarm">Stop</string>
+    <string name="attention">Attention</string>
+    <string name="set_reminder_require_start_dates">Start date and time are required to set an alarm.</string>
+    <string name="welcome">Welcome to Taskhico!</string>
+    <string name="welcome_message">Organize your tasks, manage your achievements and plan your day with ease.</string>
+    <string name="explore">Explore</string>
+    <string name="dates_explanation_1">How does task scheduling work?</string>
+    <string name="dates_explanation_2">Your tasks adapt to your needs!\nSee how the dates work:</string>
+    <string name="dates_explanation_3">Dates are optional:\nYou decide whether to add them or not.</string>
+    <string name="dates_explanation_4">Fixed tasks:</string>
+    <string name="dates_explanation_5">If you don\'t set any dates, the task will always stay at the top of the list.\n</string>
+    <string name="dates_explanation_6">Recurring tasks:</string>
+    <string name="dates_explanation_7">If you set a start date but not an end date, the task will repeat indefinitely.\n</string>
+    <string name="dates_explanation_8">Tasks with deadline:</string>
+    <string name="dates_explanation_9">If you set an end date but not a start date, the task will be pinned to the top of your list as a task with a deadline.</string>
+    <string name="got_it">Got it</string>
 </resources>

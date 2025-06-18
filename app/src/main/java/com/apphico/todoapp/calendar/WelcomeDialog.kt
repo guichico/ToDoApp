@@ -21,18 +21,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.NormalButton
 import com.apphico.designsystem.components.dialogs.DefaultDialog
 import com.apphico.designsystem.theme.LightBlue
 import com.apphico.designsystem.theme.MediumBlue
 import com.apphico.designsystem.theme.SemiMediumBlue
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.todoapp.R
 
 @Composable
 fun WelcomeDialog(
@@ -66,19 +67,19 @@ fun WelcomeDialog(
                     modifier = Modifier
                         .size(64.dp)
                         .rotate(10f),
-                    painter = painterResource(R.drawable.ic_splash),
-                    contentDescription = "Bem-vindo",
+                    painter = painterResource(com.apphico.todoapp.R.drawable.ic_splash),
+                    contentDescription = null,
                 )
 
                 Text(
-                    text = "Bem-vindo(a) ao Taskhico!",
+                    text = stringResource(R.string.welcome),
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.secondary,
                     textAlign = TextAlign.Center
                 )
 
                 Text(
-                    text = "Organize suas tarefas, gerencie suas metas e planeje seu dia com facilidade.",
+                    text = stringResource(R.string.welcome_message),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary,
                     textAlign = TextAlign.Center
@@ -87,7 +88,7 @@ fun WelcomeDialog(
                 Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
 
                 NormalButton(
-                    text = "Explorar",
+                    text = stringResource(R.string.explore),
                     onClick = {
                         isWelcomeDialogOpen = false
                         onExploreClicked()

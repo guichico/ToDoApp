@@ -719,7 +719,7 @@ fun RequiredStartDateAndTimeDialog(
                     )
             ) {
                 Text(
-                    text = "Atenção",
+                    text = stringResource(R.string.attention),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -727,7 +727,7 @@ fun RequiredStartDateAndTimeDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = ToDoAppTheme.spacing.large),
-                    text = "É necessário colocar uma data e hora de ínicio para definir um alarme.",
+                    text = stringResource(R.string.set_reminder_require_start_dates),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -739,7 +739,7 @@ fun RequiredStartDateAndTimeDialog(
                         isRequiredStartTimeDialogOpen = false
                         onConfirmClicked()
                     },
-                    text = "Ok"
+                    text = stringResource(R.string.ok)
                 )
             }
         }

@@ -12,19 +12,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.SmallButton
 import com.apphico.designsystem.components.dialogs.DefaultDialog
-import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.ToDoAppTheme
-import com.apphico.designsystem.theme.White
-import com.apphico.designsystem.theme.isColorDark
 
 @Composable
 fun DatesExplanationDialog(
@@ -58,7 +56,7 @@ fun DatesExplanationDialog(
                         .padding(ToDoAppTheme.spacing.medium)
                 ) {
                     Text(
-                        text = "Como funciona o agendamento de tarefas?",
+                        text = stringResource(R.string.dates_explanation_1),
                         style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold),
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -66,36 +64,39 @@ fun DatesExplanationDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = ToDoAppTheme.spacing.large),
-                        text = "Suas tarefas se adaptam à sua necessidade!\nVeja como as datas funcionam:",
+                        text = stringResource(R.string.dates_explanation_2),
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        text = "Datas são opcionais:\nVocê decide se quer adicioná-las ou não.",
+                        text = stringResource(R.string.dates_explanation_3),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
 
                     val annotatedString = buildAnnotatedString {
                         withStyle(style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold).toSpanStyle()) {
-                            append("Tarefas fixas: ")
+                            append(stringResource(R.string.dates_explanation_4))
+                            append(" ")
                         }
                         withStyle(style = MaterialTheme.typography.bodyMedium.toSpanStyle()) {
-                            append("Se você não definir nenhuma data, a tarefa ficará sempre no topo da sua lista.\n")
+                            append(stringResource(R.string.dates_explanation_5))
                         }
                         withStyle(style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold).toSpanStyle()) {
-                            append("Tarefas recorrentes: ")
+                            append(stringResource(R.string.dates_explanation_6))
+                            append(" ")
                         }
                         withStyle(style = MaterialTheme.typography.bodyMedium.toSpanStyle()) {
-                            append("Se você definir uma data de início, mas não uma data fim, a tarefa se repetirá indefinidamente.\n")
+                            append(stringResource(R.string.dates_explanation_7))
                         }
                         withStyle(style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold).toSpanStyle()) {
-                            append("Tarefas com prazo: ")
+                            append(stringResource(R.string.dates_explanation_8))
+                            append(" ")
                         }
                         withStyle(style = MaterialTheme.typography.bodyMedium.toSpanStyle()) {
-                            append("Se você definir uma data fim, mas não uma data de início, a tarefa será fixada no topo da sua lista como uma tarefa com prazo para ser concluída.")
+                            append(stringResource(R.string.dates_explanation_9))
                         }
                     }
 
@@ -116,7 +117,7 @@ fun DatesExplanationDialog(
                             isDatesExplanationDialogOpen = false
                             onWasDatesExplanationClosed()
                         },
-                        text = "Entendi"
+                        text = stringResource(R.string.got_it)
                     )
                 }
             }
