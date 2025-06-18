@@ -157,7 +157,6 @@ class TaskRepositoryImpl(
         taskDao.getIdsWithReminders()
             .forEach { taskId ->
                 setAlarm(taskId)
-                Log.d("TEST", "taskId: $taskId")
             }
 
     private fun Task.checkDaysOfWeek(): Task {

@@ -2,6 +2,7 @@ package com.apphico.todoapp.task
 
 import android.content.ComponentName
 import android.content.pm.PackageManager
+import android.view.ViewGroup
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Box
@@ -82,6 +83,7 @@ import com.apphico.extensions.toMillis
 import com.apphico.todoapp.ToDoAppBootReceiver
 import com.apphico.todoapp.ad.BannerAdView
 import com.apphico.todoapp.ad.ToDoAppBannerAd
+import com.google.android.gms.ads.AdView
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -360,16 +362,27 @@ private fun AddTaskScreenContent(
             if (wasDatesExplanationClosed.value) {
                 // Banner ad view
                 LocalActivity.current?.let {
-                    ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
-                        .apply {
-                            BannerAdView(adView = this)
-                            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+                    var adView by remember { mutableStateOf<AdView?>(null) }
 
-                            DisposableEffect(Unit) {
-                                // Destroy the AdView to prevent memory leaks when the screen is disposed.
-                                onDispose { this@apply.destroy() }
+                    if (adView == null) {
+                        adView = ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
+                    }
+
+                    adView?.let {
+                        BannerAdView(adView = it)
+                        Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+
+                        DisposableEffect(Unit) {
+                            // Destroy the AdView to prevent memory leaks when the screen is disposed.
+                            onDispose {
+                                if (it.parent is ViewGroup) {
+                                    (it.parent as ViewGroup).removeView(adView)
+                                }
+                                it.destroy()
+                                adView = null
                             }
                         }
+                    }
                 }
             }
 

@@ -1,5 +1,6 @@
 package com.apphico.todoapp.calendar
 
+import android.view.ViewGroup
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -121,13 +122,23 @@ private fun CalendarScreenContent(
 
     LaunchedEffect(Unit) {
         activity?.let {
-            loadedAd = ToDoAppBannerAd(activity).getAnchoredAdView()
+            if (loadedAd == null) {
+                loadedAd = ToDoAppBannerAd(activity).getAnchoredAdView()
+            }
         }
     }
 
     DisposableEffect(Unit) {
         // Destroy the AdView to prevent memory leaks when the screen is disposed.
-        onDispose { loadedAd?.destroy() }
+        onDispose {
+            loadedAd?.let {
+                if (it.parent is ViewGroup) {
+                    (it.parent as ViewGroup).removeView(loadedAd)
+                }
+                it.destroy()
+                loadedAd = null
+            }
+        }
     }
 
     MainLazyList(

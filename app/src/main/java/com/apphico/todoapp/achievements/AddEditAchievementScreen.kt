@@ -1,5 +1,6 @@
 package com.apphico.todoapp.achievements
 
+import android.view.ViewGroup
 import androidx.activity.compose.LocalActivity
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
@@ -77,6 +78,7 @@ import com.apphico.extensions.formatMediumDate
 import com.apphico.extensions.getNowGMTMillis
 import com.apphico.todoapp.ad.BannerAdView
 import com.apphico.todoapp.ad.ToDoAppBannerAd
+import com.google.android.gms.ads.AdView
 import java.time.LocalDate
 
 private val MeasurementValueUnit.label: Int
@@ -349,16 +351,27 @@ private fun MeasurementTypeFields(
 
     // Banner ad view
     LocalActivity.current?.let {
-        ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
-            .apply {
-                BannerAdView(adView = this)
-                Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+        var adView by remember { mutableStateOf<AdView?>(null) }
 
-                DisposableEffect(Unit) {
-                    // Destroy the AdView to prevent memory leaks when the screen is disposed.
-                    onDispose { this@apply.destroy() }
+        if (adView == null) {
+            adView = ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
+        }
+
+        adView?.let {
+            BannerAdView(adView = it)
+            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+
+            DisposableEffect(Unit) {
+                // Destroy the AdView to prevent memory leaks when the screen is disposed.
+                onDispose {
+                    if (it.parent is ViewGroup) {
+                        (it.parent as ViewGroup).removeView(adView)
+                    }
+                    it.destroy()
+                    adView = null
                 }
             }
+        }
     }
 
     AnimatedContent(

@@ -2,6 +2,7 @@ package com.apphico.todoapp.ad
 
 import android.app.Activity
 import android.util.Log
+import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -19,6 +20,7 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 
+
 @Composable
 fun BannerAdView(
     modifier: Modifier = Modifier,
@@ -30,17 +32,25 @@ fun BannerAdView(
         return
     }
 
+    if (adView.parent is ViewGroup) {
+        (adView.parent as ViewGroup).removeView(adView)
+    }
+
     AndroidView(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight(),
-        factory = { adView }
+        factory = {
+            adView
+        }
     )
 
     // Pause and resume the AdView when the lifecycle is paused and resumed.
     LifecycleResumeEffect(adView) {
         adView.resume()
-        onPauseOrDispose { adView.pause() }
+        onPauseOrDispose {
+            adView.pause()
+        }
     }
 }
 
