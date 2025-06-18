@@ -60,7 +60,7 @@ fun DatesExplanationDialog(
                     Text(
                         text = "Como funciona o agendamento de tarefas?",
                         style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold),
-                        color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         modifier = Modifier
@@ -68,14 +68,14 @@ fun DatesExplanationDialog(
                             .padding(vertical = ToDoAppTheme.spacing.large),
                         text = "Suas tarefas se adaptam à sua necessidade!\nVeja como as datas funcionam:",
                         style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                        color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Text(
                         modifier = Modifier
                             .fillMaxWidth(),
                         text = "Datas são opcionais:\nVocê decide se quer adicioná-las ou não.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     val annotatedString = buildAnnotatedString {
@@ -105,7 +105,7 @@ fun DatesExplanationDialog(
                             .padding(top = ToDoAppTheme.spacing.medium),
                         text = annotatedString,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = if (isColorDark(MaterialTheme.colorScheme.background.toArgb())) White else Black
+                        color = MaterialTheme.colorScheme.primary
                     )
 
                     SmallButton(

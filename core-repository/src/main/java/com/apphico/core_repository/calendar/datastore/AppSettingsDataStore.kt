@@ -9,12 +9,12 @@ class AppSettingsDataStore(
 ) : BaseDataStore(context, dataStoreFileName) {
 
     private val wasWelcomeClosedPreference = booleanPreferencesKey("was_welcome_closed")
-    val wasWelcomeClosed = wasWelcomeClosedPreference.asFlow()
+    val wasWelcomeClosed = wasWelcomeClosedPreference.asBooleanFlow()
 
     suspend fun setWasWelcomeClosed(value: Boolean) = setValue(wasWelcomeClosedPreference, value)
 
     private val wasDatesExplanationClosedPreference = booleanPreferencesKey("was_dates_explanation_closed")
-    val wasDatesExplanationClosed = wasDatesExplanationClosedPreference.asFlow()
+    val wasDatesExplanationClosed = wasDatesExplanationClosedPreference.asBooleanFlow()
 
     suspend fun setWasDatesExplanationClosed(value: Boolean) = setValue(wasDatesExplanationClosedPreference, value)
 }

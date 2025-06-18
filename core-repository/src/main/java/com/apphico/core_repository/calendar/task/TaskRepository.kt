@@ -28,8 +28,8 @@ interface TaskRepository {
     suspend fun copyTask(task: Task, taskName: String = task.name): Boolean
     suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean
     suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean
-    suspend fun setAlarm(taskId: Long): Long
-    suspend fun setNextAlarm(taskId: Long): Long
+    suspend fun setAlarm(taskId: Long): Long?
+    suspend fun setNextAlarm(taskId: Long): Long?
     suspend fun setAlarmsAfterReboot()
 }
 
@@ -149,9 +149,9 @@ class TaskRepositoryImpl(
         }
     }
 
-    override suspend fun setAlarm(taskId: Long): Long = setAlarm(0, taskId)
+    override suspend fun setAlarm(taskId: Long): Long? = setAlarm(0, taskId)
 
-    override suspend fun setNextAlarm(taskId: Long): Long = setAlarm(1, taskId)
+    override suspend fun setNextAlarm(taskId: Long): Long? = setAlarm(1, taskId)
 
     override suspend fun setAlarmsAfterReboot() =
         taskDao.getIdsWithReminders()
@@ -194,8 +194,11 @@ class TaskRepositoryImpl(
         )
     }
 
-    private suspend fun setAlarm(startDay: Int, taskId: Long): Long {
+    private suspend fun setAlarm(startDay: Int, taskId: Long): Long? {
         val task = getTask(taskId)
+
+        if (task.reminder == null) return null
+
         var alarmId = task.key()
 
         if (task.isRepeatable()) {

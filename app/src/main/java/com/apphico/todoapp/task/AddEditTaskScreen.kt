@@ -34,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -52,11 +53,13 @@ import com.apphico.core_model.Task
 import com.apphico.core_model.fakeData.mockedTask
 import com.apphico.designsystem.R
 import com.apphico.designsystem.animatedElevation
+import com.apphico.designsystem.components.buttons.SmallButton
 import com.apphico.designsystem.components.card.AddEditHeader
 import com.apphico.designsystem.components.checklist.CreateCheckList
 import com.apphico.designsystem.components.date.DaysOfWeekGrid
 import com.apphico.designsystem.components.dialogs.CheckBoxDialog
 import com.apphico.designsystem.components.dialogs.DateDialog
+import com.apphico.designsystem.components.dialogs.DefaultDialog
 import com.apphico.designsystem.components.dialogs.ReminderDialog
 import com.apphico.designsystem.components.dialogs.TimeDialog
 import com.apphico.designsystem.components.dialogs.showDiscardChangesDialogOnBackIfNeed
@@ -616,12 +619,28 @@ private fun ReminderField(
     }
 
     var isReminderClicked by rememberSaveable { mutableStateOf(false) }
+    var isSetReminderAllowed by rememberSaveable { mutableStateOf(false) }
     var isReminderDialogOpen by rememberSaveable { mutableStateOf(false) }
 
+    if (isReminderClicked) {
+        with(task.value) {
+            if (this.startDate != null && this.startTime != null) {
+                isSetReminderAllowed = true
+            } else {
+                RequiredStartDateAndTimeDialog(
+                    onConfirmClicked = {
+                        isReminderClicked = false
+                    }
+                )
+            }
+        }
+    }
+
     CheckNotificationPermission(
-        onShowDialog = { isReminderClicked },
+        onShowDialog = { isSetReminderAllowed },
         onResult = { isGranted ->
             isReminderClicked = false
+            isSetReminderAllowed = false
             isReminderDialogOpen = isGranted
         }
     )
@@ -676,6 +695,55 @@ private fun ReminderField(
             }
         }
     )
+}
+
+@Composable
+fun RequiredStartDateAndTimeDialog(
+    onConfirmClicked: () -> Unit
+) {
+    var isRequiredStartTimeDialogOpen by remember { mutableStateOf(true) }
+
+    if (isRequiredStartTimeDialogOpen) {
+        DefaultDialog(
+            modifier = Modifier
+                .padding(ToDoAppTheme.spacing.large),
+            onDismissRequest = { isRequiredStartTimeDialogOpen = false }
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        start = ToDoAppTheme.spacing.large,
+                        top = ToDoAppTheme.spacing.large,
+                        end = ToDoAppTheme.spacing.large,
+                        bottom = ToDoAppTheme.spacing.medium
+                    )
+            ) {
+                Text(
+                    text = "Atenção",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = ToDoAppTheme.spacing.large),
+                    text = "É necessário colocar uma data e hora de ínicio para definir um alarme.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                SmallButton(
+                    modifier = Modifier
+                        .padding(top = ToDoAppTheme.spacing.medium)
+                        .align(Alignment.End),
+                    onClick = {
+                        isRequiredStartTimeDialogOpen = false
+                        onConfirmClicked()
+                    },
+                    text = "Ok"
+                )
+            }
+        }
+    }
 }
 
 class AddTaskScreenPreviewProvider : PreviewParameterProvider<Task> {
