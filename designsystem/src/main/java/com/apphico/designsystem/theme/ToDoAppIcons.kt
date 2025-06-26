@@ -44,7 +44,7 @@ import com.apphico.designsystem.theme.BaseToDoAppIcon.ImageVectorIcon
 
 sealed class BaseToDoAppIcon {
     data class ImageVectorIcon(val imageVector: ImageVector) : BaseToDoAppIcon()
-    data class DrawableResourceIcon(@DrawableRes val id: Int) : BaseToDoAppIcon()
+    data class DrawableResourceIcon(@param:DrawableRes val id: Int) : BaseToDoAppIcon()
 }
 
 object ToDoAppIcons {

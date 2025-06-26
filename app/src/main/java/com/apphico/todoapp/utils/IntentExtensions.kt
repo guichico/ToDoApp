@@ -37,8 +37,8 @@ fun Intent.getTask() =
         reminder = Reminder(soundAlarm = this.getBooleanExtra(AlarmHelper.SOUND_ALARM, false))
     )
 
-fun Context.hasAlarm(taskKey: Long) =
-    createAlarmIntent(taskKey, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE) != null
+fun Context.hasAlarm(reminderId: Long) =
+    createAlarmIntent(reminderId, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_NO_CREATE) != null
 
 fun Context.createAlarmIntent(
     alarmId: Long,

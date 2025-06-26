@@ -44,8 +44,8 @@ class TaskRepositoryImpl(
 
     override suspend fun getTask(taskId: Long) = taskDao.getTask(taskId).toTask()
 
-    override suspend fun insertTask(task: Task): Boolean {
-        return try {
+    override suspend fun insertTask(task: Task): Boolean =
+        try {
             appDatabase.withTransaction {
                 val toBeSavedTask = task.checkDaysOfWeek()
 
@@ -61,12 +61,11 @@ class TaskRepositoryImpl(
                 setAlarm(taskId)
             }
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
     override suspend fun copyTask(task: Task, taskName: String): Boolean {
         val copiedTask = task.copy(
@@ -82,9 +81,9 @@ class TaskRepositoryImpl(
     override suspend fun updateTask(
         task: Task,
         recurringTask: RecurringTask,
-        initialStartDate: LocalDate?
-    ): Boolean {
-        return try {
+        initialTaskStartDate: LocalDate?
+    ): Boolean =
+        try {
             appDatabase.withTransaction {
                 val toBeSavedTask = task.checkDaysOfWeek()
 
@@ -101,7 +100,7 @@ class TaskRepositoryImpl(
                         }
 
                         RecurringTask.ThisTask -> {
-                            Task(id = toBeSavedTask.id, startDate = initialStartDate)
+                            Task(id = toBeSavedTask.id, startDate = initialTaskStartDate)
                                 .insertTaskDeleted()
 
                             val endDate = toBeSavedTask.endDate ?: toBeSavedTask.startDate
@@ -116,15 +115,14 @@ class TaskRepositoryImpl(
                 setAlarm(toBeSavedTask.id)
             }
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
-    override suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean {
-        return try {
+    override suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean =
+        try {
             alarmHelper.cancelAlarm(task.reminderId)
 
             if (task.isRepeatable()) {
@@ -142,12 +140,11 @@ class TaskRepositoryImpl(
                 taskDao.delete(task.toTaskDB())
             }
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
     override suspend fun setAlarm(taskId: Long): Long? = setAlarm(0, taskId)
 

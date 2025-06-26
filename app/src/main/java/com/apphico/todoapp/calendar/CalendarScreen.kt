@@ -1,5 +1,6 @@
 package com.apphico.todoapp.calendar
 
+import android.app.Activity
 import android.view.ViewGroup
 import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.layout.Box
@@ -42,12 +43,21 @@ import com.apphico.extensions.getNowDate
 import com.apphico.todoapp.ad.BannerAdView
 import com.apphico.todoapp.ad.ToDoAppBannerAd
 import com.google.android.gms.ads.AdView
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.suspendCancellableCoroutine
 import java.time.LocalDate
 import java.time.Month
 import java.time.format.DateTimeFormatter
+import kotlin.coroutines.resume
+
+private const val ADS_COUNT = 5
+private const val FIRST_AD_INDEX = 8
+private const val ADS_INTERVAL = 30
 
 @Composable
 fun CalendarScreen(
@@ -118,12 +128,12 @@ private fun CalendarScreenContent(
 
     val activity = LocalActivity.current
 
-    var loadedAd by remember { mutableStateOf<AdView?>(null) }
+    var loadedAds by remember { mutableStateOf<List<AdView>>(emptyList()) }
 
     LaunchedEffect(Unit) {
         activity?.let {
-            if (loadedAd == null) {
-                loadedAd = ToDoAppBannerAd(activity).getAnchoredAdView()
+            if (loadedAds.isEmpty()) {
+                loadedAds = loadAds(it, ADS_COUNT)
             }
         }
     }
@@ -131,13 +141,13 @@ private fun CalendarScreenContent(
     DisposableEffect(Unit) {
         // Destroy the AdView to prevent memory leaks when the screen is disposed.
         onDispose {
-            loadedAd?.let {
-                if (it.parent is ViewGroup) {
-                    (it.parent as ViewGroup).removeView(loadedAd)
+            loadedAds.forEach { loadedAd ->
+                if (loadedAd.parent is ViewGroup) {
+                    (loadedAd.parent as ViewGroup).removeView(loadedAd)
                 }
-                it.destroy()
-                loadedAd = null
+                loadedAd.destroy()
             }
+            loadedAds = emptyList()
         }
     }
 
@@ -159,7 +169,7 @@ private fun CalendarScreenContent(
             )
         } else {
             taskRowsAgendaViewMode(
-                loadedAd = loadedAd,
+                loadedAds = loadedAds,
                 tasks = tasks.value,
                 onTaskClicked = navigateToAddEditTask,
                 onDoneCheckedChanged = onDoneCheckedChanged,
@@ -230,12 +240,14 @@ private fun LazyListScope.taskRowsDayViewMode(
 }
 
 private fun LazyListScope.taskRowsAgendaViewMode(
-    loadedAd: AdView?,
+    loadedAds: List<AdView>,
     tasks: List<Task>,
     onTaskClicked: (Task?) -> Unit,
     onDoneCheckedChanged: (Task, Boolean) -> Unit,
     onCheckListItemDoneChanged: (CheckListItem, Task, Boolean) -> Unit
 ) {
+    var adIndexIterator = (0..(ADS_COUNT - 1)).iterator()
+
     itemsIndexed(
         items = tasks,
         key = { _, task -> task.key() }
@@ -248,14 +260,21 @@ private fun LazyListScope.taskRowsAgendaViewMode(
             }
         }
 
-        if (index != 0 && (index == 8 || index % 30 == 0)) {
-            loadedAd?.let {
+        if (index != 0 && (index == FIRST_AD_INDEX || index % ADS_INTERVAL == 0)) {
+            if (loadedAds.isNotEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = ToDoAppTheme.spacing.large)
                 ) {
-                    BannerAdView(adView = it)
+                    val adIndex = if (adIndexIterator.hasNext()) {
+                        adIndexIterator.nextInt()
+                    } else {
+                        adIndexIterator = (0..(ADS_COUNT - 1)).iterator()
+                        adIndexIterator.nextInt()
+                    }
+
+                    BannerAdView(adView = loadedAds[adIndex])
                 }
             }
         }
@@ -268,6 +287,25 @@ private fun LazyListScope.taskRowsAgendaViewMode(
         )
     }
 }
+
+private suspend fun loadAds(activity: Activity, adsCount: Int) =
+    supervisorScope {
+        List(adsCount) {
+            async {
+                suspendCancellableCoroutine { continuation ->
+                    val adView = ToDoAppBannerAd(activity).getAnchoredAdView()
+
+                    continuation.resume(adView)
+
+                    continuation.invokeOnCancellation {
+                        // When the coroutine is cancelled, clean up resources.
+                        adView.destroy()
+                    }
+                }
+            }
+        }
+            .awaitAll()
+    }
 
 class CalendarScreenPreviewProvider : PreviewParameterProvider<List<Task>> {
     override val values = sequenceOf(mockedTasks)

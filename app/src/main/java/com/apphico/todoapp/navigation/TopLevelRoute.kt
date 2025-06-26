@@ -7,7 +7,7 @@ import com.apphico.designsystem.theme.ToDoAppIcons
 import com.apphico.todoapp.achievements.AchievementsRoute
 import com.apphico.todoapp.calendar.CalendarRoute
 
-data class TopLevelRoute<T : Any>(val route: T, @StringRes val name: Int, val selectedIcon: BaseToDoAppIcon, val unselectedIcon: BaseToDoAppIcon)
+data class TopLevelRoute<T : Any>(val route: T, @param:StringRes val name: Int, val selectedIcon: BaseToDoAppIcon, val unselectedIcon: BaseToDoAppIcon)
 
 val topLevelRoutes = listOf(
     // TopLevelRoute(FocusRoute, R.string.menu_focus, ToDoAppIcons.icMenuFocusSelected, ToDoAppIcons.icMenuFocusUnselected), // TODO Not yet implemented

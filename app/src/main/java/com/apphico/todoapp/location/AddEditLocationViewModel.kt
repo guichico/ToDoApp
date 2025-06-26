@@ -25,7 +25,7 @@ import kotlin.reflect.typeOf
 
 @HiltViewModel
 class AddEditLocationViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
     private val locationRepository: LocationRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
