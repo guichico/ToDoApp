@@ -6,4 +6,5 @@ Create and manage your tasks and achievements, set alerts, customize your calend
 - Track your progress and statistics of your achievements.
 
 
-![Captura de Tela 2025-06-28 às 00 13 10](https://github.com/user-attachments/assets/6703454b-5847-4b83-bb20-6134a393bc8a)
+![image](https://github.com/user-attachments/assets/54823887-3648-4e62-b67d-54c8ddbc4f56)
+
