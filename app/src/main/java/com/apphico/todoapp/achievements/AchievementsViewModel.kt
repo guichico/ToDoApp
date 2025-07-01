@@ -34,13 +34,14 @@ class AchievementsViewModel @Inject constructor(
 
     override val selectedStatus = userSettingsRepository.getAchievementStatus()
         .flowOn(Dispatchers.IO)
-        .stateIn(viewModelScope, SharingStarted.Lazily, Status.ALL)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, Status.ALL)
 
     override val selectedGroups = MutableStateFlow(emptyList<Group>())
 
     override val searchClicked = MutableSharedFlow<Boolean>()
 
-    val achievements = searchClicked.startWith(true)
+    val achievements = searchClicked
+        .startWith(true)
         .flatMapLatest {
             val status = selectedStatus.value
             val groups = selectedGroups.value

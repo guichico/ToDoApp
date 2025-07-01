@@ -30,10 +30,13 @@ import androidx.compose.ui.window.DialogProperties
 import com.apphico.designsystem.R
 import com.apphico.designsystem.components.buttons.NormalButton
 import com.apphico.designsystem.components.dialogs.DefaultDialog
+import com.apphico.designsystem.theme.Black
 import com.apphico.designsystem.theme.LightBlue
+import com.apphico.designsystem.theme.MainText
 import com.apphico.designsystem.theme.MediumBlue
 import com.apphico.designsystem.theme.SemiMediumBlue
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.designsystem.theme.White
 
 @Composable
 fun WelcomeDialog(
@@ -74,14 +77,14 @@ fun WelcomeDialog(
                 Text(
                     text = stringResource(R.string.welcome),
                     style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MainText,
                     textAlign = TextAlign.Center
                 )
 
                 Text(
                     text = stringResource(R.string.welcome_message),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Black,
                     textAlign = TextAlign.Center
                 )
 
@@ -89,6 +92,8 @@ fun WelcomeDialog(
 
                 NormalButton(
                     text = stringResource(R.string.explore),
+                    textColor = White,
+                    containerColor = MainText,
                     onClick = {
                         isWelcomeDialogOpen = false
                         onExploreClicked()
