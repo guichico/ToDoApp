@@ -82,15 +82,15 @@ class AddEditTaskViewModel @Inject constructor(
         savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
             .filterNotNull()
             .map { editingTask.value.copy(group = it) }
-            .flowOn(Dispatchers.IO)
             .onEach(editingTask::emit)
+            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
 
         savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
             .filterNotNull()
             .map { editingTask.value.copy(group = it) }
-            .flowOn(Dispatchers.IO)
             .onEach(editingTask::emit)
+            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
 
         savedStateHandle.getStateFlow<Location?>(LOCATION_ARG, null)
@@ -103,16 +103,16 @@ class AddEditTaskViewModel @Inject constructor(
 
                 editingTask.value.copy(location = location)
             }
-            .flowOn(Dispatchers.IO)
             .onEach(editingTask::emit)
+            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
 
         savedStateHandle.getLiveData<Boolean>(REMOVE_LOCATION_ARG, false).asFlow()
             .filterNotNull()
             .ifTrue()
             .map { editingTask.value.copy(location = null) }
-            .flowOn(Dispatchers.IO)
             .onEach(editingTask::emit)
+            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
     }
 

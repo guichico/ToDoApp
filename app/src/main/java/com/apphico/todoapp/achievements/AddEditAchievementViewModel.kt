@@ -62,15 +62,14 @@ class AddEditAchievementViewModel @Inject constructor(
         savedStateHandle.getStateFlow<Group?>(GROUP_ARG, null)
             .filterNotNull()
             .map { editingAchievement.value.copy(group = it) }
-            .flowOn(Dispatchers.IO)
             .onEach(editingAchievement::emit)
+            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
 
         combine(
             savedStateHandle.getStateFlow<Int?>(MEASUREMENT_TYPE_ARG, null).filterNotNull(),
             savedStateHandle.getStateFlow<Operation?>(OPERATION_ARG, null).filterNotNull()
         )
-            .flowOn(Dispatchers.IO)
             .map { (measurementType, operation) ->
                 var progressList = when (measurementType) {
                     MeasurementType.Percentage().intValue -> editingPercentageProgress.value.progress
@@ -101,6 +100,7 @@ class AddEditAchievementViewModel @Inject constructor(
                     }
                 }
             }
+            .flowOn(Dispatchers.IO)
             .launchIn(viewModelScope)
     }
 
@@ -213,7 +213,7 @@ class AddEditAchievementViewModel @Inject constructor(
     }
 
     fun delete(onResult: (Boolean) -> Unit) {
-        var achievement = editingAchievement.value
+        val achievement = editingAchievement.value
 
         viewModelScope.launch {
             onResult(achievementRepository.deleteAchievement(achievement))
