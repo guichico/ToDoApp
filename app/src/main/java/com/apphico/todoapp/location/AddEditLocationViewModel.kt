@@ -13,7 +13,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -21,7 +20,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.reflect.typeOf
 
@@ -88,12 +86,13 @@ class AddEditLocationViewModel @Inject constructor(
         }
     }
 
-    fun searchLocation(text: String?) = viewModelScope.launch {
+    fun searchLocation(text: String?) {
         if (!text.isNullOrEmpty()) {
             locationRepository.getFromName(context, text)
                 .filterNotNull()
+                .onEach(editingLocation::emit)
                 .flowOn(Dispatchers.IO)
-                .collectLatest(editingLocation::emit)
+                .launchIn(viewModelScope)
         }
     }
 }
