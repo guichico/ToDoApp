@@ -350,11 +350,11 @@ private fun MeasurementTypeFields(
     Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
 
     // Banner ad view
-    LocalActivity.current?.let {
+    LocalActivity.current?.let { activity ->
         var adView by remember { mutableStateOf<AdView?>(null) }
 
         if (adView == null) {
-            adView = ToDoAppBannerAd(it).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
+            adView = ToDoAppBannerAd(activity).getAdaptiveAdView(LocalConfiguration.current.screenWidthDp)
         }
 
         adView?.let {
@@ -549,12 +549,14 @@ private fun MeasurementTypeValue(
 
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
 
-        UnitDialog(
-            measurementUnit = measurementUnit,
-            onUnitChanged = onUnitChanged
-        )
+        if ((valueProgress.value?.getProgress() ?: 0f) <= 0f) {
+            UnitDialog(
+                measurementUnit = measurementUnit,
+                onUnitChanged = onUnitChanged
+            )
 
-        Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+            Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.large))
+        }
 
         StartingValueField(
             measurementUnit = measurementUnit,
