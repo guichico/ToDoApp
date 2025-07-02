@@ -16,8 +16,8 @@ class CheckListRepositoryImpl(
     private val checkListItemDoneDao: CheckListItemDoneDao
 ) : CheckListRepository {
 
-    override suspend fun changeCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean): Boolean {
-        return try {
+    override suspend fun changeCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean): Boolean =
+        try {
             if (isDone) {
                 checkListItemDoneDao.insert(
                     CheckListItemDoneDB(checkListItemDoneId = checkListItem.id, doneDate = getNowDate(), parentDate = parentDate)
@@ -26,10 +26,9 @@ class CheckListRepositoryImpl(
                 checkListItemDoneDao.delete(checkListItem.id, parentDate)
             }
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 }

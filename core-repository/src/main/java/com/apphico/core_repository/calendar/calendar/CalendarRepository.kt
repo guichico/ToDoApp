@@ -11,7 +11,9 @@ import com.apphico.core_repository.calendar.room.entities.toTask
 import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.extensions.getInt
 import com.apphico.extensions.getNowDate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -38,9 +40,10 @@ class CalendarRepositoryImpl(
             nullableGroupIdsFlag = groups.isEmpty(),
             groupIds = groups.map { it.id }
         )
+            .flowOn(Dispatchers.IO)
             .map {
-                it.map {
-                    val task = it.toTask()
+                it.map { taskWithRelations ->
+                    val task = taskWithRelations.toTask()
                     task.startDate?.let {
                         task.copy(startDate = date)
                     } ?: task
@@ -48,6 +51,7 @@ class CalendarRepositoryImpl(
                     // Use it to keep same sort of getAll
                     .sortByStartDate()
             }
+            .flowOn(Dispatchers.Default)
 
     override fun getAll(fromStartDate: LocalDate, status: Status, groups: List<Group>): Flow<List<Task>> =
         taskDao.getAllTasks(
@@ -55,7 +59,8 @@ class CalendarRepositoryImpl(
             nullableGroupIdsFlag = groups.isEmpty(),
             groupIds = groups.map { it.id }
         )
-            .map { it.map { it.toTask() } }
+            .flowOn(Dispatchers.IO)
+            .map { it.map { taskWithRelations -> taskWithRelations.toTask() } }
             .map { tasks ->
                 mutableListOf<Task>()
                     .apply {
@@ -68,21 +73,21 @@ class CalendarRepositoryImpl(
                     }
                     .sortByStartDate()
             }
+            .flowOn(Dispatchers.Default)
 
-    override suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean {
-        return try {
+    override suspend fun changeTaskDone(task: Task, isDone: Boolean): Boolean =
+        try {
             if (isDone) {
                 taskDoneDao.insert(TaskDoneDB(taskDoneId = task.id, doneDate = getNowDate(), taskDate = task.startDate))
             } else {
                 taskDoneDao.delete(task.id, task.startDate)
             }
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(TaskRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
     private fun List<Task>.filterTasks(status: Status): List<Task> =
         this.filter { task ->
@@ -127,8 +132,8 @@ class CalendarRepositoryImpl(
 
             beginShowDate.datesUntil(endDate)
                 .filter {
-                    val allDays = DayOfWeek.entries.map { it.getInt() }
-                    val taskDaysOfWeek = if (this.daysOfWeek.isEmpty()) allDays else this.daysOfWeek
+                    val allDays = DayOfWeek.entries.map { daysOfWeek -> daysOfWeek.getInt() }
+                    val taskDaysOfWeek = this.daysOfWeek.ifEmpty { allDays }
 
                     it.dayOfWeek.getInt() in taskDaysOfWeek
                 }

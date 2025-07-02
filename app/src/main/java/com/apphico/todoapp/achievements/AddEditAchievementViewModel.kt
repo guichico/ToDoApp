@@ -70,6 +70,7 @@ class AddEditAchievementViewModel @Inject constructor(
             savedStateHandle.getStateFlow<Int?>(MEASUREMENT_TYPE_ARG, null).filterNotNull(),
             savedStateHandle.getStateFlow<Operation?>(OPERATION_ARG, null).filterNotNull()
         )
+            .flowOn(Dispatchers.IO)
             .map { (measurementType, operation) ->
                 var progressList = when (measurementType) {
                     MeasurementType.Percentage().intValue -> editingPercentageProgress.value.progress
@@ -85,6 +86,7 @@ class AddEditAchievementViewModel @Inject constructor(
 
                 measurementType to progressList
             }
+            .flowOn(Dispatchers.Default)
             .onEach { (measurementType, progressList) ->
                 when (measurementType) {
                     MeasurementType.Percentage().intValue -> {

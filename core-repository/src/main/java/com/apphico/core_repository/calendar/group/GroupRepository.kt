@@ -21,38 +21,35 @@ class GroupRepositoryImpl(
 
     override fun getGroups(): Flow<List<Group>> =
         groupDao.getAll()
-            .map { it.map { it.toGroup() } }
+            .map { it.map { groupDB -> groupDB.toGroup() } }
 
-    override suspend fun insertGroup(group: Group): Boolean {
-        return try {
+    override suspend fun insertGroup(group: Group): Boolean =
+        try {
             groupDao.insert(group.toGroupDB())
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(GroupRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
-    override suspend fun updateGroup(group: Group): Boolean {
-        return try {
+    override suspend fun updateGroup(group: Group): Boolean =
+        try {
             groupDao.update(group.toGroupDB())
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(GroupRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
-    override suspend fun deleteGroup(group: Group): Boolean {
-        return try {
+    override suspend fun deleteGroup(group: Group): Boolean =
+        try {
             groupDao.delete(group.toGroupDB())
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(GroupRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 }

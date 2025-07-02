@@ -16,7 +16,9 @@ import com.apphico.core_repository.calendar.room.entities.toAchievementDB
 import com.apphico.core_repository.calendar.room.entities.toCheckListItemDB
 import com.apphico.core_repository.calendar.room.entities.toProgressDB
 import com.apphico.extensions.getNowDate
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
 interface AchievementRepository {
@@ -43,21 +45,22 @@ class AchievementRepositoryImpl(
             nullableGroupIdsFlag = groups.isEmpty(),
             groupIds = groups.map { it.id }
         )
-            .map { it.map { it.toAchievement() }.filterStatus(status) }
+            .flowOn(Dispatchers.IO)
+            .map { it.map { achievementRelations -> achievementRelations.toAchievement() }.filterStatus(status) }
+            .flowOn(Dispatchers.Default)
 
-    override suspend fun setDone(achievement: Achievement): Boolean {
-        return try {
+    override suspend fun setDone(achievement: Achievement): Boolean =
+        try {
             achievementDao.update(achievement.copy(doneDate = getNowDate()).toAchievementDB())
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(AchievementRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
-    override suspend fun insertAchievement(achievement: Achievement): Boolean {
-        return try {
+    override suspend fun insertAchievement(achievement: Achievement): Boolean =
+        try {
             appDatabase.withTransaction {
                 val doneDate = if (achievement.isDone()) achievement.getDoneDate() ?: getNowDate() else null
                 val achievementId = achievementDao.insert(achievement.copy(doneDate = doneDate).toAchievementDB())
@@ -84,12 +87,11 @@ class AchievementRepositoryImpl(
                 progressDao.insertAll(progress.map { it.toProgressDB(achievementId) })
             }
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(AchievementRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
     override suspend fun copyAchievement(achievement: Achievement): Boolean {
         val copiedAchievement = achievement.copy(
@@ -117,8 +119,8 @@ class AchievementRepositoryImpl(
         return insertAchievement(copiedAchievement)
     }
 
-    override suspend fun updateAchievement(achievement: Achievement): Boolean {
-        return try {
+    override suspend fun updateAchievement(achievement: Achievement): Boolean =
+        try {
             appDatabase.withTransaction {
                 val doneDate = if (achievement.isDone()) achievement.getDoneDate() ?: getNowDate() else null
                 achievementDao.update(achievement.copy(doneDate = doneDate).toAchievementDB())
@@ -153,23 +155,21 @@ class AchievementRepositoryImpl(
                     .updateAll(progress.filter { it.id != 0L }.map { it.toProgressDB(achievementId = achievement.id) })
             }
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(AchievementRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
-    override suspend fun deleteAchievement(achievement: Achievement): Boolean {
-        return try {
+    override suspend fun deleteAchievement(achievement: Achievement): Boolean =
+        try {
             achievementDao.delete(achievement.toAchievementDB())
 
-            return true
+            true
         } catch (ex: Exception) {
             Log.d(AchievementRepository::class.simpleName, ex.stackTrace.toString())
-            return false
+            false
         }
-    }
 
     private fun List<Achievement>.filterStatus(status: Status) =
         this.filter {
