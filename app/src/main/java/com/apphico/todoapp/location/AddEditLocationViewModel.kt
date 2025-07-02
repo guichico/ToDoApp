@@ -11,9 +11,11 @@ import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -23,6 +25,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.reflect.typeOf
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AddEditLocationViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
@@ -45,22 +48,23 @@ class AddEditLocationViewModel @Inject constructor(
     val isLoadingDefaultLocation = MutableStateFlow(true)
 
     init {
-        viewModelScope.launch {
-            savedStateHandle.getStateFlow<Coordinates?>(COORDINATES_ARG, null)
-                .mapNotNull { it }
-                .collectLatest { coordinates ->
-                    searchFromCoordinates(coordinates)
-                }
-        }
+        savedStateHandle.getStateFlow<Coordinates?>(COORDINATES_ARG, null)
+            .mapNotNull { it }
+            .flatMapLatest { coordinates ->
+                locationRepository.getFromCoordinates(context, coordinates)
+            }
+            .onEach(editingLocation::emit)
+            .flowOn(Dispatchers.IO)
+            .launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            editingLocation
-                .map { it?.address }
-                .collectLatest { address ->
-                    if (address?.isNotEmpty() == true) isLoadingDefaultLocation.emit(false)
-                    editingAddress.emit(address)
-                }
-        }
+        editingLocation
+            .map { it?.address }
+            .onEach { address ->
+                if (address?.isNotEmpty() == true) isLoadingDefaultLocation.emit(false)
+                editingAddress.emit(address)
+            }
+            .flowOn(Dispatchers.Default)
+            .launchIn(viewModelScope)
     }
 
     fun onAddressTextChanged(text: String) {
@@ -70,25 +74,19 @@ class AddEditLocationViewModel @Inject constructor(
     fun setDefaultLocation() {
         if (editingLocation.value == null) {
             locationRepository.getLastKnownLocation(context)
-                .flowOn(Dispatchers.IO)
                 .onEach(editingLocation::emit)
+                .flowOn(Dispatchers.IO)
                 .launchIn(viewModelScope)
 
             locationRepository.getMyLocationFullAddress(context)
-                .flowOn(Dispatchers.IO)
                 .onEach { location ->
                     editingLocation.emit(location)
                     isLoadingDefaultLocation.emit(false)
                 }
+                .flowOn(Dispatchers.IO)
                 .launchIn(viewModelScope)
         }
     }
-
-    fun searchFromCoordinates(coordinates: Coordinates) =
-        locationRepository.getFromCoordinates(context, coordinates)
-            .flowOn(Dispatchers.IO)
-            .onEach(editingLocation::emit)
-            .launchIn(viewModelScope)
 
     fun searchLocation(text: String?) = viewModelScope.launch {
         if (!text.isNullOrEmpty()) {
