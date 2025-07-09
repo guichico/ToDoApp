@@ -4,6 +4,7 @@ appcompat = "1.7.1"
 compose = "2.7.0"
 coreSplashscreen = "1.0.1"
 desugar_jdk_libs = "2.1.5"
+detektCli = "1.23.8"
 firebaseBom = "33.16.0"
 firebaseCrashlyticsPlugin = "3.0.4"
 firebaseCrashlytics = "19.4.4"
@@ -38,6 +39,7 @@ secretsGradlePlugin = "2.0.1"
 uiTestManifest = "1.8.3"
 datastore = "1.1.7"
 coroutines-test = "1.10.2"
+detekt = "1.23.8"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -58,6 +60,7 @@ androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "ro
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 compose = { module = "com.kizitonwose.calendar:compose", version.ref = "compose" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
+detekt-cli = { module = "io.gitlab.arturbosch.detekt:detekt-cli", version.ref = "detektCli" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "firebaseCrashlytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
@@ -103,4 +106,4 @@ google-services = { id = "com.google.gms.google-services", version.ref = "google
 firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsPlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 secrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin" }
-
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }

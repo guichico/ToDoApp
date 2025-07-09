@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 interface FocusRepository {
-
     fun getRoutines(): Flow<List<FocusMode>>
 }
 

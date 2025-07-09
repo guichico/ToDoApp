@@ -19,7 +19,7 @@ class ToDoAppBootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action == "android.intent.action.BOOT_COMPLETED") {
             CoroutineScope(Dispatchers.IO).launch {
-                taskRepository.setAlarmsAfterReboot()
+                taskRepository.setTasksAlarmAfterReboot()
             }
         }
     }

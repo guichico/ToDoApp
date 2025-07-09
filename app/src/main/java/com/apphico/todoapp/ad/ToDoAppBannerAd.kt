@@ -20,6 +20,7 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
 
+private const val AD_WIDTH = 360
 
 @Composable
 fun BannerAdView(
@@ -64,7 +65,7 @@ class ToDoAppBannerAd(val activity: Activity) : AdListener() {
         getAdView(
             AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                 activity,
-                360
+                AD_WIDTH
             )
         )
 

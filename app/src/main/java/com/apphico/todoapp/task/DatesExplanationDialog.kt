@@ -57,7 +57,10 @@ fun DatesExplanationDialog(
                 ) {
                     Text(
                         text = stringResource(R.string.dates_explanation_1),
-                        style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp, fontWeight = FontWeight.Bold),
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
@@ -77,21 +80,33 @@ fun DatesExplanationDialog(
                     )
 
                     val annotatedString = buildAnnotatedString {
-                        withStyle(style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold).toSpanStyle()) {
+                        withStyle(
+                            style =
+                                MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                                    .toSpanStyle()
+                        ) {
                             append(stringResource(R.string.dates_explanation_4))
                             append(" ")
                         }
                         withStyle(style = MaterialTheme.typography.bodyMedium.toSpanStyle()) {
                             append(stringResource(R.string.dates_explanation_5))
                         }
-                        withStyle(style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold).toSpanStyle()) {
+                        withStyle(
+                            style =
+                                MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                                    .toSpanStyle()
+                        ) {
                             append(stringResource(R.string.dates_explanation_6))
                             append(" ")
                         }
                         withStyle(style = MaterialTheme.typography.bodyMedium.toSpanStyle()) {
                             append(stringResource(R.string.dates_explanation_7))
                         }
-                        withStyle(style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold).toSpanStyle()) {
+                        withStyle(
+                            style =
+                                MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                                    .toSpanStyle()
+                        ) {
                             append(stringResource(R.string.dates_explanation_8))
                             append(" ")
                         }

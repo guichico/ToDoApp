@@ -35,7 +35,11 @@ data class AddEditProgressRoute(val addEditProgressParameters: AddEditProgressPa
 
 @Parcelize
 @Serializable
-data class AddEditProgressParameters(val measurementType: Int, val measurementUnit: MeasurementValueUnit?, val progress: Progress?) : Parcelable
+data class AddEditProgressParameters(
+    val measurementType: Int,
+    val measurementUnit: MeasurementValueUnit?,
+    val progress: Progress?
+) : Parcelable
 
 fun NavController.navigateToAddEditProgress(measurementType: Int, measurementUnit: MeasurementValueUnit?, progress: Progress?) =
     navigate(AddEditProgressRoute(AddEditProgressParameters(measurementType, measurementUnit, progress)))

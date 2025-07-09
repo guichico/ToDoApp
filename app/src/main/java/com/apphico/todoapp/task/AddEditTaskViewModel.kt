@@ -37,7 +37,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import javax.inject.Inject
 import kotlin.reflect.typeOf
@@ -51,7 +50,9 @@ class AddEditTaskViewModel @Inject constructor(
 ) : SavedStateHandleViewModel(savedStateHandle) {
 
     private val addEditTaskParameters = savedStateHandle.toRoute<AddEditTaskRoute>(
-        typeMap = mapOf(typeOf<AddEditTaskParameters>() to CustomNavType(AddEditTaskParameters::class.java, AddEditTaskParameters.serializer()))
+        typeMap = mapOf(
+            typeOf<AddEditTaskParameters>() to CustomNavType(AddEditTaskParameters::class.java, AddEditTaskParameters.serializer())
+        )
     ).addEditTaskParameters
 
     private var task = addEditTaskParameters.task
@@ -116,7 +117,8 @@ class AddEditTaskViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun setWasDatesExplanationClosed() = viewModelScope.launch { appSettingsDataStore.setWasDatesExplanationClosed(true) }
+    fun setWasDatesExplanationClosed() =
+        viewModelScope.launch { appSettingsDataStore.setWasDatesExplanationClosed(true) }
 
     fun canSaveAll(): Boolean {
         val editingTask = editingTask.value
@@ -195,18 +197,19 @@ class AddEditTaskViewModel @Inject constructor(
         editingCheckList.value = editingCheckList.value.remove(checkListItem)
     }
 
-    fun setCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean) = viewModelScope.launch {
-        if (checkListRepository.changeCheckListItemDone(checkListItem, parentDate, isDone)) {
-            val newDoneDates = if (isDone) {
-                checkListItem.doneDates + "${if (checkListItem.doneDates.isNullOrEmpty()) "" else ", "}, $parentDate"
-            } else {
-                checkListItem.doneDates?.replace(parentDate.toString(), "")
-            }
-            val newItem = checkListItem.copy(hasDone = isDone, doneDates = newDoneDates)
+    fun setCheckListItemDone(checkListItem: CheckListItem, parentDate: LocalDate?, isDone: Boolean) =
+        viewModelScope.launch {
+            if (checkListRepository.changeCheckListItemDone(checkListItem, parentDate, isDone)) {
+                val newDoneDates = if (isDone) {
+                    checkListItem.doneDates + "${if (checkListItem.doneDates.isNullOrEmpty()) "" else ", "}, $parentDate"
+                } else {
+                    checkListItem.doneDates?.replace(parentDate.toString(), "")
+                }
+                val newItem = checkListItem.copy(hasDone = isDone, doneDates = newDoneDates)
 
-            editingCheckList.value = editingCheckList.value.update(checkListItem, newItem)
+                editingCheckList.value = editingCheckList.value.update(checkListItem, newItem)
+            }
         }
-    }
 
     fun onReminderChanged(reminder: Reminder?) {
         editingTask.value = editingTask.value.copy(reminder = reminder)
@@ -247,17 +250,20 @@ class AddEditTaskViewModel @Inject constructor(
         if (task.daysOfWeek.isNotEmpty() && task.startDate == null) {
             hasError = true
             startDateError.value = R.string.day_of_week_should_have_start_date
-            return
         }
 
-        if ((task.startDate != null && task.startTime != null && task.endDate != null && task.endTime != null
-                    && LocalDateTime.of(task.startDate, task.startTime) > LocalDateTime.of(task.endDate, task.endTime))
-            || (task.startDate != null && task.endDate != null && task.startDate!! > task.endDate)
-            || (task.startTime != null && task.endTime != null && task.startTime!! > task.endTime)
+        val hasDates = task.startDate != null && task.endDate != null
+        val hasTimes = task.startTime != null && task.endTime != null
+        val hasAllDatesAndTimes = hasDates && hasTimes
+
+        val isStartDateTimeAfterEndDateTime = task.getStartDateTime()?.isAfter(task.getEndDateTime())
+        val isStartDateAfterEndDate = task.startDate!! > task.endDate
+
+        if ((hasAllDatesAndTimes && isStartDateTimeAfterEndDateTime == true)
+            || (hasDates && isStartDateAfterEndDate)
         ) {
             hasError = true
             startDateError.value = R.string.start_date_after_end_date_error_message
-            return
         }
 
         if (!hasError) {

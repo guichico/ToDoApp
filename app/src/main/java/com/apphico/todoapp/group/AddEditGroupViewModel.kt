@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.apphico.core_model.Group
+import com.apphico.core_model.Progress
 import com.apphico.core_repository.calendar.group.GroupRepository
 import com.apphico.todoapp.navigation.CustomNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +35,14 @@ class AddEditGroupViewModel @Inject constructor(
     val isEditing = group != null
 
     fun hasChanges(): Boolean {
-        return false
+        val group = group ?: Group()
+        val editingGroup = editingGroup.value
+
+        return when {
+            editingGroup.name != group.name -> true
+            editingGroup.color != group.color -> true
+            else -> false
+        }
     }
 
     fun onNameChanged(name: String) {

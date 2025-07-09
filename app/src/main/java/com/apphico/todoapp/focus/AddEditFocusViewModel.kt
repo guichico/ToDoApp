@@ -4,7 +4,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.navigation.toRoute
 import com.apphico.core_model.FocusMode
-import com.apphico.core_repository.calendar.focus.FocusRepository
 import com.apphico.todoapp.navigation.CustomNavType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,12 +12,16 @@ import kotlin.reflect.typeOf
 
 @HiltViewModel
 class AddEditFocusViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val focusRepository: FocusRepository
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val focusMode = savedStateHandle.toRoute<AddEditFocusRoute>(
-        typeMap = mapOf(typeOf<AddEditFocusParameters>() to CustomNavType(AddEditFocusParameters::class.java, AddEditFocusParameters.serializer()))
+        typeMap = mapOf(
+            typeOf<AddEditFocusParameters>() to CustomNavType(
+                AddEditFocusParameters::class.java,
+                AddEditFocusParameters.serializer()
+            )
+        )
     ).addEditFocusParameters.focusMode
 
     val editingFocus = MutableStateFlow(focusMode ?: FocusMode())

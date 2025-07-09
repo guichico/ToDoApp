@@ -28,9 +28,8 @@ interface TaskRepository {
     suspend fun copyTask(task: Task, taskName: String = task.name): Boolean
     suspend fun updateTask(task: Task, recurringTask: RecurringTask, initialTaskStartDate: LocalDate?): Boolean
     suspend fun deleteTask(task: Task, recurringTask: RecurringTask): Boolean
-    suspend fun setAlarm(taskId: Long): Long?
-    suspend fun setNextAlarm(taskId: Long): Long?
-    suspend fun setAlarmsAfterReboot()
+    suspend fun updateTaskNextAlarm(taskId: Long): Long?
+    suspend fun setTasksAlarmAfterReboot()
 }
 
 class TaskRepositoryImpl(
@@ -146,11 +145,11 @@ class TaskRepositoryImpl(
             false
         }
 
-    override suspend fun setAlarm(taskId: Long): Long? = setAlarm(0, taskId)
+    private suspend fun setAlarm(taskId: Long): Long? = setAlarm(0, taskId)
 
-    override suspend fun setNextAlarm(taskId: Long): Long? = setAlarm(1, taskId)
+    override suspend fun updateTaskNextAlarm(taskId: Long): Long? = setAlarm(1, taskId)
 
-    override suspend fun setAlarmsAfterReboot() =
+    override suspend fun setTasksAlarmAfterReboot() =
         taskDao.getIdsWithReminders()
             .forEach { taskId ->
                 setAlarm(taskId)
@@ -200,9 +199,9 @@ class TaskRepositoryImpl(
         if (task.isRepeatable()) {
             var nextAlarmDate: LocalDate? = null
 
-            val startDate = with(LocalDateTime.of(task.startDate, task.startTime)) {
+            val startDate = with(task.getStartDateTime()) {
                 task.reminderDateTime(
-                    (getNowDateTime().takeIf { it.isAfter(this) } ?: this).toLocalDate()
+                    (getNowDateTime().takeIf { it.isAfter(this) } ?: this)?.toLocalDate()
                 ) ?: getNowDateTime()
             }
 

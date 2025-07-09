@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.android.hilt)
@@ -9,6 +11,7 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
     alias(libs.plugins.ksp)
     alias(libs.plugins.secrets)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -75,6 +78,21 @@ secrets {
     propertiesFileName = "secrets.properties"
 }
 
+detekt {
+    toolVersion = libs.versions.detekt.toString()
+    config.setFrom(file("../config/detekt/detekt.yml"))
+    buildUponDefaultConfig = true
+}
+
+tasks.withType<Detekt>().configureEach {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        sarif.required.set(true)
+        md.required.set(true)
+    }
+}
+
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
@@ -82,6 +100,8 @@ dependencies {
     implementation(project(":core-extensions"))
     implementation(project(":core-model"))
     implementation(project(":core-repository"))
+
+    detekt (libs.detekt.cli)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

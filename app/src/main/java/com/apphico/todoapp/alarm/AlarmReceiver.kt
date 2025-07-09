@@ -56,7 +56,7 @@ class AlarmReceiver : BroadcastReceiver() {
                     if (task.reminder?.soundAlarm == true) mediaPlayerHelper.start()
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        taskRepository.setNextAlarm(task.id)
+                        taskRepository.updateTaskNextAlarm(task.id)
                     }
                 }
             }
@@ -75,7 +75,7 @@ class AlarmReceiver : BroadcastReceiver() {
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun Context.createNotification(task: Task) {
-        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         notificationManager.createNotificationChannel(
             NotificationChannel(ALARM_CHANNEL_ID, ALARM_CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
