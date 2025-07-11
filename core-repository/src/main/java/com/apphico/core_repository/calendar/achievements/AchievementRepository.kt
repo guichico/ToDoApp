@@ -7,6 +7,7 @@ import com.apphico.core_model.Group
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.Progress
 import com.apphico.core_model.Status
+import com.apphico.core_model.filterStatus
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.AchievementDao
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
@@ -169,14 +170,5 @@ class AchievementRepositoryImpl(
         } catch (ex: Exception) {
             Log.d(AchievementRepository::class.simpleName, ex.stackTrace.toString())
             false
-        }
-
-    private fun List<Achievement>.filterStatus(status: Status) =
-        this.filter {
-            when (status) {
-                Status.DONE -> it.isDone()
-                Status.UNDONE -> !it.isDone()
-                else -> true
-            }
         }
 }

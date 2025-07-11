@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.room.withTransaction
 import com.apphico.core_model.RecurringTask
 import com.apphico.core_model.Task
+import com.apphico.core_model.checkDaysOfWeek
 import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.core_repository.calendar.room.AppDatabase
 import com.apphico.core_repository.calendar.room.dao.CheckListItemDao
@@ -18,7 +19,6 @@ import com.apphico.core_repository.calendar.room.entities.toTaskDB
 import com.apphico.extensions.getInt
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowDateTime
-import com.apphico.extensions.isAfterRightNotNull
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -154,16 +154,6 @@ class TaskRepositoryImpl(
             .forEach { taskId ->
                 setAlarm(taskId)
             }
-
-    private fun Task.checkDaysOfWeek(): Task {
-        if (this.daysOfWeek.isEmpty() &&
-            ((this.endDate == null && this.startDate != null) || (this.endDate != null && this.endDate.isAfterRightNotNull(this.startDate)))
-        ) {
-            return this.copy(daysOfWeek = listOf(1, 2, 3, 4, 5, 6, 7))
-        }
-
-        return this
-    }
 
     private suspend fun Task.updateTask() {
         appDatabase.withTransaction {

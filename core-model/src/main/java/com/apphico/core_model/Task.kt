@@ -79,6 +79,16 @@ data class Task(
     }
 }
 
+fun Task.checkDaysOfWeek(): Task {
+    if (this.daysOfWeek.isEmpty() &&
+        ((this.endDate == null && this.startDate != null) || (this.endDate != null && this.endDate.isAfterRightNotNull(this.startDate)))
+    ) {
+        return this.copy(daysOfWeek = listOf(1, 2, 3, 4, 5, 6, 7))
+    }
+
+    return this
+}
+
 fun List<Task>.sortByStartDate() =
     this.sortedWith(
         compareBy<Task> { task ->

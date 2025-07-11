@@ -129,3 +129,12 @@ data class Achievement(
         doneDate
     }
 }
+
+fun List<Achievement>.filterStatus(status: Status) =
+    this.filter {
+        when (status) {
+            Status.DONE -> it.isDone()
+            Status.UNDONE -> !it.isDone()
+            else -> true
+        }
+    }
