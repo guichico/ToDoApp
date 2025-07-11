@@ -18,23 +18,26 @@ import kotlinx.coroutines.flow.flowOf
 
 interface LocationRepository {
 
-    fun getLastKnownLocation(context: Context): Flow<Location?>
+    fun getLastKnownLocation(): Flow<Location?>
 
-    fun getMyLocationCoordinates(context: Context): Flow<Location?>
+    fun getMyLocationCoordinates(): Flow<Location?>
 
-    fun getMyLocationFullAddress(context: Context): Flow<Location?>
+    fun getMyLocationFullAddress(): Flow<Location?>
 
-    fun getFromCoordinates(context: Context, coordinates: Coordinates): Flow<Location?>
+    fun getFromCoordinates(coordinates: Coordinates): Flow<Location?>
 
-    fun getFromName(context: Context, name: String): Flow<Location?>
+    fun getFromName(name: String): Flow<Location?>
 }
 
-class LocationRepositoryImpl : LocationRepository {
+class LocationRepositoryImpl(val context: Context) : LocationRepository {
+
+    private val fusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(context) }
+    private val geocoder by lazy { Geocoder(context) }
 
     @SuppressLint("MissingPermission")
-    override fun getLastKnownLocation(context: Context): Flow<Location?> =
+    override fun getLastKnownLocation(): Flow<Location?> =
         callbackFlow {
-            LocationServices.getFusedLocationProviderClient(context)
+            fusedLocationProviderClient
                 .lastLocation
                 .addOnSuccessListener { location ->
                     trySend(
@@ -45,16 +48,17 @@ class LocationRepositoryImpl : LocationRepository {
                             )
                         }
                     )
-                }.addOnCanceledListener { trySend(null) }
+                }
+                .addOnCanceledListener { trySend(null) }
                 .addOnFailureListener { trySend(null) }
 
             awaitClose()
         }
 
     @SuppressLint("MissingPermission")
-    override fun getMyLocationCoordinates(context: Context): Flow<Location?> =
+    override fun getMyLocationCoordinates(): Flow<Location?> =
         callbackFlow {
-            LocationServices.getFusedLocationProviderClient(context)
+            fusedLocationProviderClient
                 .getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
                 .addOnSuccessListener { location ->
                     trySend(
@@ -73,26 +77,21 @@ class LocationRepositoryImpl : LocationRepository {
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getMyLocationFullAddress(context: Context): Flow<Location?> =
-        getMyLocationCoordinates(context)
+    override fun getMyLocationFullAddress(): Flow<Location?> =
+        getMyLocationCoordinates()
             .flatMapLatest {
-                it?.let { getFromCoordinates(context, it.coordinates) } ?: flowOf(null)
+                it?.let { getFromCoordinates(it.coordinates) } ?: flowOf(null)
             }
 
     @Suppress("DEPRECATION")
-    override fun getFromCoordinates(
-        context: Context,
-        coordinates: Coordinates
-    ): Flow<Location?> =
+    override fun getFromCoordinates(coordinates: Coordinates): Flow<Location?> =
         callbackFlow {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Geocoder(context)
-                    .getFromLocation(coordinates.first, coordinates.second, 1) {
-                        trySend(it.firstOrNull()?.toLocation())
-                    }
+                geocoder.getFromLocation(coordinates.first, coordinates.second, 1) {
+                    trySend(it.firstOrNull()?.toLocation())
+                }
             } else {
-                val address = Geocoder(context)
-                    .getFromLocation(coordinates.first, coordinates.second, 1)
+                val address = geocoder.getFromLocation(coordinates.first, coordinates.second, 1)
                     ?.firstOrNull()
 
                 trySend(address?.toLocation())
@@ -102,19 +101,14 @@ class LocationRepositoryImpl : LocationRepository {
         }
 
     @Suppress("DEPRECATION")
-    override fun getFromName(
-        context: Context,
-        name: String
-    ): Flow<Location?> =
+    override fun getFromName(name: String): Flow<Location?> =
         callbackFlow {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                Geocoder(context)
-                    .getFromLocationName(name, 1) {
-                        trySend(it.firstOrNull()?.toLocation())
-                    }
+                geocoder.getFromLocationName(name, 1) {
+                    trySend(it.firstOrNull()?.toLocation())
+                }
             } else {
-                val address = Geocoder(context)
-                    .getFromLocationName(name, 1)
+                val address = geocoder.getFromLocationName(name, 1)
                     ?.firstOrNull()
 
                 trySend(address?.toLocation())

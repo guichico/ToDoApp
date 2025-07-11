@@ -1,6 +1,5 @@
 package com.apphico.todoapp.location
 
-import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
@@ -9,7 +8,6 @@ import com.apphico.core_repository.calendar.location.LocationRepository
 import com.apphico.todoapp.navigation.CustomNavType
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,7 +24,6 @@ import kotlin.reflect.typeOf
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class AddEditLocationViewModel @Inject constructor(
-    @param:ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
     private val locationRepository: LocationRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
@@ -49,7 +46,7 @@ class AddEditLocationViewModel @Inject constructor(
         savedStateHandle.getStateFlow<Coordinates?>(COORDINATES_ARG, null)
             .mapNotNull { it }
             .flatMapLatest { coordinates ->
-                locationRepository.getFromCoordinates(context, coordinates)
+                locationRepository.getFromCoordinates(coordinates)
             }
             .onEach(editingLocation::emit)
             .flowOn(Dispatchers.IO)
@@ -71,12 +68,12 @@ class AddEditLocationViewModel @Inject constructor(
 
     fun setDefaultLocation() {
         if (editingLocation.value == null) {
-            locationRepository.getLastKnownLocation(context)
+            locationRepository.getLastKnownLocation()
                 .onEach(editingLocation::emit)
                 .flowOn(Dispatchers.IO)
                 .launchIn(viewModelScope)
 
-            locationRepository.getMyLocationFullAddress(context)
+            locationRepository.getMyLocationFullAddress()
                 .onEach { location ->
                     editingLocation.emit(location)
                     isLoadingDefaultLocation.emit(false)
@@ -88,7 +85,7 @@ class AddEditLocationViewModel @Inject constructor(
 
     fun searchLocation(text: String?) {
         if (!text.isNullOrEmpty()) {
-            locationRepository.getFromName(context, text)
+            locationRepository.getFromName(text)
                 .filterNotNull()
                 .onEach(editingLocation::emit)
                 .flowOn(Dispatchers.IO)
