@@ -1,9 +1,12 @@
 [versions]
-agp = "8.11.0"
+agp = "8.11.1"
 appcompat = "1.7.1"
 compose = "2.7.0"
 coreSplashscreen = "1.0.1"
+coroutines-test = "1.10.2"
+datastore = "1.1.7"
 desugar_jdk_libs = "2.1.5"
+detekt = "1.23.8"
 detektCli = "1.23.8"
 firebaseBom = "33.16.0"
 firebaseCrashlyticsPlugin = "3.0.4"
@@ -20,6 +23,7 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxSerializationJson = "1.9.0"
+leakcanaryAndroid = "3.0-alpha-8"
 lifecycleRuntimeKtx = "2.9.1"
 activityCompose = "1.10.1"
 composeBom = "2025.06.01"
@@ -37,9 +41,6 @@ playServicesMaps = "19.2.0"
 roomVersion = "2.7.2"
 secretsGradlePlugin = "2.0.1"
 uiTestManifest = "1.8.3"
-datastore = "1.1.7"
-coroutines-test = "1.10.2"
-detekt = "1.23.8"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -75,6 +76,7 @@ androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecyc
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
