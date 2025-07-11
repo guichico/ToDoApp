@@ -256,11 +256,10 @@ class AddEditTaskViewModel @Inject constructor(
         val hasTimes = task.startTime != null && task.endTime != null
         val hasAllDatesAndTimes = hasDates && hasTimes
 
-        val isStartDateTimeAfterEndDateTime = task.getStartDateTime()?.isAfter(task.getEndDateTime())
-        val isStartDateAfterEndDate = task.startDate!! > task.endDate
+        val isStartDateTimeAfterEndDateTime = task.getEndDateTime()?.let { endDateTime -> task.getStartDateTime()?.isAfter(endDateTime) } ?: false
+        val isStartDateAfterEndDate = task.endDate?.let { endDate -> task.startDate?.isAfter(endDate) } ?: false
 
-        if ((hasAllDatesAndTimes && isStartDateTimeAfterEndDateTime == true)
-            || (hasDates && isStartDateAfterEndDate)
+        if ((hasAllDatesAndTimes && isStartDateTimeAfterEndDateTime) || (hasDates && isStartDateAfterEndDate)
         ) {
             hasError = true
             startDateError.value = R.string.start_date_after_end_date_error_message
@@ -285,10 +284,8 @@ class AddEditTaskViewModel @Inject constructor(
         deleteMethod: RecurringTask,
         onResult: (Boolean) -> Unit
     ) {
-        var task = editingTask.value
-
         viewModelScope.launch {
-            onResult(taskRepository.deleteTask(task, deleteMethod))
+            onResult(taskRepository.deleteTask(editingTask.value, deleteMethod))
         }
     }
 

@@ -53,8 +53,8 @@ data class Task(
     fun isDone(): Boolean = doneDates?.contains(startDate.toString()) == true || (startDate == null && hasDone == true)
     fun isDeleted(): Boolean = deletedDates?.contains(startDate.toString()) == true || (startDate == null && hasDeleted == true)
 
-    fun getStartDateTime(): LocalDateTime? = LocalDateTime.of(startDate, startTime).takeIf { this.startDate != null && this.startTime != null }
-    fun getEndDateTime(): LocalDateTime? = LocalDateTime.of(endDate, endTime).takeIf { this.endDate != null && this.endTime != null }
+    fun getStartDateTime(): LocalDateTime? = if (this.startDate != null && this.startTime != null) LocalDateTime.of(startDate, startTime) else null
+    fun getEndDateTime(): LocalDateTime? = if (this.endDate != null && this.endTime != null) LocalDateTime.of(endDate, endTime) else null
 
     fun reminderDateTime(): LocalDateTime? {
         if (this.startDate != null && this.startTime != null && reminder != null) {
