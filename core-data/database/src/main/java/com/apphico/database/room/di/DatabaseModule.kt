@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.apphico.database.room.AppDatabaseInitializer
 import com.apphico.database.room.AppDatabase
+import com.apphico.database.room.AppDatabaseInitializer
 import com.apphico.database.room.dao.AchievementDao
 import com.apphico.database.room.dao.CheckListItemDao
 import com.apphico.database.room.dao.CheckListItemDoneDao

@@ -41,14 +41,8 @@ fun CheckListItemField(
     val textColor = MaterialTheme.colorScheme.secondary
     val animatedColor by animateColorAsState(if (!isCheckListItemDone) textColor else textColor.copy(alpha = 0.5f))
 
-    SmallTextField(
-        modifier = Modifier
-            .fillMaxWidth(),
-        value = checkListItem.name,
-        onValueChange = onNameChanged,
-        textStyle = nameStyle,
-        textColor = animatedColor,
-        leadingIcon = {
+    val leadingIcon = if (checkListItem.id != 0L) {
+        @Composable {
             Row {
                 // TODO Implement list ordering (1.1)
                 /*
@@ -56,7 +50,6 @@ fun CheckListItemField(
                     icon = ToDoAppIcons.icReorder,
                     onClick = {}
                 )
-                if (checkListItem.id != 0L) {
                 */
                 CircleCheckbox(
                     modifier = Modifier
@@ -68,9 +61,18 @@ fun CheckListItemField(
                     },
                     tint = animatedColor
                 )
-                // }
             }
-        },
+        }
+    } else null
+
+    SmallTextField(
+        modifier = Modifier
+            .fillMaxWidth(),
+        value = checkListItem.name,
+        onValueChange = onNameChanged,
+        textStyle = nameStyle,
+        textColor = animatedColor,
+        leadingIcon = leadingIcon,
         trailingIcon = {
             ToDoAppIconButton(
                 icon = ToDoAppIcons.icRemove,

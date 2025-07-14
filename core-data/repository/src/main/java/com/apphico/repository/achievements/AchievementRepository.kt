@@ -21,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlin.collections.map
 
 interface AchievementRepository {
     fun getAll(status: Status, groups: List<Group>): Flow<List<Achievement>>
@@ -41,9 +40,6 @@ class AchievementRepositoryImpl(
 
     override fun getAll(status: Status, groups: List<Group>): Flow<List<Achievement>> =
         achievementDao.getAll(
-            statusAllFlag = status == Status.ALL,
-            statusDoneFlag = status == Status.DONE,
-            statusUndoneFlag = status == Status.UNDONE,
             nullableGroupIdsFlag = groups.isEmpty(),
             groupIds = groups.map { it.id }
         )

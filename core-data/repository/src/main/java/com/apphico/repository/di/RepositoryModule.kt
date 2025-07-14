@@ -1,8 +1,6 @@
 package com.apphico.repository.di
 
 import android.content.Context
-import com.apphico.datastore.AppSettingsDataStore
-import com.apphico.datastore.UserSettingsDataStore
 import com.apphico.database.room.AppDatabase
 import com.apphico.database.room.dao.AchievementDao
 import com.apphico.database.room.dao.CheckListItemDao
@@ -13,6 +11,8 @@ import com.apphico.database.room.dao.ProgressDao
 import com.apphico.database.room.dao.TaskDao
 import com.apphico.database.room.dao.TaskDeletedDao
 import com.apphico.database.room.dao.TaskDoneDao
+import com.apphico.datastore.AppSettingsDataStore
+import com.apphico.datastore.UserSettingsDataStore
 import com.apphico.repository.achievements.AchievementRepository
 import com.apphico.repository.achievements.AchievementRepositoryImpl
 import com.apphico.repository.alarm.AlarmHelper

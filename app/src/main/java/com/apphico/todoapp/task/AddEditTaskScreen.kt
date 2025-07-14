@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
@@ -80,6 +81,7 @@ import com.apphico.extensions.getNowDate
 import com.apphico.extensions.getNowGMTMillis
 import com.apphico.extensions.getNowTime
 import com.apphico.extensions.toMillis
+import com.apphico.extensions.toUTCMillis
 import com.apphico.todoapp.ToDoAppBootReceiver
 import com.apphico.todoapp.ad.BannerAdView
 import com.apphico.todoapp.ad.ToDoAppBannerAd
@@ -442,6 +444,7 @@ private fun Dates(
         )
         Spacer(modifier = Modifier.height(ToDoAppTheme.spacing.small))
         EndDateRow(
+            startDate = startDate,
             endDate = endDate,
             endTime = endTime,
             onEndDateChanged = onEndDateChanged,
@@ -482,6 +485,7 @@ private fun StarDateRow(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EndDateRow(
+    startDate: State<LocalDate?>,
     endDate: State<LocalDate?>,
     onEndDateChanged: (LocalDate?) -> Unit,
     endTime: State<LocalTime?>,
@@ -496,7 +500,12 @@ private fun EndDateRow(
     }
 
     val endDatePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = initialEndDate.toMillis()
+        initialSelectedDateMillis = initialEndDate.toMillis(),
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis >= (startDate.value?.toUTCMillis() ?: 0)
+            }
+        }
     )
     val endTimePickerState = rememberTimePickerState(
         initialHour = initialEndHour,

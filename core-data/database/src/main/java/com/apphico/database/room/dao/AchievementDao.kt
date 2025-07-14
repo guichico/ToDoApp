@@ -18,15 +18,9 @@ interface AchievementDao : BaseDao<AchievementDB> {
     @Query(
         "SELECT * FROM AchievementDB " +
                 "WHERE (:nullableGroupIdsFlag OR achievementGroupId IN (:groupIds)) " +
-                "  AND (:statusAllFlag " +
-                "   OR (:statusDoneFlag AND doneDate IS NOT NULL) " +
-                "   OR (:statusUndoneFlag AND doneDate IS NULL)) " +
                 "ORDER BY endDate"
     )
     fun getAll(
-        statusAllFlag: Boolean,
-        statusDoneFlag: Boolean,
-        statusUndoneFlag: Boolean,
         nullableGroupIdsFlag: Boolean,
         groupIds: List<Long>
     ): Flow<List<AchievementRelations>>
