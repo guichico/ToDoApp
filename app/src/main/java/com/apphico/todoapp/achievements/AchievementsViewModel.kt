@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Status
-import com.apphico.core_repository.calendar.achievements.AchievementRepository
-import com.apphico.core_repository.calendar.checklist.CheckListRepository
-import com.apphico.core_repository.calendar.settings.UserSettingsRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.startWith
+import com.apphico.repository.achievements.AchievementRepository
+import com.apphico.repository.checklist.CheckListRepository
+import com.apphico.repository.settings.UserSettingsRepository
 import com.apphico.todoapp.FilterViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

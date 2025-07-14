@@ -7,14 +7,14 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.Status
 import com.apphico.core_model.Task
-import com.apphico.core_repository.calendar.calendar.CalendarRepository
-import com.apphico.core_repository.calendar.checklist.CheckListRepository
-import com.apphico.core_repository.calendar.datastore.AppSettingsDataStore
-import com.apphico.core_repository.calendar.settings.UserSettingsRepository
 import com.apphico.extensions.addOrRemove
 import com.apphico.extensions.combine
 import com.apphico.extensions.getNowDate
 import com.apphico.extensions.startWith
+import com.apphico.repository.calendar.CalendarRepository
+import com.apphico.repository.checklist.CheckListRepository
+import com.apphico.repository.settings.AppSettingsRepository
+import com.apphico.repository.settings.UserSettingsRepository
 import com.apphico.todoapp.FilterViewModel
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,13 +35,13 @@ import javax.inject.Inject
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val appSettingsDataStore: AppSettingsDataStore,
+    private val appSettingsRepository: AppSettingsRepository,
     private val userSettingsRepository: UserSettingsRepository,
     private val calendarRepository: CalendarRepository,
     private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle), FilterViewModel {
 
-    val wasWelcomeClosed = appSettingsDataStore.wasWelcomeClosed
+    val wasWelcomeClosed = appSettingsRepository.wasWelcomeClosed()
 
     val currentMonth = MutableStateFlow<Pair<Month, Int>>(with(getNowDate()) { month to year })
 
@@ -77,7 +77,7 @@ class CalendarViewModel @Inject constructor(
         .flowOn(Dispatchers.IO)
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    fun setWasWelcomeClosed() = viewModelScope.launch { appSettingsDataStore.setWasWelcomeClosed(true) }
+    fun setWasWelcomeClosed() = viewModelScope.launch { appSettingsRepository.setWasWelcomeClosed(true) }
 
     fun onCurrentMonthChanged(month: Month?, year: Int?) {
         if (month != null && year != null) currentMonth.value = Pair(month, year)

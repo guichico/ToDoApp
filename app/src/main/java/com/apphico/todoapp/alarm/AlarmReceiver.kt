@@ -10,10 +10,11 @@ import android.content.Intent
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.getSystemService
 import com.apphico.core_model.Task
-import com.apphico.core_repository.calendar.alarm.AlarmHelper
-import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.extensions.hasNotificationPermission
+import com.apphico.repository.alarm.AlarmHelper
+import com.apphico.repository.task.TaskRepository
 import com.apphico.todoapp.R
 import com.apphico.todoapp.utils.createActionStopAlarmIntent
 import com.apphico.todoapp.utils.createOpenTaskIntent
@@ -46,38 +47,31 @@ class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
-            AlarmHelper.ALARM_ACTION -> {
-                if (context.hasNotificationPermission()) {
-                    val task = intent.getTask()
+            AlarmHelper.ALARM_ACTION -> context.playAlarm(intent)
+            AlarmHelper.STOP_ALARM_ACTION -> context.stopAlarm(intent)
+        }
+    }
 
-                    @SuppressLint("MissingPermission")
-                    context.createNotification(task)
+    private fun Context.playAlarm(intent: Intent) {
+        if (hasNotificationPermission()) {
+            val task = intent.getTask()
 
-                    if (task.reminder?.soundAlarm == true) mediaPlayerHelper.start()
+            @SuppressLint("MissingPermission")
+            createNotification(task)
 
-                    CoroutineScope(Dispatchers.IO).launch {
-                        taskRepository.updateTaskNextAlarm(task.id)
-                    }
-                }
-            }
+            if (task.reminder?.soundAlarm == true) mediaPlayerHelper.start()
 
-            AlarmHelper.STOP_ALARM_ACTION -> {
-                val alarmId = intent.getAlarmId()
-
-                alarmHelper.cancelAlarm(alarmId)
-
-                mediaPlayerHelper.stop()
-
-                NotificationManagerCompat.from(context).cancel(alarmId.toInt())
+            CoroutineScope(Dispatchers.IO).launch {
+                taskRepository.updateTaskNextAlarm(task.id)
             }
         }
     }
 
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun Context.createNotification(task: Task) {
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService<NotificationManager>()
 
-        notificationManager.createNotificationChannel(
+        notificationManager?.createNotificationChannel(
             NotificationChannel(ALARM_CHANNEL_ID, ALARM_CHANNEL_ID, NotificationManager.IMPORTANCE_HIGH)
         )
 
@@ -100,5 +94,15 @@ class AlarmReceiver : BroadcastReceiver() {
         NotificationManagerCompat
             .from(this)
             .notify(task.reminderId.toInt(), notificationBuilder.build())
+    }
+
+    private fun Context.stopAlarm(intent: Intent) {
+        val alarmId = intent.getAlarmId()
+
+        alarmHelper.cancelAlarm(alarmId)
+
+        mediaPlayerHelper.stop()
+
+        NotificationManagerCompat.from(this).cancel(alarmId.toInt())
     }
 }

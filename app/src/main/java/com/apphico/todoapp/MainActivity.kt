@@ -16,9 +16,9 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.util.Consumer
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.apphico.core_repository.calendar.alarm.AlarmHelper
 import com.apphico.designsystem.LockScreenOrientation
 import com.apphico.designsystem.theme.ToDoAppTheme
+import com.apphico.repository.alarm.AlarmHelper
 import com.apphico.todoapp.task.navigateToAddEditTask
 import com.apphico.todoapp.utils.getTask
 import dagger.hilt.android.AndroidEntryPoint

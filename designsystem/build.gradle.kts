@@ -41,8 +41,8 @@ android {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    implementation(project(":core-extensions"))
-    implementation(project(":core-model"))
+    api(project(":core-extensions"))
+    api(project(":core-model"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

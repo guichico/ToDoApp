@@ -2,7 +2,7 @@ package com.apphico.todoapp.focus
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apphico.core_repository.calendar.focus.FocusRepository
+import com.apphico.repository.focus.FocusRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted

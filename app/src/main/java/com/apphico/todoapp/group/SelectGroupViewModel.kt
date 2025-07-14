@@ -2,7 +2,7 @@ package com.apphico.todoapp.group
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apphico.core_repository.calendar.group.GroupRepository
+import com.apphico.repository.group.GroupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted

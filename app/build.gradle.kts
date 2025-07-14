@@ -99,7 +99,7 @@ dependencies {
     implementation(project(":designsystem"))
     implementation(project(":core-extensions"))
     implementation(project(":core-model"))
-    implementation(project(":core-repository"))
+    api(project(":core-data:repository"))
 
     detekt (libs.detekt.cli)
 

@@ -1,7 +1,7 @@
 package com.apphico.todoapp.di
 
 import android.content.Context
-import com.apphico.core_repository.calendar.alarm.AlarmHelper
+import com.apphico.repository.alarm.AlarmHelper
 import com.apphico.todoapp.alarm.AlarmHelperImpl
 import com.apphico.todoapp.alarm.MediaPlayerHelper
 import com.apphico.todoapp.alarm.MediaPlayerHelperImpl

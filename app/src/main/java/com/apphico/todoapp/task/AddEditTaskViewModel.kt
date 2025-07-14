@@ -10,9 +10,6 @@ import com.apphico.core_model.Location
 import com.apphico.core_model.RecurringTask
 import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
-import com.apphico.core_repository.calendar.checklist.CheckListRepository
-import com.apphico.core_repository.calendar.datastore.AppSettingsDataStore
-import com.apphico.core_repository.calendar.task.TaskRepository
 import com.apphico.designsystem.R
 import com.apphico.extensions.add
 import com.apphico.extensions.addDaysBetween
@@ -21,6 +18,9 @@ import com.apphico.extensions.ifTrue
 import com.apphico.extensions.isEqualToBy
 import com.apphico.extensions.remove
 import com.apphico.extensions.update
+import com.apphico.repository.checklist.CheckListRepository
+import com.apphico.repository.settings.AppSettingsRepository
+import com.apphico.repository.task.TaskRepository
 import com.apphico.todoapp.group.GROUP_ARG
 import com.apphico.todoapp.location.LOCATION_ARG
 import com.apphico.todoapp.location.REMOVE_LOCATION_ARG
@@ -44,7 +44,7 @@ import kotlin.reflect.typeOf
 @HiltViewModel
 class AddEditTaskViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val appSettingsDataStore: AppSettingsDataStore,
+    private val appSettingsRepository: AppSettingsRepository,
     private val taskRepository: TaskRepository,
     private val checkListRepository: CheckListRepository
 ) : SavedStateHandleViewModel(savedStateHandle) {
@@ -66,7 +66,7 @@ class AddEditTaskViewModel @Inject constructor(
     val nameError = MutableStateFlow<Int?>(null)
     val startDateError = MutableStateFlow<Int?>(null)
 
-    val wasDatesExplanationClosed = appSettingsDataStore.wasDatesExplanationClosed
+    val wasDatesExplanationClosed = appSettingsRepository.wasDatesExplanationClosed()
 
     init {
         if (addEditTaskParameters.isFromIntent) {
@@ -118,7 +118,7 @@ class AddEditTaskViewModel @Inject constructor(
     }
 
     fun setWasDatesExplanationClosed() =
-        viewModelScope.launch { appSettingsDataStore.setWasDatesExplanationClosed(true) }
+        viewModelScope.launch { appSettingsRepository.setWasDatesExplanationClosed(true) }
 
     fun canSaveAll(): Boolean {
         val editingTask = editingTask.value
@@ -259,8 +259,7 @@ class AddEditTaskViewModel @Inject constructor(
         val isStartDateTimeAfterEndDateTime = task.getEndDateTime()?.let { endDateTime -> task.getStartDateTime()?.isAfter(endDateTime) } ?: false
         val isStartDateAfterEndDate = task.endDate?.let { endDate -> task.startDate?.isAfter(endDate) } ?: false
 
-        if ((hasAllDatesAndTimes && isStartDateTimeAfterEndDateTime) || (hasDates && isStartDateAfterEndDate)
-        ) {
+        if ((hasAllDatesAndTimes && isStartDateTimeAfterEndDateTime) || (hasDates && isStartDateAfterEndDate)) {
             hasError = true
             startDateError.value = R.string.start_date_after_end_date_error_message
         }

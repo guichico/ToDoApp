@@ -4,7 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.apphico.core_model.Coordinates
-import com.apphico.core_repository.calendar.location.LocationRepository
+import com.apphico.repository.location.LocationRepository
 import com.apphico.todoapp.navigation.CustomNavType
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

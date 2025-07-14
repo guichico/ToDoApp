@@ -3,7 +3,7 @@ package com.apphico.todoapp
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.apphico.core_repository.calendar.task.TaskRepository
+import com.apphico.repository.task.TaskRepository
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

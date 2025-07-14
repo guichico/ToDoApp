@@ -8,14 +8,14 @@ import com.apphico.core_model.CheckListItem
 import com.apphico.core_model.Group
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.MeasurementValueUnit
-import com.apphico.core_repository.calendar.achievements.AchievementRepository
-import com.apphico.core_repository.calendar.checklist.CheckListRepository
 import com.apphico.designsystem.R
 import com.apphico.extensions.add
 import com.apphico.extensions.combine
 import com.apphico.extensions.isEqualToBy
 import com.apphico.extensions.remove
 import com.apphico.extensions.update
+import com.apphico.repository.achievements.AchievementRepository
+import com.apphico.repository.checklist.CheckListRepository
 import com.apphico.todoapp.group.GROUP_ARG
 import com.apphico.todoapp.navigation.CustomNavType
 import com.apphico.todoapp.navigation.SavedStateHandleViewModel

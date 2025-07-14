@@ -8,7 +8,7 @@ import android.os.Bundle
 import androidx.core.net.toUri
 import com.apphico.core_model.Reminder
 import com.apphico.core_model.Task
-import com.apphico.core_repository.calendar.alarm.AlarmHelper
+import com.apphico.repository.alarm.AlarmHelper
 import com.apphico.todoapp.MainActivity
 import com.apphico.todoapp.alarm.AlarmReceiver
 import com.apphico.todoapp.alarm.AlarmReceiver.Companion.OPEN_TASK_REQUEST_CODE
