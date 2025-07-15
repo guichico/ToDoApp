@@ -13,7 +13,7 @@ class MediaPlayerHelperImpl(
     private val context: Context
 ) : MediaPlayerHelper {
 
-    var mediaPlayer: MediaPlayer? = MediaPlayer.create(context, Settings.System.DEFAULT_ALARM_ALERT_URI)
+    var mediaPlayer: MediaPlayer? = null
 
     override fun start() {
         if (mediaPlayer == null) {

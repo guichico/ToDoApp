@@ -16,8 +16,9 @@ import com.apphico.extensions.hasNotificationPermission
 import com.apphico.repository.alarm.AlarmHelper
 import com.apphico.repository.task.TaskRepository
 import com.apphico.todoapp.R
-import com.apphico.todoapp.utils.createActionStopAlarmIntent
+import com.apphico.todoapp.utils.createDeleteIntent
 import com.apphico.todoapp.utils.createOpenTaskIntent
+import com.apphico.todoapp.utils.createStopAlarmIntent
 import com.apphico.todoapp.utils.getAlarmId
 import com.apphico.todoapp.utils.getTask
 import dagger.hilt.android.AndroidEntryPoint
@@ -43,12 +44,14 @@ class AlarmReceiver : BroadcastReceiver() {
 
         const val STOP_ALARM_REQUEST_CODE = 1
         const val OPEN_TASK_REQUEST_CODE = 2
+        const val DELETE_NOTIFICATION_REQUEST_CODE = 3
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             AlarmHelper.ALARM_ACTION -> context.playAlarm(intent)
-            AlarmHelper.STOP_ALARM_ACTION -> context.stopAlarm(intent)
+            AlarmHelper.STOP_ALARM_ACTION,
+            AlarmHelper.DELETE_NOTIFICATION_ACTION -> context.stopAlarm(intent)
         }
     }
 
@@ -86,8 +89,9 @@ class AlarmReceiver : BroadcastReceiver() {
                 .addAction(
                     R.drawable.ic_notification,
                     getString(com.apphico.designsystem.R.string.stop_alarm),
-                    createActionStopAlarmIntent(task.reminderId)
+                    createStopAlarmIntent(task.reminderId)
                 )
+                .setDeleteIntent(createDeleteIntent(task.reminderId))
         } else {
             notificationBuilder.setAutoCancel(true)
         }

@@ -11,6 +11,7 @@ interface AlarmHelper {
         const val ALARM_ACTION = "alarm"
         const val STOP_ALARM_ACTION = "stop_alarm"
         const val OPEN_TASK_ACTION = "open_task"
+        const val DELETE_NOTIFICATION_ACTION = "delete_alarm"
 
         const val ALARM_ID = "alarm_id"
 

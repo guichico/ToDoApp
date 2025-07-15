@@ -63,17 +63,6 @@ fun Context.createAlarmIntentWithExtras(alarmId: Long, task: Task) =
         extras = task.getTaskBundle()
     )
 
-fun Context.createActionStopAlarmIntent(alarmId: Long): PendingIntent =
-    PendingIntent.getBroadcast(
-        this,
-        STOP_ALARM_REQUEST_CODE,
-        Intent(this, AlarmReceiver::class.java).apply {
-            action = AlarmHelper.STOP_ALARM_ACTION
-            putExtra(AlarmHelper.ALARM_ID, alarmId)
-        },
-        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-    )
-
 fun Context.createOpenTaskIntent(task: Task): PendingIntent =
     PendingIntent.getActivity(
         this,
@@ -89,6 +78,28 @@ fun Context.createOpenTaskIntent(task: Task): PendingIntent =
             putExtras(task.getTaskBundle())
         },
         PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
+fun Context.createStopAlarmIntent(alarmId: Long): PendingIntent =
+    PendingIntent.getBroadcast(
+        this,
+        STOP_ALARM_REQUEST_CODE,
+        Intent(this, AlarmReceiver::class.java).apply {
+            action = AlarmHelper.STOP_ALARM_ACTION
+            putExtra(AlarmHelper.ALARM_ID, alarmId)
+        },
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+    )
+
+fun Context.createDeleteIntent(alarmId: Long): PendingIntent =
+    PendingIntent.getBroadcast(
+        this,
+        AlarmReceiver.Companion.DELETE_NOTIFICATION_REQUEST_CODE,
+        Intent(this, AlarmReceiver::class.java).apply {
+            action = AlarmHelper.DELETE_NOTIFICATION_ACTION
+            putExtra(AlarmHelper.ALARM_ID, alarmId)
+        },
+        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_ONE_SHOT
     )
 
 private fun Task.getTaskBundle() = Bundle().apply {
