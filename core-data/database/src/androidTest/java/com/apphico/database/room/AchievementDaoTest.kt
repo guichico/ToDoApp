@@ -3,6 +3,7 @@ package com.apphico.database.room
 import com.apphico.core_model.Achievement
 import com.apphico.core_model.MeasurementType
 import com.apphico.core_model.Status
+import com.apphico.core_model.filterStatus
 import com.apphico.database.room.dao.AchievementDao
 import com.apphico.database.room.dao.CheckListItemDao
 import com.apphico.database.room.dao.CheckListItemDoneDao
@@ -127,12 +128,9 @@ class AchievementDaoTest : BaseDaoTest() {
 
     private suspend fun getAll(status: Status = Status.ALL, groupIds: List<Long> = emptyList()): List<Achievement> =
         achievementDao.getAll(
-            statusAllFlag = status == Status.ALL,
-            statusDoneFlag = status == Status.DONE,
-            statusUndoneFlag = status == Status.UNDONE,
             nullableGroupIdsFlag = groupIds.isEmpty(),
             groupIds = groupIds
         )
-            .map { it.map { it.toAchievement() } }
+            .map { it.map { achievementRelations -> achievementRelations.toAchievement() }.filterStatus(status) }
             .first()
 }

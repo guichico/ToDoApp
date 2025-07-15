@@ -23,12 +23,12 @@ object SelectGroupRouteFromAchievement
 fun <T : Any> NavController.navigateToSelectGroup(route: T) = navigate(route)
 
 fun NavController.navigateBackToAddEditTask(savedStateHandle: SavedStateHandle, group: Group) {
-    savedStateHandle.set<Group>(GROUP_ARG, group)
+    savedStateHandle[GROUP_ARG] = group
     popBackStack<AddEditTaskRoute>(inclusive = false)
 }
 
 fun NavController.navigateBackToAddEditAchievement(savedStateHandle: SavedStateHandle, group: Group) {
-    savedStateHandle.set<Group>(GROUP_ARG, group)
+    savedStateHandle[GROUP_ARG] = group
     popBackStack<AddEditAchievementRoute>(inclusive = false)
 }
 

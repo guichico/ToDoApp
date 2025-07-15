@@ -25,7 +25,7 @@ fun NavController.navigateToSelectLocationOnMap(coordinates: Coordinates?) =
     navigate(SelectLocationOnMapRoute(SelectLocationOnMapParameters(coordinates)))
 
 fun NavController.navigateBackToAddEditLocation(savedStateHandle: SavedStateHandle, coordinates: Coordinates?) {
-    savedStateHandle.set<Coordinates>(COORDINATES_ARG, coordinates)
+    savedStateHandle[COORDINATES_ARG] = coordinates
     popBackStack<AddEditLocationRoute>(inclusive = false)
 }
 

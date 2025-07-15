@@ -99,7 +99,7 @@ dependencies {
     implementation(project(":designsystem"))
     implementation(project(":core-extensions"))
     implementation(project(":core-model"))
-    api(project(":core-data:repository"))
+    implementation(project(":core-data:repository"))
 
     detekt (libs.detekt.cli)
 
@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.work.runtime.ktx)
 
     implementation(libs.kotlinx.serialization.json)
 
@@ -125,8 +126,10 @@ dependencies {
     // Hilt
     ksp(libs.hilt.compiler)
     ksp(libs.hilt.android.compiler)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.work)
 
     // Firebase
     implementation(platform(libs.firebase.bom))

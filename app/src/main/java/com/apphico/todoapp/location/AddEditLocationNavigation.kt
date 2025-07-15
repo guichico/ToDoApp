@@ -28,12 +28,12 @@ data class AddEditLocationParameters(val location: Location?) : Parcelable
 fun NavController.navigateToAddEditLocation(location: Location?) = navigate(AddEditLocationRoute(AddEditLocationParameters(location)))
 
 fun NavController.navigateBackToAddEditTaskWithAddLocation(savedStateHandle: SavedStateHandle, location: Location?) {
-    savedStateHandle.set<Location>(LOCATION_ARG, location)
+    savedStateHandle[LOCATION_ARG] = location
     popBackStack<AddEditTaskRoute>(inclusive = false)
 }
 
 fun NavController.navigateBackToAddEditTaskWithRemoveLocation(savedStateHandle: SavedStateHandle) {
-    savedStateHandle.set<Boolean>(REMOVE_LOCATION_ARG, true)
+    savedStateHandle[REMOVE_LOCATION_ARG] = true
     popBackStack<AddEditTaskRoute>(inclusive = false)
 }
 

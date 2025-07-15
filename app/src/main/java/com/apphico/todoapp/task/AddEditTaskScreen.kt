@@ -82,9 +82,9 @@ import com.apphico.extensions.getNowGMTMillis
 import com.apphico.extensions.getNowTime
 import com.apphico.extensions.toMillis
 import com.apphico.extensions.toUTCMillis
-import com.apphico.todoapp.ToDoAppBootReceiver
 import com.apphico.todoapp.ad.BannerAdView
 import com.apphico.todoapp.ad.ToDoAppBannerAd
+import com.apphico.todoapp.alarm.ToDoAppBootReceiver
 import com.google.android.gms.ads.AdView
 import java.time.LocalDate
 import java.time.LocalTime

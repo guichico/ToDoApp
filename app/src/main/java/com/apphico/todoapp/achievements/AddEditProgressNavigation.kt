@@ -45,8 +45,8 @@ fun NavController.navigateToAddEditProgress(measurementType: Int, measurementUni
     navigate(AddEditProgressRoute(AddEditProgressParameters(measurementType, measurementUnit, progress)))
 
 fun NavController.navigateBackToAddEditAchievement(savedStateHandle: SavedStateHandle, measurementType: Int, operation: Operation) {
-    savedStateHandle.set<Int>(MEASUREMENT_TYPE_ARG, measurementType)
-    savedStateHandle.set<Operation>(OPERATION_ARG, operation)
+    savedStateHandle[MEASUREMENT_TYPE_ARG] = measurementType
+    savedStateHandle[OPERATION_ARG] = operation
     popBackStack<AddEditAchievementRoute>(inclusive = false)
 }
 

@@ -47,13 +47,19 @@
         <receiver android:name=".alarm.AlarmReceiver" />
 
         <receiver
-            android:name=".ToDoAppBootReceiver"
+            android:name=".alarm.ToDoAppBootReceiver"
             android:enabled="false"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove">
+        </provider>
 
     </application>
 

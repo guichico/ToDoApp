@@ -38,9 +38,9 @@ android {
 dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
 
-    api(project(":core-data:database"))
-    api(project(":core-data:datastore"))
-    api(project(":core-data:repository"))
+    implementation(project(":core-data:database"))
+    implementation(project(":core-data:datastore"))
+    implementation(project(":core-data:repository"))
 
     // Hilt
     ksp(libs.hilt.compiler)

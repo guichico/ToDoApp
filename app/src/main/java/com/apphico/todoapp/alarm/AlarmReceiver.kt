@@ -82,11 +82,12 @@ class AlarmReceiver : BroadcastReceiver() {
             .setContentIntent(createOpenTaskIntent(task))
 
         if (task.reminder?.soundAlarm == true) {
-            notificationBuilder.addAction(
-                R.drawable.ic_notification,
-                getString(com.apphico.designsystem.R.string.stop_alarm),
-                createActionStopAlarmIntent(task.reminderId)
-            )
+            notificationBuilder
+                .addAction(
+                    R.drawable.ic_notification,
+                    getString(com.apphico.designsystem.R.string.stop_alarm),
+                    createActionStopAlarmIntent(task.reminderId)
+                )
         } else {
             notificationBuilder.setAutoCancel(true)
         }
